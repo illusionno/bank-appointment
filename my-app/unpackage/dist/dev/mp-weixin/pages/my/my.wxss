@@ -1,0 +1,30 @@
+.user-card.data-v-0be17cc6 {
+  width: 100%;
+}
+.user-card .usercard-top.data-v-0be17cc6 {
+  height: 320rpx;
+  background: #e6e6e6;
+  border-radius: 15rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.user-card .usercard-top .avatar.data-v-0be17cc6 {
+  width: 100rpx;
+  height: 100rpx;
+}
+.user-card .usercard-top .avatar image.data-v-0be17cc6 {
+  width: 100%;
+  height: 100%;
+}
+.user-card .usercard-top text.data-v-0be17cc6 {
+  display: block;
+  text-align: center;
+}
+.user-card .usercard-top .login-btn.data-v-0be17cc6 {
+  display: block;
+  padding: 3rpx;
+  margin-top: 7rpx;
+}
+

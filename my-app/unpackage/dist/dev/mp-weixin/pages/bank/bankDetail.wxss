@@ -1,0 +1,32 @@
+.bank.data-v-0020b3f7 {
+  padding: 15px;
+}
+.bank .item.data-v-0020b3f7 {
+  background-color: beige;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+.bank .item .time.data-v-0020b3f7 {
+  margin-bottom: 5px;
+}
+.bank .my-btn.data-v-0020b3f7 {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.bank .my-btn .link.data-v-0020b3f7 {
+  color: #218cff;
+  padding: 3px 7px;
+  border: 1px solid #218cff;
+  display: inline-block;
+  border-radius: 8px;
+}
+.bank .my-btn .link2.data-v-0020b3f7 {
+  color: #ffbc34;
+  padding: 3px 7px;
+  border: 1px solid #ffbc34;
+  display: inline-block;
+  border-radius: 8px;
+}
+

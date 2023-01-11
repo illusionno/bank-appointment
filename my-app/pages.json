@@ -3,14 +3,82 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "银行首页"
+			}
+		},
+		{
+			"path": "pages/book/book",
+			"style": {
+				"navigationBarTitleText": "银行业务预约"
+			}
+		},
+		{
+			"path": "pages/my/my",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/register/register",
+			"style": {
+				"navigationBarTitleText": "注册"
+			}
+		},
+		{
+			"path": "pages/register/updateRegister",
+			"style": {
+				"navigationBarTitleText": "修改个人信息"
+			}
+		},
+		{
+			"path": "pages/bank/bankDetail",
+			"style": {
+				"navigationBarTitleText": "银行详情"
+			}
+		},{
+			"path": "pages/business/business",
+			"style": {
+				"navigationBarTitleText": "业务详情"
+			}
+		},{
+			"path": "pages/register/getUserInfo",
+			"style": {
+				"navigationBarTitleText": "查看个人信息"
 			}
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
+		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
+		"navigationBarBackgroundColor": "#8666ac",
 		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#000000",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "pages/index/index",
+			"iconPath": "static/tab/index.png",
+			"selectedIconPath": "static/tab/index-active.png",
+			"text": "首页"
+		}, {
+			"pagePath": "pages/book/book",
+			"iconPath": "static/tab/order.png",
+			"selectedIconPath": "static/tab/order-active.png",
+			"text": "预约"
+		},{
+			"pagePath": "pages/my/my",
+			"iconPath": "static/tab/my.png",
+			"selectedIconPath": "static/tab/my-active.png",
+			"text": "我的"
+		}]
 	}
 }

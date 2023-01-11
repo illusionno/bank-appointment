@@ -1,0 +1,56 @@
+.business.data-v-4ead8e86 {
+  padding: 7px;
+}
+.business .none-box.data-v-4ead8e86 {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.business .none-box .none.data-v-4ead8e86 {
+  height: 200px;
+  width: 200px;
+}
+.business .none-box .none image.data-v-4ead8e86 {
+  width: 100%;
+  height: 100%;
+}
+.business .none-box .none .content.data-v-4ead8e86 {
+  text-align: center;
+  color: #858585;
+}
+.business .bankName.data-v-4ead8e86 {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+.business .bankName image.data-v-4ead8e86 {
+  width: 25px;
+  height: 25px;
+}
+.business .item.data-v-4ead8e86 {
+  background-color: beige;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+.business .my-btn.data-v-4ead8e86 {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.business .my-btn .link.data-v-4ead8e86 {
+  color: #218cff;
+  padding: 3px 7px;
+  border: 1px solid #218cff;
+  display: inline-block;
+  border-radius: 8px;
+}
+.business .my-btn .link2.data-v-4ead8e86 {
+  color: #ffbc34;
+  padding: 3px 7px;
+  border: 1px solid #ffbc34;
+  display: inline-block;
+  border-radius: 8px;
+}
+

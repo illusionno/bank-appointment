@@ -1,0 +1,13 @@
+.content.data-v-f144a4c8 {
+  padding: 7px;
+}
+.content .item.data-v-f144a4c8 {
+  background-color: beige;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+.content .item .time.data-v-f144a4c8 {
+  margin-bottom: 5px;
+}
+
