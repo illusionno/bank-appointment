@@ -7,4 +7,12 @@
 .book .radio.data-v-d0ed62b4 {
   display: inline-block;
 }
+.book .btn.data-v-d0ed62b4 {
+  color: #fff;
+  padding: 3px 7px;
+  display: inline-block;
+  border-radius: 8px;
+  background-color: #8666ac;
+  margin-top: 12px;
+}
 

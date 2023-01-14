@@ -96,10 +96,10 @@ var components
 try {
   components = {
     uniForms: function() {
-      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms/uni-forms */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms/uni-forms")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms/uni-forms.vue */ 105))
+      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms/uni-forms */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms/uni-forms")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms/uni-forms.vue */ 131))
     },
     uniFormsItem: function() {
-      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms-item/uni-forms-item */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms-item/uni-forms-item")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms-item/uni-forms-item.vue */ 117))
+      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms-item/uni-forms-item */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms-item/uni-forms-item")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms-item/uni-forms-item.vue */ 143))
     }
   }
 } catch (e) {
@@ -229,20 +229,19 @@ var _default =
               // console.log(res.data.data.token);
               uni.setStorageSync('token', res.data.data.token);
               uni.setStorageSync('userName', _this.formData.userName);
-              uni.setStorageSync('name', _this.formData.name);
+              uni.setStorageSync('isLogin', true);
               uni.showToast({
                 title: '登录成功！',
                 duration: 2000 });
 
               setTimeout(function () {
-                uni.redirectTo({
-                  url: '/pages/my/my' });
-
+                uni.reLaunch({
+                  url: '/pages/index/index' });
 
               }, 2000);
             } else {
               uni.showToast({
-                title: '用户名密码不正确！',
+                title: '用户名密码错误！',
                 icon: 'error',
                 duration: 2000 });
 

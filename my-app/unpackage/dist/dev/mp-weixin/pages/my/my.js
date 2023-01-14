@@ -96,10 +96,10 @@ var components
 try {
   components = {
     uniList: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list/uni-list */ "uni_modules/uni-list/components/uni-list/uni-list").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list/uni-list.vue */ 91))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list/uni-list */ "uni_modules/uni-list/components/uni-list/uni-list").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list/uni-list.vue */ 117))
     },
     uniListItem: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list-item/uni-list-item */ "uni_modules/uni-list/components/uni-list-item/uni-list-item").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list-item/uni-list-item.vue */ 98))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list-item/uni-list-item */ "uni_modules/uni-list/components/uni-list-item/uni-list-item").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list-item/uni-list-item.vue */ 124))
     }
   }
 } catch (e) {
@@ -187,7 +187,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 var _default =
 {
   data: function data() {
@@ -217,8 +216,9 @@ var _default =
           if (res.confirm) {
             uni.removeStorageSync('token');
             uni.removeStorageSync('userName');
-            uni.switchTab({
-              url: '/pages/my/my' });
+            uni.removeStorageSync('isLogin');
+            uni.reLaunch({
+              url: '/pages/index/index' });
 
           } else if (res.cancel) {
             console.log('用户点击取消');
@@ -226,6 +226,23 @@ var _default =
         } });
 
     },
+    // getUserInfo(){
+    // 	uni.request({
+    // 		url: 'http://localhost:8082/sysUser/getUserInfo',
+    // 		method: 'POST',
+    // 		timeout: 3000,
+    // 		data:{
+    // 			userName:uni.getStorageSync('userName')
+    // 		},
+    // 		success: (res) => {
+    // 			if (res.data.code === 200) {
+    // 				if(res.data.code === 200){
+    // 					this.userInfo = res.data.data[0]
+    // 				}
+    // 			}
+    // 		}
+    // 	})
+    // },
     // 查看个人信息
     goUserInfo: function goUserInfo() {var _this = this;
       uni.request({
@@ -240,11 +257,34 @@ var _default =
             if (res.data.code === 200) {
               _this.userInfo = res.data.data[0];
               uni.navigateTo({
-                url: "/pages/register/getUserInfo?data=".concat(JSON.stringify(_this.userInfo)) });
+                url: "/pages/register/getUserInfo?data=".concat(JSON.stringify(res.data.data[0])) });
 
             }
           }
         } });
+
+
+    },
+    // 更新个人信息
+    goUpdate: function goUpdate() {var _this2 = this;
+      uni.request({
+        url: 'http://localhost:8082/sysUser/getUserInfo',
+        method: 'POST',
+        timeout: 3000,
+        data: {
+          userName: uni.getStorageSync('userName') },
+
+        success: function success(res) {
+          if (res.data.code === 200) {
+            if (res.data.code === 200) {
+              _this2.userInfo = res.data.data[0];
+              uni.navigateTo({
+                url: "/pages/register/updateUserInfo?data=".concat(JSON.stringify(res.data.data[0])) });
+
+            }
+          }
+        } });
+
 
     },
     // 关于

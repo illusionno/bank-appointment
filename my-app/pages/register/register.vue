@@ -16,10 +16,10 @@
 			<uni-forms-item name="certificatesType" label="证件类型">
 				<radio-group @change="radioChange">
 					<label class="radio">
-						<radio :value="1" checked="true" />身份证
+						<radio :value="1" checked="true" style="transform: scale(0.7)"/>身份证
 					</label>
 					<label class="radio">
-						<radio :value="2" />其他证件
+						<radio :value="2" style="transform: scale(0.7)"/>其他证件
 					</label>
 				</radio-group>
 			</uni-forms-item>
@@ -177,7 +177,7 @@
 
 <style scoped lang="less">
 	.content {
-		padding: 6upx;
+		padding: 6px;
 
 		/deep/.uni-forms-item.is-direction-left {
 			align-items: center;

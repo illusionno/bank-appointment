@@ -96,13 +96,13 @@ var components
 try {
   components = {
     uniForms: function() {
-      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms/uni-forms */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms/uni-forms")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms/uni-forms.vue */ 105))
+      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms/uni-forms */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms/uni-forms")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms/uni-forms.vue */ 131))
     },
     uniFormsItem: function() {
-      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms-item/uni-forms-item */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms-item/uni-forms-item")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms-item/uni-forms-item.vue */ 117))
+      return Promise.all(/*! import() | uni_modules/uni-forms/components/uni-forms-item/uni-forms-item */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-forms/components/uni-forms-item/uni-forms-item")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-forms/components/uni-forms-item/uni-forms-item.vue */ 143))
     },
     uniDatetimePicker: function() {
-      return Promise.all(/*! import() | uni_modules/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker.vue */ 124))
+      return Promise.all(/*! import() | uni_modules/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker.vue */ 150))
     }
   }
 } catch (e) {
@@ -193,16 +193,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var _default =
 {
   data: function data() {
     return {
+      isLogin: uni.getStorageSync('isLogin'),
       allBank: [],
       allBusiness: [],
+      reset: '',
       formData: {
         bankName: '',
         businessName: '',
-        userName: '',
         appointmentTime: '' },
 
       rules: {
@@ -212,24 +222,10 @@ var _default =
             errorMessage: '请选择银行名称' }] },
 
 
-
         businessName: {
           rules: [{
             required: true,
             errorMessage: '请选择业务名' }] },
-
-
-
-        userName: {
-          rules: [{
-            required: true,
-            errorMessage: '请输入用户名' },
-
-          {
-            minLength: 2,
-            maxLength: 8,
-            errorMessage: '用户名长度在 {minLength} 到 {maxLength} 个字符' }] },
-
 
 
         appointmentTime: {
@@ -240,19 +236,19 @@ var _default =
 
 
 
-
   },
   onReady: function onReady() {
     // 需要在onReady中设置规则
     this.$refs.form.setRules(this.rules);
   },
-  mounted: function mounted() {
+  onLoad: function onLoad() {
     this.getAllBank();
   },
   methods: {
+    // 获取可预约的全部银行
     getAllBank: function getAllBank() {var _this = this;
       uni.request({
-        url: 'http://localhost:8082/system/bank/getAllBank',
+        url: "http://localhost:8082/system/bank/getAllBank/true",
         method: 'GET',
         success: function success(res) {
           console.log(res);
@@ -285,10 +281,10 @@ var _default =
       this.$refs.form.validate().then(function (res) {
         var data = _objectSpread(_objectSpread({},
         res), {}, {
+          userName: uni.getStorageSync('userName'),
           // 转成时间戳
           appointmentTime: Date.parse(new Date(_this3.formData.appointmentTime)) });
 
-        console.log('表单数据信息：', data);
         uni.request({
           url: 'http://localhost:8082/book/save',
           method: 'POST',
@@ -301,14 +297,15 @@ var _default =
                 title: '预约成功！',
                 duration: 2000 });
 
-              // this.formData = {}
-              _this3.formData.bankName = '';
-              _this3.formData.businessName = '';
+
               // 退回页面
               setTimeout(function () {
                 uni.switchTab({
                   url: '/pages/index/index' });
 
+                _this3.formData.appointmentTime = '';
+                // 取消勾选
+                _this3.reset = false;
               }, 2000);
             }
           } });
@@ -316,6 +313,11 @@ var _default =
       }).catch(function (err) {
         console.log('表单错误信息：', err);
       });
+    },
+    goLogin: function goLogin() {
+      uni.navigateTo({
+        url: '/pages/login/login' });
+
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

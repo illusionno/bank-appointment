@@ -106,16 +106,16 @@ var components
 try {
   components = {
     uniSection: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-section/components/uni-section/uni-section */ "uni_modules/uni-section/components/uni-section/uni-section").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-section/components/uni-section/uni-section.vue */ 77))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-section/components/uni-section/uni-section */ "uni_modules/uni-section/components/uni-section/uni-section").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-section/components/uni-section/uni-section.vue */ 103))
     },
     uniCard: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-card/components/uni-card/uni-card */ "uni_modules/uni-card/components/uni-card/uni-card").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-card/components/uni-card/uni-card.vue */ 84))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-card/components/uni-card/uni-card */ "uni_modules/uni-card/components/uni-card/uni-card").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-card/components/uni-card/uni-card.vue */ 110))
     },
     uniList: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list/uni-list */ "uni_modules/uni-list/components/uni-list/uni-list").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list/uni-list.vue */ 91))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list/uni-list */ "uni_modules/uni-list/components/uni-list/uni-list").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list/uni-list.vue */ 117))
     },
     uniListItem: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list-item/uni-list-item */ "uni_modules/uni-list/components/uni-list-item/uni-list-item").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list-item/uni-list-item.vue */ 98))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-list/components/uni-list-item/uni-list-item */ "uni_modules/uni-list/components/uni-list-item/uni-list-item").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-list/components/uni-list-item/uni-list-item.vue */ 124))
     }
   }
 } catch (e) {
@@ -202,13 +202,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
+// const banner = [
+// 	"../../static/imgs/banner/b1.png",
+// 	"../../static/imgs/banner/b2.png",
+// 	"../../static/imgs/banner/b3.png",
+// 	"../../static/imgs/banner/b4.png",
+// ]
 var banner = [
-"../../static/imgs/banner/b1.png",
-"../../static/imgs/banner/b2.png",
-"../../static/imgs/banner/b3.png",
-"../../static/imgs/banner/b4.png"];var _default =
+__webpack_require__(/*! ../../static/imgs/banner/b1.png */ 228),
+__webpack_require__(/*! ../../static/imgs/banner/b2.png */ 229),
+__webpack_require__(/*! ../../static/imgs/banner/b3.png */ 230),
+__webpack_require__(/*! ../../static/imgs/banner/b4.png */ 231)];var _default =
+
 
 {
   data: function data() {
@@ -243,10 +249,10 @@ var banner = [
 
 
     },
-    // 所有业务
+    // 所有业务 (获取可预约银行)
     getAllBusiness: function getAllBusiness() {var _this2 = this;
       uni.request({
-        url: 'http://localhost:8082/system/bank/getAllBank',
+        url: 'http://localhost:8082/system/bank/getAllBank/true',
         method: 'GET',
         timeout: 3000,
         success: function success(res) {

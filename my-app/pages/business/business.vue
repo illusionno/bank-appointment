@@ -16,15 +16,16 @@
 							{{item.businessName}}
 						</view>
 					</block>
+					<view class="my-btn">
+						<view class="link" @click="goBank">
+							查看该银行信息
+						</view>
+						<view class="link2" @click="goBook">
+							去预约
+						</view>
+					</view>
 		</view>
-		<view class="my-btn">
-			<view class="link" @click="goBank">
-				查看该银行信息
-			</view>
-			<view class="link2" @click="goBook">
-				去预约
-			</view>
-		</view>
+	
 
 	</view>
 </template>

@@ -13,13 +13,12 @@
 		<!-- bank -->
 		<uni-section title="全部银行" type="line">
 			<view v-for="(item,index) in bank" :key="index">
-				<uni-card :title="item.bankName" extra="详细信息" :thumbnail="avatar" @click="getBankDetail(item.bankName)">
+				<uni-card :title="item.bankName" extra="详细信息" @click="getBankDetail(item.bankName)">
 					<text class="uni-body">{{item.address}}</text>
 				</uni-card>
 			</view>
 		</uni-section>
 		<!--  业务-->
-
 		<uni-section title="银行业务" type="line">
 			<uni-list >
 			<block v-for="(item,index) in business" :key="index">
@@ -32,12 +31,19 @@
 </template>
 
 <script>
+	// const banner = [
+	// 	"../../static/imgs/banner/b1.png",
+	// 	"../../static/imgs/banner/b2.png",
+	// 	"../../static/imgs/banner/b3.png",
+	// 	"../../static/imgs/banner/b4.png",
+	// ]
 	const banner = [
-		"../../static/imgs/banner/b1.png",
-		"../../static/imgs/banner/b2.png",
-		"../../static/imgs/banner/b3.png",
-		"../../static/imgs/banner/b4.png",
+		require('../../static/imgs/banner/b1.png'),
+		require('../../static/imgs/banner/b2.png'),
+		require('../../static/imgs/banner/b3.png'),
+		require('../../static/imgs/banner/b4.png'),
 	]
+	
 	export default {
 		data() {
 			return {
@@ -71,10 +77,10 @@
 
 				})
 			},
-			// 所有业务
+			// 所有业务 (获取可预约银行)
 			getAllBusiness() {
 				uni.request({
-					url: 'http://localhost:8082/system/bank/getAllBank',
+					url: 'http://localhost:8082/system/bank/getAllBank/true',
 					method: 'GET',
 					timeout: 3000,
 					success: (res) => {

@@ -1,0 +1,29 @@
+.none-box.data-v-23787f32 {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.none-box .none.data-v-23787f32 {
+  height: 200px;
+  width: 200px;
+}
+.none-box .none image.data-v-23787f32 {
+  width: 100%;
+  height: 100%;
+}
+.none-box .none .content.data-v-23787f32 {
+  text-align: center;
+  color: #858585;
+}
+.delete.data-v-23787f32 {
+  color: #a98cff;
+  float: right;
+  margin: 5px 0;
+}
+.update.data-v-23787f32 {
+  color: #edae30;
+  float: left;
+  margin: 5px 0;
+}
+

@@ -10,8 +10,8 @@
 					<text>{{userName}}</text>
 				</view>
 				<uni-list>
-					<uni-list-item title="个人信息" link to="/pages/register/updateRegister"></uni-list-item>
-					<uni-list-item title="查看预约" link ></uni-list-item>
+					<uni-list-item title="修改个人信息" link @click="goUpdate"></uni-list-item>
+					<uni-list-item title="我的预约" link to="/pages/book/myBook"></uni-list-item>
 					<uni-list-item title="退出" link @click="exit"></uni-list-item>
 					<uni-list-item title="关于" link @click="about"></uni-list-item>
 				</uni-list>
@@ -25,7 +25,6 @@
 				<text @click="gologin">未登录</text>
 				<!-- <text  class="login-btn" @click="gologin">去登录</text> -->
 			</view>
-
 		</view>
 	</view>
 </template>
@@ -59,8 +58,9 @@ userInfo:[]
 						if (res.confirm) {
 							uni.removeStorageSync('token');
 							uni.removeStorageSync('userName');
-							uni.switchTab({
-								url:'/pages/my/my'
+							uni.removeStorageSync('isLogin');
+							uni.reLaunch({
+								url:'/pages/index/index'
 							})
 						} else if (res.cancel) {
 							console.log('用户点击取消');
@@ -68,6 +68,23 @@ userInfo:[]
 					}
 				})
 			},
+			// getUserInfo(){
+			// 	uni.request({
+			// 		url: 'http://localhost:8082/sysUser/getUserInfo',
+			// 		method: 'POST',
+			// 		timeout: 3000,
+			// 		data:{
+			// 			userName:uni.getStorageSync('userName')
+			// 		},
+			// 		success: (res) => {
+			// 			if (res.data.code === 200) {
+			// 				if(res.data.code === 200){
+			// 					this.userInfo = res.data.data[0]
+			// 				}
+			// 			}
+			// 		}
+			// 	})
+			// },
 			// 查看个人信息
 			goUserInfo(){
 				uni.request({
@@ -82,12 +99,35 @@ userInfo:[]
 							if(res.data.code === 200){
 								this.userInfo = res.data.data[0]
 								uni.navigateTo({
-									url:`/pages/register/getUserInfo?data=${JSON.stringify((this.userInfo))}`
+									url:`/pages/register/getUserInfo?data=${JSON.stringify(res.data.data[0])}`
 								})
 							}
 						}
 					}
 				})
+			
+			},
+			// 更新个人信息
+			goUpdate(){
+				uni.request({
+					url: 'http://localhost:8082/sysUser/getUserInfo',
+					method: 'POST',
+					timeout: 3000,
+					data:{
+						userName:uni.getStorageSync('userName')
+					},
+					success: (res) => {
+						if (res.data.code === 200) {
+							if(res.data.code === 200){
+								this.userInfo = res.data.data[0]
+								uni.navigateTo({
+									url:`/pages/register/updateUserInfo?data=${JSON.stringify(res.data.data[0])}`
+								})
+							}
+						}
+					}
+				})
+			
 			},
 			// 关于
 			about(){

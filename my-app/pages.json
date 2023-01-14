@@ -31,7 +31,7 @@
 			}
 		},
 		{
-			"path": "pages/register/updateRegister",
+			"path": "pages/register/updateUserInfo",
 			"style": {
 				"navigationBarTitleText": "修改个人信息"
 			}
@@ -50,6 +50,16 @@
 			"path": "pages/register/getUserInfo",
 			"style": {
 				"navigationBarTitleText": "查看个人信息"
+			}
+		},{
+			"path": "pages/book/myBook",
+			"style": {
+				"navigationBarTitleText": "我的预约"
+			}
+		},{
+			"path": "pages/book/updateBook",
+			"style": {
+				"navigationBarTitleText": "修改预约"
 			}
 		}
 	],

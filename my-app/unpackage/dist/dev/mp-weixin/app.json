@@ -5,10 +5,12 @@
     "pages/my/my",
     "pages/login/login",
     "pages/register/register",
-    "pages/register/updateRegister",
+    "pages/register/updateUserInfo",
     "pages/bank/bankDetail",
     "pages/business/business",
-    "pages/register/getUserInfo"
+    "pages/register/getUserInfo",
+    "pages/book/myBook",
+    "pages/book/updateBook"
   ],
   "subPackages": [],
   "window": {

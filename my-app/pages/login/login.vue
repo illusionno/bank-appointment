@@ -15,8 +15,8 @@
 		</view>
 		<view class="action-row">
 			<text class="actiontext" @click="registeraccount">注册账号</text>
-			<text>|</text>
-			<text class="actiontext" @click="Sendmail">忘记密码</text>
+			<!-- <text>|</text>
+			<text class="actiontext" @click="Sendmail">忘记密码</text> -->
 		</view>
 	</view>
 </template>
@@ -71,20 +71,19 @@
 								// console.log(res.data.data.token);
 								uni.setStorageSync('token', res.data.data.token);
 								uni.setStorageSync('userName',this.formData.userName)
-								uni.setStorageSync('name',this.formData.name)
+								uni.setStorageSync('isLogin',true)
 								uni.showToast({
 									title: '登录成功！',
 									duration: 2000,
 								})
 								setTimeout(() =>{
-								uni.redirectTo({
-								      url: '/pages/my/my',
+								uni.reLaunch({
+									 url: '/pages/index/index'
 								})
-									
 								},2000)
 							}else{
 								uni.showToast({
-									title: '用户名密码不正确！',
+									title: '用户名密码错误！',
 									icon:'error',
 									duration: 2000,
 								})

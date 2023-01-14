@@ -1,9 +1,10 @@
-let requestApi = function(url, method,) {
+let requestApi = function(url, method,data) {
 	let baseUrl = 'http://localhost:8082'
 	return new Promise((resolve, reject) => {
 		uni.request({
 			url: baseUrl + url,
-			method: method
+			method: method,
+			data:data
 		}).then(res => {
 			// 请求成功时，将结果返出去
 			resolve(res)
