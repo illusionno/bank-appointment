@@ -1,3843 +1,323 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["common/vendor"],{
 
 /***/ 1:
-/*!************************************************************!*\
-  !*** ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js ***!
-  \************************************************************/
+/*!*********************************************************!*\
+  !*** ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js ***!
+  \*********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) {Object.defineProperty(exports, "__esModule", { value: true });exports.createApp = createApp;exports.createComponent = createComponent;exports.createPage = createPage;exports.createPlugin = createPlugin;exports.createSubpackageApp = createSubpackageApp;exports.default = void 0;var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 3));
-var _uniI18n = __webpack_require__(/*! @dcloudio/uni-i18n */ 4);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _slicedToArray(arr, i) {return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();}function _nonIterableRest() {throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _iterableToArrayLimit(arr, i) {if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {_arr.push(_s.value);if (i && _arr.length === i) break;}} catch (err) {_d = true;_e = err;} finally {try {if (!_n && _i["return"] != null) _i["return"]();} finally {if (_d) throw _e;}}return _arr;}function _arrayWithHoles(arr) {if (Array.isArray(arr)) return arr;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _iterableToArray(iter) {if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) return _arrayLikeToArray(arr);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}
-
-var realAtob;
-
-var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-var b64re = /^(?:[A-Za-z\d+/]{4})*?(?:[A-Za-z\d+/]{2}(?:==)?|[A-Za-z\d+/]{3}=?)?$/;
-
-if (typeof atob !== 'function') {
-  realAtob = function realAtob(str) {
-    str = String(str).replace(/[\t\n\f\r ]+/g, '');
-    if (!b64re.test(str)) {throw new Error("Failed to execute 'atob' on 'Window': The string to be decoded is not correctly encoded.");}
-
-    // Adding the padding if missing, for semplicity
-    str += '=='.slice(2 - (str.length & 3));
-    var bitmap;var result = '';var r1;var r2;var i = 0;
-    for (; i < str.length;) {
-      bitmap = b64.indexOf(str.charAt(i++)) << 18 | b64.indexOf(str.charAt(i++)) << 12 |
-      (r1 = b64.indexOf(str.charAt(i++))) << 6 | (r2 = b64.indexOf(str.charAt(i++)));
-
-      result += r1 === 64 ? String.fromCharCode(bitmap >> 16 & 255) :
-      r2 === 64 ? String.fromCharCode(bitmap >> 16 & 255, bitmap >> 8 & 255) :
-      String.fromCharCode(bitmap >> 16 & 255, bitmap >> 8 & 255, bitmap & 255);
-    }
-    return result;
-  };
-} else {
-  // 注意atob只能在全局对象上调用，例如：`const Base64 = {atob};Base64.atob('xxxx')`是错误的用法
-  realAtob = atob;
-}
-
-function b64DecodeUnicode(str) {
-  return decodeURIComponent(realAtob(str).split('').map(function (c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
-}
-
-function getCurrentUserInfo() {
-  var token = wx.getStorageSync('uni_id_token') || '';
-  var tokenArr = token.split('.');
-  if (!token || tokenArr.length !== 3) {
-    return {
-      uid: null,
-      role: [],
-      permission: [],
-      tokenExpired: 0 };
-
-  }
-  var userInfo;
-  try {
-    userInfo = JSON.parse(b64DecodeUnicode(tokenArr[1]));
-  } catch (error) {
-    throw new Error('获取当前用户信息出错，详细错误信息为：' + error.message);
-  }
-  userInfo.tokenExpired = userInfo.exp * 1000;
-  delete userInfo.exp;
-  delete userInfo.iat;
-  return userInfo;
-}
-
-function uniIdMixin(Vue) {
-  Vue.prototype.uniIDHasRole = function (roleId) {var _getCurrentUserInfo =
 
 
-    getCurrentUserInfo(),role = _getCurrentUserInfo.role;
-    return role.indexOf(roleId) > -1;
-  };
-  Vue.prototype.uniIDHasPermission = function (permissionId) {var _getCurrentUserInfo2 =
-
-
-    getCurrentUserInfo(),permission = _getCurrentUserInfo2.permission;
-    return this.uniIDHasRole('admin') || permission.indexOf(permissionId) > -1;
-  };
-  Vue.prototype.uniIDTokenValid = function () {var _getCurrentUserInfo3 =
-
-
-    getCurrentUserInfo(),tokenExpired = _getCurrentUserInfo3.tokenExpired;
-    return tokenExpired > Date.now();
-  };
-}
-
-var _toString = Object.prototype.toString;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-function isFn(fn) {
-  return typeof fn === 'function';
-}
-
-function isStr(str) {
-  return typeof str === 'string';
-}
-
-function isPlainObject(obj) {
-  return _toString.call(obj) === '[object Object]';
-}
-
-function hasOwn(obj, key) {
-  return hasOwnProperty.call(obj, key);
-}
-
-function noop() {}
-
-/**
-                    * Create a cached version of a pure function.
-                    */
-function cached(fn) {
-  var cache = Object.create(null);
-  return function cachedFn(str) {
-    var hit = cache[str];
-    return hit || (cache[str] = fn(str));
-  };
-}
-
-/**
-   * Camelize a hyphen-delimited string.
-   */
-var camelizeRE = /-(\w)/g;
-var camelize = cached(function (str) {
-  return str.replace(camelizeRE, function (_, c) {return c ? c.toUpperCase() : '';});
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-
-var HOOKS = [
-'invoke',
-'success',
-'fail',
-'complete',
-'returnValue'];
-
-
-var globalInterceptors = {};
-var scopedInterceptors = {};
-
-function mergeHook(parentVal, childVal) {
-  var res = childVal ?
-  parentVal ?
-  parentVal.concat(childVal) :
-  Array.isArray(childVal) ?
-  childVal : [childVal] :
-  parentVal;
-  return res ?
-  dedupeHooks(res) :
-  res;
-}
-
-function dedupeHooks(hooks) {
-  var res = [];
-  for (var i = 0; i < hooks.length; i++) {
-    if (res.indexOf(hooks[i]) === -1) {
-      res.push(hooks[i]);
-    }
-  }
-  return res;
-}
-
-function removeHook(hooks, hook) {
-  var index = hooks.indexOf(hook);
-  if (index !== -1) {
-    hooks.splice(index, 1);
-  }
-}
-
-function mergeInterceptorHook(interceptor, option) {
-  Object.keys(option).forEach(function (hook) {
-    if (HOOKS.indexOf(hook) !== -1 && isFn(option[hook])) {
-      interceptor[hook] = mergeHook(interceptor[hook], option[hook]);
-    }
-  });
-}
-
-function removeInterceptorHook(interceptor, option) {
-  if (!interceptor || !option) {
-    return;
-  }
-  Object.keys(option).forEach(function (hook) {
-    if (HOOKS.indexOf(hook) !== -1 && isFn(option[hook])) {
-      removeHook(interceptor[hook], option[hook]);
-    }
-  });
-}
-
-function addInterceptor(method, option) {
-  if (typeof method === 'string' && isPlainObject(option)) {
-    mergeInterceptorHook(scopedInterceptors[method] || (scopedInterceptors[method] = {}), option);
-  } else if (isPlainObject(method)) {
-    mergeInterceptorHook(globalInterceptors, method);
-  }
-}
-
-function removeInterceptor(method, option) {
-  if (typeof method === 'string') {
-    if (isPlainObject(option)) {
-      removeInterceptorHook(scopedInterceptors[method], option);
-    } else {
-      delete scopedInterceptors[method];
-    }
-  } else if (isPlainObject(method)) {
-    removeInterceptorHook(globalInterceptors, method);
-  }
-}
-
-function wrapperHook(hook) {
-  return function (data) {
-    return hook(data) || data;
-  };
-}
-
-function isPromise(obj) {
-  return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-}
-
-function queue(hooks, data) {
-  var promise = false;
-  for (var i = 0; i < hooks.length; i++) {
-    var hook = hooks[i];
-    if (promise) {
-      promise = Promise.resolve(wrapperHook(hook));
-    } else {
-      var res = hook(data);
-      if (isPromise(res)) {
-        promise = Promise.resolve(res);
-      }
-      if (res === false) {
-        return {
-          then: function then() {} };
-
-      }
-    }
-  }
-  return promise || {
-    then: function then(callback) {
-      return callback(data);
-    } };
-
-}
-
-function wrapperOptions(interceptor) {var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  ['success', 'fail', 'complete'].forEach(function (name) {
-    if (Array.isArray(interceptor[name])) {
-      var oldCallback = options[name];
-      options[name] = function callbackInterceptor(res) {
-        queue(interceptor[name], res).then(function (res) {
-          /* eslint-disable no-mixed-operators */
-          return isFn(oldCallback) && oldCallback(res) || res;
-        });
-      };
-    }
-  });
-  return options;
-}
-
-function wrapperReturnValue(method, returnValue) {
-  var returnValueHooks = [];
-  if (Array.isArray(globalInterceptors.returnValue)) {
-    returnValueHooks.push.apply(returnValueHooks, _toConsumableArray(globalInterceptors.returnValue));
-  }
-  var interceptor = scopedInterceptors[method];
-  if (interceptor && Array.isArray(interceptor.returnValue)) {
-    returnValueHooks.push.apply(returnValueHooks, _toConsumableArray(interceptor.returnValue));
-  }
-  returnValueHooks.forEach(function (hook) {
-    returnValue = hook(returnValue) || returnValue;
-  });
-  return returnValue;
-}
-
-function getApiInterceptorHooks(method) {
-  var interceptor = Object.create(null);
-  Object.keys(globalInterceptors).forEach(function (hook) {
-    if (hook !== 'returnValue') {
-      interceptor[hook] = globalInterceptors[hook].slice();
-    }
-  });
-  var scopedInterceptor = scopedInterceptors[method];
-  if (scopedInterceptor) {
-    Object.keys(scopedInterceptor).forEach(function (hook) {
-      if (hook !== 'returnValue') {
-        interceptor[hook] = (interceptor[hook] || []).concat(scopedInterceptor[hook]);
-      }
-    });
-  }
-  return interceptor;
-}
-
-function invokeApi(method, api, options) {for (var _len = arguments.length, params = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {params[_key - 3] = arguments[_key];}
-  var interceptor = getApiInterceptorHooks(method);
-  if (interceptor && Object.keys(interceptor).length) {
-    if (Array.isArray(interceptor.invoke)) {
-      var res = queue(interceptor.invoke, options);
-      return res.then(function (options) {
-        return api.apply(void 0, [wrapperOptions(interceptor, options)].concat(params));
-      });
-    } else {
-      return api.apply(void 0, [wrapperOptions(interceptor, options)].concat(params));
-    }
-  }
-  return api.apply(void 0, [options].concat(params));
-}
-
-var promiseInterceptor = {
-  returnValue: function returnValue(res) {
-    if (!isPromise(res)) {
-      return res;
-    }
-    return new Promise(function (resolve, reject) {
-      res.then(function (res) {
-        if (res[0]) {
-          reject(res[0]);
-        } else {
-          resolve(res[1]);
-        }
-      });
-    });
-  } };
-
-
-var SYNC_API_RE =
-/^\$|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale/;
-
-var CONTEXT_API_RE = /^create|Manager$/;
-
-// Context例外情况
-var CONTEXT_API_RE_EXC = ['createBLEConnection'];
-
-// 同步例外情况
-var ASYNC_API = ['createBLEConnection'];
-
-var CALLBACK_API_RE = /^on|^off/;
-
-function isContextApi(name) {
-  return CONTEXT_API_RE.test(name) && CONTEXT_API_RE_EXC.indexOf(name) === -1;
-}
-function isSyncApi(name) {
-  return SYNC_API_RE.test(name) && ASYNC_API.indexOf(name) === -1;
-}
-
-function isCallbackApi(name) {
-  return CALLBACK_API_RE.test(name) && name !== 'onPush';
-}
-
-function handlePromise(promise) {
-  return promise.then(function (data) {
-    return [null, data];
-  }).
-  catch(function (err) {return [err];});
-}
-
-function shouldPromise(name) {
-  if (
-  isContextApi(name) ||
-  isSyncApi(name) ||
-  isCallbackApi(name))
-  {
-    return false;
-  }
-  return true;
-}
-
-/* eslint-disable no-extend-native */
-if (!Promise.prototype.finally) {
-  Promise.prototype.finally = function (callback) {
-    var promise = this.constructor;
-    return this.then(
-    function (value) {return promise.resolve(callback()).then(function () {return value;});},
-    function (reason) {return promise.resolve(callback()).then(function () {
-        throw reason;
-      });});
-
-  };
-}
-
-function promisify(name, api) {
-  if (!shouldPromise(name)) {
-    return api;
-  }
-  return function promiseApi() {var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};for (var _len2 = arguments.length, params = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {params[_key2 - 1] = arguments[_key2];}
-    if (isFn(options.success) || isFn(options.fail) || isFn(options.complete)) {
-      return wrapperReturnValue(name, invokeApi.apply(void 0, [name, api, options].concat(params)));
-    }
-    return wrapperReturnValue(name, handlePromise(new Promise(function (resolve, reject) {
-      invokeApi.apply(void 0, [name, api, Object.assign({}, options, {
-        success: resolve,
-        fail: reject })].concat(
-      params));
-    })));
-  };
-}
-
-var EPS = 1e-4;
-var BASE_DEVICE_WIDTH = 750;
-var isIOS = false;
-var deviceWidth = 0;
-var deviceDPR = 0;
-
-function checkDeviceWidth() {var _wx$getSystemInfoSync =
-
-
-
-
-  wx.getSystemInfoSync(),platform = _wx$getSystemInfoSync.platform,pixelRatio = _wx$getSystemInfoSync.pixelRatio,windowWidth = _wx$getSystemInfoSync.windowWidth; // uni=>wx runtime 编译目标是 uni 对象，内部不允许直接使用 uni
-
-  deviceWidth = windowWidth;
-  deviceDPR = pixelRatio;
-  isIOS = platform === 'ios';
-}
-
-function upx2px(number, newDeviceWidth) {
-  if (deviceWidth === 0) {
-    checkDeviceWidth();
-  }
-
-  number = Number(number);
-  if (number === 0) {
-    return 0;
-  }
-  var result = number / BASE_DEVICE_WIDTH * (newDeviceWidth || deviceWidth);
-  if (result < 0) {
-    result = -result;
-  }
-  result = Math.floor(result + EPS);
-  if (result === 0) {
-    if (deviceDPR === 1 || !isIOS) {
-      result = 1;
-    } else {
-      result = 0.5;
-    }
-  }
-  return number < 0 ? -result : result;
-}
-
-function getLocale() {
-  // 优先使用 $locale
-  var app = getApp({
-    allowDefault: true });
-
-  if (app && app.$vm) {
-    return app.$vm.$locale;
-  }
-  return wx.getSystemInfoSync().language || 'zh-Hans';
-}
-
-function setLocale(locale) {
-  var app = getApp();
-  if (!app) {
-    return false;
-  }
-  var oldLocale = app.$vm.$locale;
-  if (oldLocale !== locale) {
-    app.$vm.$locale = locale;
-    onLocaleChangeCallbacks.forEach(function (fn) {return fn({
-        locale: locale });});
-
-    return true;
-  }
-  return false;
-}
-
-var onLocaleChangeCallbacks = [];
-function onLocaleChange(fn) {
-  if (onLocaleChangeCallbacks.indexOf(fn) === -1) {
-    onLocaleChangeCallbacks.push(fn);
-  }
-}
-
-if (typeof global !== 'undefined') {
-  global.getLocale = getLocale;
-}
-
-var interceptors = {
-  promiseInterceptor: promiseInterceptor };
-
-
-var baseApi = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  upx2px: upx2px,
-  getLocale: getLocale,
-  setLocale: setLocale,
-  onLocaleChange: onLocaleChange,
-  addInterceptor: addInterceptor,
-  removeInterceptor: removeInterceptor,
-  interceptors: interceptors });
-
-
-function findExistsPageIndex(url) {
-  var pages = getCurrentPages();
-  var len = pages.length;
-  while (len--) {
-    var page = pages[len];
-    if (page.$page && page.$page.fullPath === url) {
-      return len;
-    }
-  }
-  return -1;
-}
-
-var redirectTo = {
-  name: function name(fromArgs) {
-    if (fromArgs.exists === 'back' && fromArgs.delta) {
-      return 'navigateBack';
-    }
-    return 'redirectTo';
-  },
-  args: function args(fromArgs) {
-    if (fromArgs.exists === 'back' && fromArgs.url) {
-      var existsPageIndex = findExistsPageIndex(fromArgs.url);
-      if (existsPageIndex !== -1) {
-        var delta = getCurrentPages().length - 1 - existsPageIndex;
-        if (delta > 0) {
-          fromArgs.delta = delta;
-        }
-      }
-    }
-  } };
-
-
-var previewImage = {
-  args: function args(fromArgs) {
-    var currentIndex = parseInt(fromArgs.current);
-    if (isNaN(currentIndex)) {
-      return;
-    }
-    var urls = fromArgs.urls;
-    if (!Array.isArray(urls)) {
-      return;
-    }
-    var len = urls.length;
-    if (!len) {
-      return;
-    }
-    if (currentIndex < 0) {
-      currentIndex = 0;
-    } else if (currentIndex >= len) {
-      currentIndex = len - 1;
-    }
-    if (currentIndex > 0) {
-      fromArgs.current = urls[currentIndex];
-      fromArgs.urls = urls.filter(
-      function (item, index) {return index < currentIndex ? item !== urls[currentIndex] : true;});
-
-    } else {
-      fromArgs.current = urls[0];
-    }
-    return {
-      indicator: false,
-      loop: false };
-
-  } };
-
-
-var UUID_KEY = '__DC_STAT_UUID';
-var deviceId;
-function addUuid(result) {
-  deviceId = deviceId || wx.getStorageSync(UUID_KEY);
-  if (!deviceId) {
-    deviceId = Date.now() + '' + Math.floor(Math.random() * 1e7);
-    wx.setStorage({
-      key: UUID_KEY,
-      data: deviceId });
-
-  }
-  result.deviceId = deviceId;
-}
-
-function addSafeAreaInsets(result) {
-  if (result.safeArea) {
-    var safeArea = result.safeArea;
-    result.safeAreaInsets = {
-      top: safeArea.top,
-      left: safeArea.left,
-      right: result.windowWidth - safeArea.right,
-      bottom: result.windowHeight - safeArea.bottom };
-
-  }
-}
-
-var getSystemInfo = {
-  returnValue: function returnValue(result) {
-    addUuid(result);
-    addSafeAreaInsets(result);
-  } };
-
-
-var showActionSheet = {
-  args: function args(fromArgs) {
-    if (typeof fromArgs === 'object') {
-      fromArgs.alertText = fromArgs.title;
-    }
-  } };
-
-
-// import navigateTo from 'uni-helpers/navigate-to'
-
-var protocols = {
-  redirectTo: redirectTo,
-  // navigateTo,  // 由于在微信开发者工具的页面参数，会显示__id__参数，因此暂时关闭mp-weixin对于navigateTo的AOP
-  previewImage: previewImage,
-  getSystemInfo: getSystemInfo,
-  getSystemInfoSync: getSystemInfo,
-  showActionSheet: showActionSheet };
-
-var todos = [
-'vibrate',
-'preloadPage',
-'unPreloadPage',
-'loadSubPackage'];
-
-var canIUses = [];
-
-var CALLBACKS = ['success', 'fail', 'cancel', 'complete'];
-
-function processCallback(methodName, method, returnValue) {
-  return function (res) {
-    return method(processReturnValue(methodName, res, returnValue));
-  };
-}
-
-function processArgs(methodName, fromArgs) {var argsOption = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};var returnValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};var keepFromArgs = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-  if (isPlainObject(fromArgs)) {// 一般 api 的参数解析
-    var toArgs = keepFromArgs === true ? fromArgs : {}; // returnValue 为 false 时，说明是格式化返回值，直接在返回值对象上修改赋值
-    if (isFn(argsOption)) {
-      argsOption = argsOption(fromArgs, toArgs) || {};
-    }
-    for (var key in fromArgs) {
-      if (hasOwn(argsOption, key)) {
-        var keyOption = argsOption[key];
-        if (isFn(keyOption)) {
-          keyOption = keyOption(fromArgs[key], fromArgs, toArgs);
-        }
-        if (!keyOption) {// 不支持的参数
-          console.warn("The '".concat(methodName, "' method of platform '\u5FAE\u4FE1\u5C0F\u7A0B\u5E8F' does not support option '").concat(key, "'"));
-        } else if (isStr(keyOption)) {// 重写参数 key
-          toArgs[keyOption] = fromArgs[key];
-        } else if (isPlainObject(keyOption)) {// {name:newName,value:value}可重新指定参数 key:value
-          toArgs[keyOption.name ? keyOption.name : key] = keyOption.value;
-        }
-      } else if (CALLBACKS.indexOf(key) !== -1) {
-        if (isFn(fromArgs[key])) {
-          toArgs[key] = processCallback(methodName, fromArgs[key], returnValue);
-        }
-      } else {
-        if (!keepFromArgs) {
-          toArgs[key] = fromArgs[key];
-        }
-      }
-    }
-    return toArgs;
-  } else if (isFn(fromArgs)) {
-    fromArgs = processCallback(methodName, fromArgs, returnValue);
-  }
-  return fromArgs;
-}
-
-function processReturnValue(methodName, res, returnValue) {var keepReturnValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  if (isFn(protocols.returnValue)) {// 处理通用 returnValue
-    res = protocols.returnValue(methodName, res);
-  }
-  return processArgs(methodName, res, returnValue, {}, keepReturnValue);
-}
-
-function wrapper(methodName, method) {
-  if (hasOwn(protocols, methodName)) {
-    var protocol = protocols[methodName];
-    if (!protocol) {// 暂不支持的 api
-      return function () {
-        console.error("Platform '\u5FAE\u4FE1\u5C0F\u7A0B\u5E8F' does not support '".concat(methodName, "'."));
-      };
-    }
-    return function (arg1, arg2) {// 目前 api 最多两个参数
-      var options = protocol;
-      if (isFn(protocol)) {
-        options = protocol(arg1);
-      }
-
-      arg1 = processArgs(methodName, arg1, options.args, options.returnValue);
-
-      var args = [arg1];
-      if (typeof arg2 !== 'undefined') {
-        args.push(arg2);
-      }
-      if (isFn(options.name)) {
-        methodName = options.name(arg1);
-      } else if (isStr(options.name)) {
-        methodName = options.name;
-      }
-      var returnValue = wx[methodName].apply(wx, args);
-      if (isSyncApi(methodName)) {// 同步 api
-        return processReturnValue(methodName, returnValue, options.returnValue, isContextApi(methodName));
-      }
-      return returnValue;
-    };
-  }
-  return method;
-}
-
-var todoApis = Object.create(null);
-
-var TODOS = [
-'onTabBarMidButtonTap',
-'subscribePush',
-'unsubscribePush',
-'onPush',
-'offPush',
-'share'];
-
-
-function createTodoApi(name) {
-  return function todoApi(_ref)
-
-
-  {var fail = _ref.fail,complete = _ref.complete;
-    var res = {
-      errMsg: "".concat(name, ":fail method '").concat(name, "' not supported") };
-
-    isFn(fail) && fail(res);
-    isFn(complete) && complete(res);
-  };
-}
-
-TODOS.forEach(function (name) {
-  todoApis[name] = createTodoApi(name);
-});
-
-var providers = {
-  oauth: ['weixin'],
-  share: ['weixin'],
-  payment: ['wxpay'],
-  push: ['weixin'] };
-
-
-function getProvider(_ref2)
-
-
-
-
-{var service = _ref2.service,success = _ref2.success,fail = _ref2.fail,complete = _ref2.complete;
-  var res = false;
-  if (providers[service]) {
-    res = {
-      errMsg: 'getProvider:ok',
-      service: service,
-      provider: providers[service] };
-
-    isFn(success) && success(res);
-  } else {
-    res = {
-      errMsg: 'getProvider:fail service not found' };
-
-    isFn(fail) && fail(res);
-  }
-  isFn(complete) && complete(res);
-}
-
-var extraApi = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  getProvider: getProvider });
-
-
-var getEmitter = function () {
-  var Emitter;
-  return function getUniEmitter() {
-    if (!Emitter) {
-      Emitter = new _vue.default();
-    }
-    return Emitter;
-  };
+exports.default = void 0;
+var objectKeys = ['qy', 'env', 'error', 'version', 'lanDebug', 'cloud', 'serviceMarket', 'router', 'worklet'];
+var target = typeof globalThis !== 'undefined' ? globalThis : function () {
+  return this;
 }();
-
-function apply(ctx, method, args) {
-  return ctx[method].apply(ctx, args);
+var key = ['w', 'x'].join('');
+var oldWx = target[key];
+function isWxKey(key) {
+  return objectKeys.indexOf(key) > -1 || typeof oldWx[key] === 'function';
 }
-
-function $on() {
-  return apply(getEmitter(), '$on', Array.prototype.slice.call(arguments));
-}
-function $off() {
-  return apply(getEmitter(), '$off', Array.prototype.slice.call(arguments));
-}
-function $once() {
-  return apply(getEmitter(), '$once', Array.prototype.slice.call(arguments));
-}
-function $emit() {
-  return apply(getEmitter(), '$emit', Array.prototype.slice.call(arguments));
-}
-
-var eventApi = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  $on: $on,
-  $off: $off,
-  $once: $once,
-  $emit: $emit });
-
-
-var api = /*#__PURE__*/Object.freeze({
-  __proto__: null });
-
-
-var MPPage = Page;
-var MPComponent = Component;
-
-var customizeRE = /:/g;
-
-var customize = cached(function (str) {
-  return camelize(str.replace(customizeRE, '-'));
-});
-
-function initTriggerEvent(mpInstance) {
-  var oldTriggerEvent = mpInstance.triggerEvent;
-  var newTriggerEvent = function newTriggerEvent(event) {for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {args[_key3 - 1] = arguments[_key3];}
-    return oldTriggerEvent.apply(mpInstance, [customize(event)].concat(args));
-  };
-  try {
-    // 京东小程序 triggerEvent 为只读
-    mpInstance.triggerEvent = newTriggerEvent;
-  } catch (error) {
-    mpInstance._triggerEvent = newTriggerEvent;
-  }
-}
-
-function initHook(name, options, isComponent) {
-  var oldHook = options[name];
-  if (!oldHook) {
-    options[name] = function () {
-      initTriggerEvent(this);
-    };
-  } else {
-    options[name] = function () {
-      initTriggerEvent(this);for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {args[_key4] = arguments[_key4];}
-      return oldHook.apply(this, args);
-    };
-  }
-}
-if (!MPPage.__$wrappered) {
-  MPPage.__$wrappered = true;
-  Page = function Page() {var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    initHook('onLoad', options);
-    return MPPage(options);
-  };
-  Page.after = MPPage.after;
-
-  Component = function Component() {var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    initHook('created', options);
-    return MPComponent(options);
-  };
-}
-
-var PAGE_EVENT_HOOKS = [
-'onPullDownRefresh',
-'onReachBottom',
-'onAddToFavorites',
-'onShareTimeline',
-'onShareAppMessage',
-'onPageScroll',
-'onResize',
-'onTabItemTap'];
-
-
-function initMocks(vm, mocks) {
-  var mpInstance = vm.$mp[vm.mpType];
-  mocks.forEach(function (mock) {
-    if (hasOwn(mpInstance, mock)) {
-      vm[mock] = mpInstance[mock];
-    }
-  });
-}
-
-function hasHook(hook, vueOptions) {
-  if (!vueOptions) {
-    return true;
-  }
-
-  if (_vue.default.options && Array.isArray(_vue.default.options[hook])) {
-    return true;
-  }
-
-  vueOptions = vueOptions.default || vueOptions;
-
-  if (isFn(vueOptions)) {
-    if (isFn(vueOptions.extendOptions[hook])) {
-      return true;
-    }
-    if (vueOptions.super &&
-    vueOptions.super.options &&
-    Array.isArray(vueOptions.super.options[hook])) {
-      return true;
-    }
-    return false;
-  }
-
-  if (isFn(vueOptions[hook])) {
-    return true;
-  }
-  var mixins = vueOptions.mixins;
-  if (Array.isArray(mixins)) {
-    return !!mixins.find(function (mixin) {return hasHook(hook, mixin);});
-  }
-}
-
-function initHooks(mpOptions, hooks, vueOptions) {
-  hooks.forEach(function (hook) {
-    if (hasHook(hook, vueOptions)) {
-      mpOptions[hook] = function (args) {
-        return this.$vm && this.$vm.__call_hook(hook, args);
-      };
-    }
-  });
-}
-
-function initVueComponent(Vue, vueOptions) {
-  vueOptions = vueOptions.default || vueOptions;
-  var VueComponent;
-  if (isFn(vueOptions)) {
-    VueComponent = vueOptions;
-  } else {
-    VueComponent = Vue.extend(vueOptions);
-  }
-  vueOptions = VueComponent.options;
-  return [VueComponent, vueOptions];
-}
-
-function initSlots(vm, vueSlots) {
-  if (Array.isArray(vueSlots) && vueSlots.length) {
-    var $slots = Object.create(null);
-    vueSlots.forEach(function (slotName) {
-      $slots[slotName] = true;
-    });
-    vm.$scopedSlots = vm.$slots = $slots;
-  }
-}
-
-function initVueIds(vueIds, mpInstance) {
-  vueIds = (vueIds || '').split(',');
-  var len = vueIds.length;
-
-  if (len === 1) {
-    mpInstance._$vueId = vueIds[0];
-  } else if (len === 2) {
-    mpInstance._$vueId = vueIds[0];
-    mpInstance._$vuePid = vueIds[1];
-  }
-}
-
-function initData(vueOptions, context) {
-  var data = vueOptions.data || {};
-  var methods = vueOptions.methods || {};
-
-  if (typeof data === 'function') {
-    try {
-      data = data.call(context); // 支持 Vue.prototype 上挂的数据
-    } catch (e) {
-      if (Object({"VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
-        console.warn('根据 Vue 的 data 函数初始化小程序 data 失败，请尽量确保 data 函数中不访问 vm 对象，否则可能影响首次数据渲染速度。', data);
-      }
-    }
-  } else {
-    try {
-      // 对 data 格式化
-      data = JSON.parse(JSON.stringify(data));
-    } catch (e) {}
-  }
-
-  if (!isPlainObject(data)) {
-    data = {};
-  }
-
-  Object.keys(methods).forEach(function (methodName) {
-    if (context.__lifecycle_hooks__.indexOf(methodName) === -1 && !hasOwn(data, methodName)) {
-      data[methodName] = methods[methodName];
-    }
-  });
-
-  return data;
-}
-
-var PROP_TYPES = [String, Number, Boolean, Object, Array, null];
-
-function createObserver(name) {
-  return function observer(newVal, oldVal) {
-    if (this.$vm) {
-      this.$vm[name] = newVal; // 为了触发其他非 render watcher
-    }
-  };
-}
-
-function initBehaviors(vueOptions, initBehavior) {
-  var vueBehaviors = vueOptions.behaviors;
-  var vueExtends = vueOptions.extends;
-  var vueMixins = vueOptions.mixins;
-
-  var vueProps = vueOptions.props;
-
-  if (!vueProps) {
-    vueOptions.props = vueProps = [];
-  }
-
-  var behaviors = [];
-  if (Array.isArray(vueBehaviors)) {
-    vueBehaviors.forEach(function (behavior) {
-      behaviors.push(behavior.replace('uni://', "wx".concat("://")));
-      if (behavior === 'uni://form-field') {
-        if (Array.isArray(vueProps)) {
-          vueProps.push('name');
-          vueProps.push('value');
-        } else {
-          vueProps.name = {
-            type: String,
-            default: '' };
-
-          vueProps.value = {
-            type: [String, Number, Boolean, Array, Object, Date],
-            default: '' };
-
-        }
-      }
-    });
-  }
-  if (isPlainObject(vueExtends) && vueExtends.props) {
-    behaviors.push(
-    initBehavior({
-      properties: initProperties(vueExtends.props, true) }));
-
-
-  }
-  if (Array.isArray(vueMixins)) {
-    vueMixins.forEach(function (vueMixin) {
-      if (isPlainObject(vueMixin) && vueMixin.props) {
-        behaviors.push(
-        initBehavior({
-          properties: initProperties(vueMixin.props, true) }));
-
-
-      }
-    });
-  }
-  return behaviors;
-}
-
-function parsePropType(key, type, defaultValue, file) {
-  // [String]=>String
-  if (Array.isArray(type) && type.length === 1) {
-    return type[0];
-  }
-  return type;
-}
-
-function initProperties(props) {var isBehavior = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;var file = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-  var properties = {};
-  if (!isBehavior) {
-    properties.vueId = {
-      type: String,
-      value: '' };
-
-    // 用于字节跳动小程序模拟抽象节点
-    properties.generic = {
-      type: Object,
-      value: null };
-
-    // scopedSlotsCompiler auto
-    properties.scopedSlotsCompiler = {
-      type: String,
-      value: '' };
-
-    properties.vueSlots = { // 小程序不能直接定义 $slots 的 props，所以通过 vueSlots 转换到 $slots
-      type: null,
-      value: [],
-      observer: function observer(newVal, oldVal) {
-        var $slots = Object.create(null);
-        newVal.forEach(function (slotName) {
-          $slots[slotName] = true;
-        });
-        this.setData({
-          $slots: $slots });
-
-      } };
-
-  }
-  if (Array.isArray(props)) {// ['title']
-    props.forEach(function (key) {
-      properties[key] = {
-        type: null,
-        observer: createObserver(key) };
-
-    });
-  } else if (isPlainObject(props)) {// {title:{type:String,default:''},content:String}
-    Object.keys(props).forEach(function (key) {
-      var opts = props[key];
-      if (isPlainObject(opts)) {// title:{type:String,default:''}
-        var value = opts.default;
-        if (isFn(value)) {
-          value = value();
-        }
-
-        opts.type = parsePropType(key, opts.type);
-
-        properties[key] = {
-          type: PROP_TYPES.indexOf(opts.type) !== -1 ? opts.type : null,
-          value: value,
-          observer: createObserver(key) };
-
-      } else {// content:String
-        var type = parsePropType(key, opts);
-        properties[key] = {
-          type: PROP_TYPES.indexOf(type) !== -1 ? type : null,
-          observer: createObserver(key) };
-
-      }
-    });
-  }
-  return properties;
-}
-
-function wrapper$1(event) {
-  // TODO 又得兼容 mpvue 的 mp 对象
-  try {
-    event.mp = JSON.parse(JSON.stringify(event));
-  } catch (e) {}
-
-  event.stopPropagation = noop;
-  event.preventDefault = noop;
-
-  event.target = event.target || {};
-
-  if (!hasOwn(event, 'detail')) {
-    event.detail = {};
-  }
-
-  if (hasOwn(event, 'markerId')) {
-    event.detail = typeof event.detail === 'object' ? event.detail : {};
-    event.detail.markerId = event.markerId;
-  }
-
-  if (isPlainObject(event.detail)) {
-    event.target = Object.assign({}, event.target, event.detail);
-  }
-
-  return event;
-}
-
-function getExtraValue(vm, dataPathsArray) {
-  var context = vm;
-  dataPathsArray.forEach(function (dataPathArray) {
-    var dataPath = dataPathArray[0];
-    var value = dataPathArray[2];
-    if (dataPath || typeof value !== 'undefined') {// ['','',index,'disable']
-      var propPath = dataPathArray[1];
-      var valuePath = dataPathArray[3];
-
-      var vFor;
-      if (Number.isInteger(dataPath)) {
-        vFor = dataPath;
-      } else if (!dataPath) {
-        vFor = context;
-      } else if (typeof dataPath === 'string' && dataPath) {
-        if (dataPath.indexOf('#s#') === 0) {
-          vFor = dataPath.substr(3);
-        } else {
-          vFor = vm.__get_value(dataPath, context);
-        }
-      }
-
-      if (Number.isInteger(vFor)) {
-        context = value;
-      } else if (!propPath) {
-        context = vFor[value];
-      } else {
-        if (Array.isArray(vFor)) {
-          context = vFor.find(function (vForItem) {
-            return vm.__get_value(propPath, vForItem) === value;
-          });
-        } else if (isPlainObject(vFor)) {
-          context = Object.keys(vFor).find(function (vForKey) {
-            return vm.__get_value(propPath, vFor[vForKey]) === value;
-          });
-        } else {
-          console.error('v-for 暂不支持循环数据：', vFor);
-        }
-      }
-
-      if (valuePath) {
-        context = vm.__get_value(valuePath, context);
-      }
-    }
-  });
-  return context;
-}
-
-function processEventExtra(vm, extra, event) {
-  var extraObj = {};
-
-  if (Array.isArray(extra) && extra.length) {
-    /**
-                                              *[
-                                              *    ['data.items', 'data.id', item.data.id],
-                                              *    ['metas', 'id', meta.id]
-                                              *],
-                                              *[
-                                              *    ['data.items', 'data.id', item.data.id],
-                                              *    ['metas', 'id', meta.id]
-                                              *],
-                                              *'test'
-                                              */
-    extra.forEach(function (dataPath, index) {
-      if (typeof dataPath === 'string') {
-        if (!dataPath) {// model,prop.sync
-          extraObj['$' + index] = vm;
-        } else {
-          if (dataPath === '$event') {// $event
-            extraObj['$' + index] = event;
-          } else if (dataPath === 'arguments') {
-            if (event.detail && event.detail.__args__) {
-              extraObj['$' + index] = event.detail.__args__;
-            } else {
-              extraObj['$' + index] = [event];
-            }
-          } else if (dataPath.indexOf('$event.') === 0) {// $event.target.value
-            extraObj['$' + index] = vm.__get_value(dataPath.replace('$event.', ''), event);
-          } else {
-            extraObj['$' + index] = vm.__get_value(dataPath);
-          }
-        }
-      } else {
-        extraObj['$' + index] = getExtraValue(vm, dataPath);
-      }
-    });
-  }
-
-  return extraObj;
-}
-
-function getObjByArray(arr) {
-  var obj = {};
-  for (var i = 1; i < arr.length; i++) {
-    var element = arr[i];
-    obj[element[0]] = element[1];
-  }
-  return obj;
-}
-
-function processEventArgs(vm, event) {var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];var extra = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];var isCustom = arguments.length > 4 ? arguments[4] : undefined;var methodName = arguments.length > 5 ? arguments[5] : undefined;
-  var isCustomMPEvent = false; // wxcomponent 组件，传递原始 event 对象
-  if (isCustom) {// 自定义事件
-    isCustomMPEvent = event.currentTarget &&
-    event.currentTarget.dataset &&
-    event.currentTarget.dataset.comType === 'wx';
-    if (!args.length) {// 无参数，直接传入 event 或 detail 数组
-      if (isCustomMPEvent) {
-        return [event];
-      }
-      return event.detail.__args__ || event.detail;
+function initWx() {
+  var newWx = {};
+  for (var _key in oldWx) {
+    if (isWxKey(_key)) {
+      // TODO wrapper function
+      newWx[_key] = oldWx[_key];
     }
   }
-
-  var extraObj = processEventExtra(vm, extra, event);
-
-  var ret = [];
-  args.forEach(function (arg) {
-    if (arg === '$event') {
-      if (methodName === '__set_model' && !isCustom) {// input v-model value
-        ret.push(event.target.value);
-      } else {
-        if (isCustom && !isCustomMPEvent) {
-          ret.push(event.detail.__args__[0]);
-        } else {// wxcomponent 组件或内置组件
-          ret.push(event);
-        }
-      }
-    } else {
-      if (Array.isArray(arg) && arg[0] === 'o') {
-        ret.push(getObjByArray(arg));
-      } else if (typeof arg === 'string' && hasOwn(extraObj, arg)) {
-        ret.push(extraObj[arg]);
-      } else {
-        ret.push(arg);
-      }
-    }
-  });
-
-  return ret;
+  return newWx;
 }
+target[key] = initWx();
+var _default = target[key];
+exports.default = _default;
 
-var ONCE = '~';
-var CUSTOM = '^';
+/***/ }),
 
-function isMatchEventType(eventType, optType) {
-  return eventType === optType ||
+/***/ 10:
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/nonIterableRest.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-  optType === 'regionchange' && (
-
-  eventType === 'begin' ||
-  eventType === 'end');
-
-
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-
-function getContextVm(vm) {
-  var $parent = vm.$parent;
-  // 父组件是 scoped slots 或者其他自定义组件时继续查找
-  while ($parent && $parent.$parent && ($parent.$options.generic || $parent.$parent.$options.generic || $parent.$scope._$vuePid)) {
-    $parent = $parent.$parent;
-  }
-  return $parent && $parent.$parent;
-}
-
-function handleEvent(event) {var _this = this;
-  event = wrapper$1(event);
-
-  // [['tap',[['handle',[1,2,a]],['handle1',[1,2,a]]]]]
-  var dataset = (event.currentTarget || event.target).dataset;
-  if (!dataset) {
-    return console.warn('事件信息不存在');
-  }
-  var eventOpts = dataset.eventOpts || dataset['event-opts']; // 支付宝 web-view 组件 dataset 非驼峰
-  if (!eventOpts) {
-    return console.warn('事件信息不存在');
-  }
-
-  // [['handle',[1,2,a]],['handle1',[1,2,a]]]
-  var eventType = event.type;
-
-  var ret = [];
-
-  eventOpts.forEach(function (eventOpt) {
-    var type = eventOpt[0];
-    var eventsArray = eventOpt[1];
-
-    var isCustom = type.charAt(0) === CUSTOM;
-    type = isCustom ? type.slice(1) : type;
-    var isOnce = type.charAt(0) === ONCE;
-    type = isOnce ? type.slice(1) : type;
-
-    if (eventsArray && isMatchEventType(eventType, type)) {
-      eventsArray.forEach(function (eventArray) {
-        var methodName = eventArray[0];
-        if (methodName) {
-          var handlerCtx = _this.$vm;
-          if (handlerCtx.$options.generic) {// mp-weixin,mp-toutiao 抽象节点模拟 scoped slots
-            handlerCtx = getContextVm(handlerCtx) || handlerCtx;
-          }
-          if (methodName === '$emit') {
-            handlerCtx.$emit.apply(handlerCtx,
-            processEventArgs(
-            _this.$vm,
-            event,
-            eventArray[1],
-            eventArray[2],
-            isCustom,
-            methodName));
-
-            return;
-          }
-          var handler = handlerCtx[methodName];
-          if (!isFn(handler)) {
-            throw new Error(" _vm.".concat(methodName, " is not a function"));
-          }
-          if (isOnce) {
-            if (handler.once) {
-              return;
-            }
-            handler.once = true;
-          }
-          var params = processEventArgs(
-          _this.$vm,
-          event,
-          eventArray[1],
-          eventArray[2],
-          isCustom,
-          methodName);
-
-          params = Array.isArray(params) ? params : [];
-          // 参数尾部增加原始事件对象用于复杂表达式内获取额外数据
-          if (/=\s*\S+\.eventParams\s*\|\|\s*\S+\[['"]event-params['"]\]/.test(handler.toString())) {
-            // eslint-disable-next-line no-sparse-arrays
-            params = params.concat([,,,,,,,,,, event]);
-          }
-          ret.push(handler.apply(handlerCtx, params));
-        }
-      });
-    }
-  });
-
-  if (
-  eventType === 'input' &&
-  ret.length === 1 &&
-  typeof ret[0] !== 'undefined')
-  {
-    return ret[0];
-  }
-}
-
-var messages = {};
-
-var locale;
-
-{
-  locale = wx.getSystemInfoSync().language;
-}
-
-function initI18nMessages() {
-  if (!isEnableLocale()) {
-    return;
-  }
-  var localeKeys = Object.keys(__uniConfig.locales);
-  if (localeKeys.length) {
-    localeKeys.forEach(function (locale) {
-      var curMessages = messages[locale];
-      var userMessages = __uniConfig.locales[locale];
-      if (curMessages) {
-        Object.assign(curMessages, userMessages);
-      } else {
-        messages[locale] = userMessages;
-      }
-    });
-  }
-}
-
-initI18nMessages();
-
-var i18n = (0, _uniI18n.initVueI18n)(
-locale,
-{});
-
-var t = i18n.t;
-var i18nMixin = i18n.mixin = {
-  beforeCreate: function beforeCreate() {var _this2 = this;
-    var unwatch = i18n.i18n.watchLocale(function () {
-      _this2.$forceUpdate();
-    });
-    this.$once('hook:beforeDestroy', function () {
-      unwatch();
-    });
-  },
-  methods: {
-    $$t: function $$t(key, values) {
-      return t(key, values);
-    } } };
-
-
-var setLocale$1 = i18n.setLocale;
-var getLocale$1 = i18n.getLocale;
-
-function initAppLocale(Vue, appVm, locale) {
-  var state = Vue.observable({
-    locale: locale || i18n.getLocale() });
-
-  var localeWatchers = [];
-  appVm.$watchLocale = function (fn) {
-    localeWatchers.push(fn);
-  };
-  Object.defineProperty(appVm, '$locale', {
-    get: function get() {
-      return state.locale;
-    },
-    set: function set(v) {
-      state.locale = v;
-      localeWatchers.forEach(function (watch) {return watch(v);});
-    } });
-
-}
-
-function isEnableLocale() {
-  return typeof __uniConfig !== 'undefined' && __uniConfig.locales && !!Object.keys(__uniConfig.locales).length;
-}
-
-// export function initI18n() {
-//   const localeKeys = Object.keys(__uniConfig.locales || {})
-//   if (localeKeys.length) {
-//     localeKeys.forEach((locale) =>
-//       i18n.add(locale, __uniConfig.locales[locale])
-//     )
-//   }
-// }
-
-var eventChannels = {};
-
-var eventChannelStack = [];
-
-function getEventChannel(id) {
-  if (id) {
-    var eventChannel = eventChannels[id];
-    delete eventChannels[id];
-    return eventChannel;
-  }
-  return eventChannelStack.shift();
-}
-
-var hooks = [
-'onShow',
-'onHide',
-'onError',
-'onPageNotFound',
-'onThemeChange',
-'onUnhandledRejection'];
-
-
-function initEventChannel() {
-  _vue.default.prototype.getOpenerEventChannel = function () {
-    // 微信小程序使用自身getOpenerEventChannel
-    {
-      return this.$scope.getOpenerEventChannel();
-    }
-  };
-  var callHook = _vue.default.prototype.__call_hook;
-  _vue.default.prototype.__call_hook = function (hook, args) {
-    if (hook === 'onLoad' && args && args.__id__) {
-      this.__eventChannel__ = getEventChannel(args.__id__);
-      delete args.__id__;
-    }
-    return callHook.call(this, hook, args);
-  };
-}
-
-function initScopedSlotsParams() {
-  var center = {};
-  var parents = {};
-
-  _vue.default.prototype.$hasScopedSlotsParams = function (vueId) {
-    var has = center[vueId];
-    if (!has) {
-      parents[vueId] = this;
-      this.$on('hook:destroyed', function () {
-        delete parents[vueId];
-      });
-    }
-    return has;
-  };
-
-  _vue.default.prototype.$getScopedSlotsParams = function (vueId, name, key) {
-    var data = center[vueId];
-    if (data) {
-      var object = data[name] || {};
-      return key ? object[key] : object;
-    } else {
-      parents[vueId] = this;
-      this.$on('hook:destroyed', function () {
-        delete parents[vueId];
-      });
-    }
-  };
-
-  _vue.default.prototype.$setScopedSlotsParams = function (name, value) {
-    var vueIds = this.$options.propsData.vueId;
-    if (vueIds) {
-      var vueId = vueIds.split(',')[0];
-      var object = center[vueId] = center[vueId] || {};
-      object[name] = value;
-      if (parents[vueId]) {
-        parents[vueId].$forceUpdate();
-      }
-    }
-  };
-
-  _vue.default.mixin({
-    destroyed: function destroyed() {
-      var propsData = this.$options.propsData;
-      var vueId = propsData && propsData.vueId;
-      if (vueId) {
-        delete center[vueId];
-        delete parents[vueId];
-      }
-    } });
-
-}
-
-function parseBaseApp(vm, _ref3)
-
-
-{var mocks = _ref3.mocks,initRefs = _ref3.initRefs;
-  initEventChannel();
-  {
-    initScopedSlotsParams();
-  }
-  if (vm.$options.store) {
-    _vue.default.prototype.$store = vm.$options.store;
-  }
-  uniIdMixin(_vue.default);
-
-  _vue.default.prototype.mpHost = "mp-weixin";
-
-  _vue.default.mixin({
-    beforeCreate: function beforeCreate() {
-      if (!this.$options.mpType) {
-        return;
-      }
-
-      this.mpType = this.$options.mpType;
-
-      this.$mp = _defineProperty({
-        data: {} },
-      this.mpType, this.$options.mpInstance);
-
-
-      this.$scope = this.$options.mpInstance;
-
-      delete this.$options.mpType;
-      delete this.$options.mpInstance;
-      if (this.mpType === 'page' && typeof getApp === 'function') {// hack vue-i18n
-        var app = getApp();
-        if (app.$vm && app.$vm.$i18n) {
-          this._i18n = app.$vm.$i18n;
-        }
-      }
-      if (this.mpType !== 'app') {
-        initRefs(this);
-        initMocks(this, mocks);
-      }
-    } });
-
-
-  var appOptions = {
-    onLaunch: function onLaunch(args) {
-      if (this.$vm) {// 已经初始化过了，主要是为了百度，百度 onShow 在 onLaunch 之前
-        return;
-      }
-      {
-        if (wx.canIUse && !wx.canIUse('nextTick')) {// 事实 上2.2.3 即可，简单使用 2.3.0 的 nextTick 判断
-          console.error('当前微信基础库版本过低，请将 微信开发者工具-详情-项目设置-调试基础库版本 更换为`2.3.0`以上');
-        }
-      }
-
-      this.$vm = vm;
-
-      this.$vm.$mp = {
-        app: this };
-
-
-      this.$vm.$scope = this;
-      // vm 上也挂载 globalData
-      this.$vm.globalData = this.globalData;
-
-      this.$vm._isMounted = true;
-      this.$vm.__call_hook('mounted', args);
-
-      this.$vm.__call_hook('onLaunch', args);
-    } };
-
-
-  // 兼容旧版本 globalData
-  appOptions.globalData = vm.$options.globalData || {};
-  // 将 methods 中的方法挂在 getApp() 中
-  var methods = vm.$options.methods;
-  if (methods) {
-    Object.keys(methods).forEach(function (name) {
-      appOptions[name] = methods[name];
-    });
-  }
-
-  initAppLocale(_vue.default, vm, wx.getSystemInfoSync().language || 'zh-Hans');
-
-  initHooks(appOptions, hooks);
-
-  return appOptions;
-}
-
-var mocks = ['__route__', '__wxExparserNodeId__', '__wxWebviewId__'];
-
-function findVmByVueId(vm, vuePid) {
-  var $children = vm.$children;
-  // 优先查找直属(反向查找:https://github.com/dcloudio/uni-app/issues/1200)
-  for (var i = $children.length - 1; i >= 0; i--) {
-    var childVm = $children[i];
-    if (childVm.$scope._$vueId === vuePid) {
-      return childVm;
-    }
-  }
-  // 反向递归查找
-  var parentVm;
-  for (var _i = $children.length - 1; _i >= 0; _i--) {
-    parentVm = findVmByVueId($children[_i], vuePid);
-    if (parentVm) {
-      return parentVm;
-    }
-  }
-}
-
-function initBehavior(options) {
-  return Behavior(options);
-}
-
-function isPage() {
-  return !!this.route;
-}
-
-function initRelation(detail) {
-  this.triggerEvent('__l', detail);
-}
-
-function selectAllComponents(mpInstance, selector, $refs) {
-  var components = mpInstance.selectAllComponents(selector);
-  components.forEach(function (component) {
-    var ref = component.dataset.ref;
-    $refs[ref] = component.$vm || component;
-    {
-      if (component.dataset.vueGeneric === 'scoped') {
-        component.selectAllComponents('.scoped-ref').forEach(function (scopedComponent) {
-          selectAllComponents(scopedComponent, selector, $refs);
-        });
-      }
-    }
-  });
-}
-
-function initRefs(vm) {
-  var mpInstance = vm.$scope;
-  Object.defineProperty(vm, '$refs', {
-    get: function get() {
-      var $refs = {};
-      selectAllComponents(mpInstance, '.vue-ref', $refs);
-      // TODO 暂不考虑 for 中的 scoped
-      var forComponents = mpInstance.selectAllComponents('.vue-ref-in-for');
-      forComponents.forEach(function (component) {
-        var ref = component.dataset.ref;
-        if (!$refs[ref]) {
-          $refs[ref] = [];
-        }
-        $refs[ref].push(component.$vm || component);
-      });
-      return $refs;
-    } });
-
-}
-
-function handleLink(event) {var _ref4 =
-
-
-
-  event.detail || event.value,vuePid = _ref4.vuePid,vueOptions = _ref4.vueOptions; // detail 是微信,value 是百度(dipatch)
-
-  var parentVm;
-
-  if (vuePid) {
-    parentVm = findVmByVueId(this.$vm, vuePid);
-  }
-
-  if (!parentVm) {
-    parentVm = this.$vm;
-  }
-
-  vueOptions.parent = parentVm;
-}
-
-function parseApp(vm) {
-  return parseBaseApp(vm, {
-    mocks: mocks,
-    initRefs: initRefs });
-
-}
-
-function createApp(vm) {
-  App(parseApp(vm));
-  return vm;
-}
-
-var encodeReserveRE = /[!'()*]/g;
-var encodeReserveReplacer = function encodeReserveReplacer(c) {return '%' + c.charCodeAt(0).toString(16);};
-var commaRE = /%2C/g;
-
-// fixed encodeURIComponent which is more conformant to RFC3986:
-// - escapes [!'()*]
-// - preserve commas
-var encode = function encode(str) {return encodeURIComponent(str).
-  replace(encodeReserveRE, encodeReserveReplacer).
-  replace(commaRE, ',');};
-
-function stringifyQuery(obj) {var encodeStr = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : encode;
-  var res = obj ? Object.keys(obj).map(function (key) {
-    var val = obj[key];
-
-    if (val === undefined) {
-      return '';
-    }
-
-    if (val === null) {
-      return encodeStr(key);
-    }
-
-    if (Array.isArray(val)) {
-      var result = [];
-      val.forEach(function (val2) {
-        if (val2 === undefined) {
-          return;
-        }
-        if (val2 === null) {
-          result.push(encodeStr(key));
-        } else {
-          result.push(encodeStr(key) + '=' + encodeStr(val2));
-        }
-      });
-      return result.join('&');
-    }
-
-    return encodeStr(key) + '=' + encodeStr(val);
-  }).filter(function (x) {return x.length > 0;}).join('&') : null;
-  return res ? "?".concat(res) : '';
-}
-
-function parseBaseComponent(vueComponentOptions)
-
-
-{var _ref5 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},isPage = _ref5.isPage,initRelation = _ref5.initRelation;var _initVueComponent =
-  initVueComponent(_vue.default, vueComponentOptions),_initVueComponent2 = _slicedToArray(_initVueComponent, 2),VueComponent = _initVueComponent2[0],vueOptions = _initVueComponent2[1];
-
-  var options = _objectSpread({
-    multipleSlots: true,
-    addGlobalClass: true },
-  vueOptions.options || {});
-
-
-  {
-    // 微信 multipleSlots 部分情况有 bug，导致内容顺序错乱 如 u-list，提供覆盖选项
-    if (vueOptions['mp-weixin'] && vueOptions['mp-weixin'].options) {
-      Object.assign(options, vueOptions['mp-weixin'].options);
-    }
-  }
-
-  var componentOptions = {
-    options: options,
-    data: initData(vueOptions, _vue.default.prototype),
-    behaviors: initBehaviors(vueOptions, initBehavior),
-    properties: initProperties(vueOptions.props, false, vueOptions.__file),
-    lifetimes: {
-      attached: function attached() {
-        var properties = this.properties;
-
-        var options = {
-          mpType: isPage.call(this) ? 'page' : 'component',
-          mpInstance: this,
-          propsData: properties };
-
-
-        initVueIds(properties.vueId, this);
-
-        // 处理父子关系
-        initRelation.call(this, {
-          vuePid: this._$vuePid,
-          vueOptions: options });
-
-
-        // 初始化 vue 实例
-        this.$vm = new VueComponent(options);
-
-        // 处理$slots,$scopedSlots（暂不支持动态变化$slots）
-        initSlots(this.$vm, properties.vueSlots);
-
-        // 触发首次 setData
-        this.$vm.$mount();
-      },
-      ready: function ready() {
-        // 当组件 props 默认值为 true，初始化时传入 false 会导致 created,ready 触发, 但 attached 不触发
-        // https://developers.weixin.qq.com/community/develop/doc/00066ae2844cc0f8eb883e2a557800
-        if (this.$vm) {
-          this.$vm._isMounted = true;
-          this.$vm.__call_hook('mounted');
-          this.$vm.__call_hook('onReady');
-        }
-      },
-      detached: function detached() {
-        this.$vm && this.$vm.$destroy();
-      } },
-
-    pageLifetimes: {
-      show: function show(args) {
-        this.$vm && this.$vm.__call_hook('onPageShow', args);
-      },
-      hide: function hide() {
-        this.$vm && this.$vm.__call_hook('onPageHide');
-      },
-      resize: function resize(size) {
-        this.$vm && this.$vm.__call_hook('onPageResize', size);
-      } },
-
-    methods: {
-      __l: handleLink,
-      __e: handleEvent } };
-
-
-  // externalClasses
-  if (vueOptions.externalClasses) {
-    componentOptions.externalClasses = vueOptions.externalClasses;
-  }
-
-  if (Array.isArray(vueOptions.wxsCallMethods)) {
-    vueOptions.wxsCallMethods.forEach(function (callMethod) {
-      componentOptions.methods[callMethod] = function (args) {
-        return this.$vm[callMethod](args);
-      };
-    });
-  }
-
-  if (isPage) {
-    return componentOptions;
-  }
-  return [componentOptions, VueComponent];
-}
-
-function parseComponent(vueComponentOptions) {
-  return parseBaseComponent(vueComponentOptions, {
-    isPage: isPage,
-    initRelation: initRelation });
-
-}
-
-var hooks$1 = [
-'onShow',
-'onHide',
-'onUnload'];
-
-
-hooks$1.push.apply(hooks$1, PAGE_EVENT_HOOKS);
-
-function parseBasePage(vuePageOptions, _ref6)
-
-
-{var isPage = _ref6.isPage,initRelation = _ref6.initRelation;
-  var pageOptions = parseComponent(vuePageOptions);
-
-  initHooks(pageOptions.methods, hooks$1, vuePageOptions);
-
-  pageOptions.methods.onLoad = function (query) {
-    this.options = query;
-    var copyQuery = Object.assign({}, query);
-    delete copyQuery.__id__;
-    this.$page = {
-      fullPath: '/' + (this.route || this.is) + stringifyQuery(copyQuery) };
-
-    this.$vm.$mp.query = query; // 兼容 mpvue
-    this.$vm.__call_hook('onLoad', query);
-  };
-
-  return pageOptions;
-}
-
-function parsePage(vuePageOptions) {
-  return parseBasePage(vuePageOptions, {
-    isPage: isPage,
-    initRelation: initRelation });
-
-}
-
-function createPage(vuePageOptions) {
-  {
-    return Component(parsePage(vuePageOptions));
-  }
-}
-
-function createComponent(vueOptions) {
-  {
-    return Component(parseComponent(vueOptions));
-  }
-}
-
-function createSubpackageApp(vm) {
-  var appOptions = parseApp(vm);
-  var app = getApp({
-    allowDefault: true });
-
-  vm.$scope = app;
-  var globalData = app.globalData;
-  if (globalData) {
-    Object.keys(appOptions.globalData).forEach(function (name) {
-      if (!hasOwn(globalData, name)) {
-        globalData[name] = appOptions.globalData[name];
-      }
-    });
-  }
-  Object.keys(appOptions).forEach(function (name) {
-    if (!hasOwn(app, name)) {
-      app[name] = appOptions[name];
-    }
-  });
-  if (isFn(appOptions.onShow) && wx.onAppShow) {
-    wx.onAppShow(function () {for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {args[_key5] = arguments[_key5];}
-      vm.__call_hook('onShow', args);
-    });
-  }
-  if (isFn(appOptions.onHide) && wx.onAppHide) {
-    wx.onAppHide(function () {for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {args[_key6] = arguments[_key6];}
-      vm.__call_hook('onHide', args);
-    });
-  }
-  if (isFn(appOptions.onLaunch)) {
-    var args = wx.getLaunchOptionsSync && wx.getLaunchOptionsSync();
-    vm.__call_hook('onLaunch', args);
-  }
-  return vm;
-}
-
-function createPlugin(vm) {
-  var appOptions = parseApp(vm);
-  if (isFn(appOptions.onShow) && wx.onAppShow) {
-    wx.onAppShow(function () {for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {args[_key7] = arguments[_key7];}
-      vm.__call_hook('onShow', args);
-    });
-  }
-  if (isFn(appOptions.onHide) && wx.onAppHide) {
-    wx.onAppHide(function () {for (var _len8 = arguments.length, args = new Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {args[_key8] = arguments[_key8];}
-      vm.__call_hook('onHide', args);
-    });
-  }
-  if (isFn(appOptions.onLaunch)) {
-    var args = wx.getLaunchOptionsSync && wx.getLaunchOptionsSync();
-    vm.__call_hook('onLaunch', args);
-  }
-  return vm;
-}
-
-todos.forEach(function (todoApi) {
-  protocols[todoApi] = false;
-});
-
-canIUses.forEach(function (canIUseApi) {
-  var apiName = protocols[canIUseApi] && protocols[canIUseApi].name ? protocols[canIUseApi].name :
-  canIUseApi;
-  if (!wx.canIUse(apiName)) {
-    protocols[canIUseApi] = false;
-  }
-});
-
-var uni = {};
-
-if (typeof Proxy !== 'undefined' && "mp-weixin" !== 'app-plus') {
-  uni = new Proxy({}, {
-    get: function get(target, name) {
-      if (hasOwn(target, name)) {
-        return target[name];
-      }
-      if (baseApi[name]) {
-        return baseApi[name];
-      }
-      if (api[name]) {
-        return promisify(name, api[name]);
-      }
-      {
-        if (extraApi[name]) {
-          return promisify(name, extraApi[name]);
-        }
-        if (todoApis[name]) {
-          return promisify(name, todoApis[name]);
-        }
-      }
-      if (eventApi[name]) {
-        return eventApi[name];
-      }
-      if (!hasOwn(wx, name) && !hasOwn(protocols, name)) {
-        return;
-      }
-      return promisify(name, wrapper(name, wx[name]));
-    },
-    set: function set(target, name, value) {
-      target[name] = value;
-      return true;
-    } });
-
-} else {
-  Object.keys(baseApi).forEach(function (name) {
-    uni[name] = baseApi[name];
-  });
-
-  {
-    Object.keys(todoApis).forEach(function (name) {
-      uni[name] = promisify(name, todoApis[name]);
-    });
-    Object.keys(extraApi).forEach(function (name) {
-      uni[name] = promisify(name, todoApis[name]);
-    });
-  }
-
-  Object.keys(eventApi).forEach(function (name) {
-    uni[name] = eventApi[name];
-  });
-
-  Object.keys(api).forEach(function (name) {
-    uni[name] = promisify(name, api[name]);
-  });
-
-  Object.keys(wx).forEach(function (name) {
-    if (hasOwn(wx, name) || hasOwn(protocols, name)) {
-      uni[name] = promisify(name, wrapper(name, wx[name]));
-    }
-  });
-}
-
-wx.createApp = createApp;
-wx.createPage = createPage;
-wx.createComponent = createComponent;
-wx.createSubpackageApp = createSubpackageApp;
-wx.createPlugin = createPlugin;
-
-var uni$1 = uni;var _default =
-
-uni$1;exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/global.js */ 2)))
+module.exports = _nonIterableRest, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
 /***/ 11:
-/*!**********************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
-  \**********************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/defineProperty.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return normalizeComponent; });
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-function normalizeComponent (
-  scriptExports,
-  render,
-  staticRenderFns,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier, /* server only */
-  shadowMode, /* vue-cli only */
-  components, // fixed by xxxxxx auto components
-  renderjs // fixed by xxxxxx renderjs
-) {
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // fixed by xxxxxx auto components
-  if (components) {
-    if (!options.components) {
-      options.components = {}
-    }
-    var hasOwn = Object.prototype.hasOwnProperty
-    for (var name in components) {
-      if (hasOwn.call(components, name) && !hasOwn.call(options.components, name)) {
-        options.components[name] = components[name]
-      }
-    }
-  }
-  // fixed by xxxxxx renderjs
-  if (renderjs) {
-    (renderjs.beforeCreate || (renderjs.beforeCreate = [])).unshift(function() {
-      this[renderjs.__module] = this
+var toPropertyKey = __webpack_require__(/*! ./toPropertyKey.js */ 12);
+function _defineProperty(obj, key, value) {
+  key = toPropertyKey(key);
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
     });
-    (options.mixins || (options.mixins = [])).push(renderjs)
+  } else {
+    obj[key] = value;
   }
-
-  // render functions
-  if (render) {
-    options.render = render
-    options.staticRenderFns = staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = 'data-v-' + scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = shadowMode
-      ? function () { injectStyles.call(this, this.$root.$options.shadowRoot) }
-      : injectStyles
-  }
-
-  if (hook) {
-    if (options.functional) {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      var originalRender = options.render
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return originalRender(h, context)
-      }
-    } else {
-      // inject component registration as beforeCreate hook
-      var existing = options.beforeCreate
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    }
-  }
-
-  return {
-    exports: scriptExports,
-    options: options
-  }
+  return obj;
 }
-
+module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
 /***/ 12:
-/*!********************************************************!*\
-  !*** F:/A_项目实战/bank-appointment/my-app/store/index.js ***!
-  \********************************************************/
+/*!**************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/toPropertyKey.js ***!
+  \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 3));
-var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 13));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
-
-_vue.default.use(_vuex.default);
-
-var store = new _vuex.default.Store({
-  state: {
-    userInfo: '11' },
-
-  mutations: {
-    setUserInfo: function setUserInfo(state, data) {
-      state.userInfo = data;
-    } } });var _default =
-
-
-store;exports.default = _default;
+var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
+var toPrimitive = __webpack_require__(/*! ./toPrimitive.js */ 14);
+function _toPropertyKey(arg) {
+  var key = toPrimitive(arg, "string");
+  return _typeof(key) === "symbol" ? key : String(key);
+}
+module.exports = _toPropertyKey, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
 /***/ 13:
-/*!**************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vuex3/dist/vuex.common.js ***!
-  \**************************************************************************************/
+/*!*******************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/typeof.js ***!
+  \*******************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {/*!
- * vuex v3.6.2
- * (c) 2021 Evan You
- * @license MIT
- */
+function _typeof(obj) {
+  "@babel/helpers - typeof";
 
-
-function applyMixin (Vue) {
-  var version = Number(Vue.version.split('.')[0]);
-
-  if (version >= 2) {
-    Vue.mixin({ beforeCreate: vuexInit });
-  } else {
-    // override init and inject vuex init procedure
-    // for 1.x backwards compatibility.
-    var _init = Vue.prototype._init;
-    Vue.prototype._init = function (options) {
-      if ( options === void 0 ) options = {};
-
-      options.init = options.init
-        ? [vuexInit].concat(options.init)
-        : vuexInit;
-      _init.call(this, options);
-    };
-  }
-
-  /**
-   * Vuex init hook, injected into each instances init hooks list.
-   */
-
-  function vuexInit () {
-    var options = this.$options;
-    // store injection
-    if (options.store) {
-      this.$store = typeof options.store === 'function'
-        ? options.store()
-        : options.store;
-    } else if (options.parent && options.parent.$store) {
-      this.$store = options.parent.$store;
-    }
-  }
+  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
 }
-
-var target = typeof window !== 'undefined'
-  ? window
-  : typeof global !== 'undefined'
-    ? global
-    : {};
-var devtoolHook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-
-function devtoolPlugin (store) {
-  if (!devtoolHook) { return }
-
-  store._devtoolHook = devtoolHook;
-
-  devtoolHook.emit('vuex:init', store);
-
-  devtoolHook.on('vuex:travel-to-state', function (targetState) {
-    store.replaceState(targetState);
-  });
-
-  store.subscribe(function (mutation, state) {
-    devtoolHook.emit('vuex:mutation', mutation, state);
-  }, { prepend: true });
-
-  store.subscribeAction(function (action, state) {
-    devtoolHook.emit('vuex:action', action, state);
-  }, { prepend: true });
-}
-
-/**
- * Get the first item that pass the test
- * by second argument function
- *
- * @param {Array} list
- * @param {Function} f
- * @return {*}
- */
-function find (list, f) {
-  return list.filter(f)[0]
-}
-
-/**
- * Deep copy the given object considering circular structure.
- * This function caches all nested objects and its copies.
- * If it detects circular structure, use cached copy to avoid infinite loop.
- *
- * @param {*} obj
- * @param {Array<Object>} cache
- * @return {*}
- */
-function deepCopy (obj, cache) {
-  if ( cache === void 0 ) cache = [];
-
-  // just return if obj is immutable value
-  if (obj === null || typeof obj !== 'object') {
-    return obj
-  }
-
-  // if obj is hit, it is in circular structure
-  var hit = find(cache, function (c) { return c.original === obj; });
-  if (hit) {
-    return hit.copy
-  }
-
-  var copy = Array.isArray(obj) ? [] : {};
-  // put the copy into cache at first
-  // because we want to refer it in recursive deepCopy
-  cache.push({
-    original: obj,
-    copy: copy
-  });
-
-  Object.keys(obj).forEach(function (key) {
-    copy[key] = deepCopy(obj[key], cache);
-  });
-
-  return copy
-}
-
-/**
- * forEach for object
- */
-function forEachValue (obj, fn) {
-  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
-}
-
-function isObject (obj) {
-  return obj !== null && typeof obj === 'object'
-}
-
-function isPromise (val) {
-  return val && typeof val.then === 'function'
-}
-
-function assert (condition, msg) {
-  if (!condition) { throw new Error(("[vuex] " + msg)) }
-}
-
-function partial (fn, arg) {
-  return function () {
-    return fn(arg)
-  }
-}
-
-// Base data struct for store's module, package with some attribute and method
-var Module = function Module (rawModule, runtime) {
-  this.runtime = runtime;
-  // Store some children item
-  this._children = Object.create(null);
-  // Store the origin module object which passed by programmer
-  this._rawModule = rawModule;
-  var rawState = rawModule.state;
-
-  // Store the origin module's state
-  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
-};
-
-var prototypeAccessors = { namespaced: { configurable: true } };
-
-prototypeAccessors.namespaced.get = function () {
-  return !!this._rawModule.namespaced
-};
-
-Module.prototype.addChild = function addChild (key, module) {
-  this._children[key] = module;
-};
-
-Module.prototype.removeChild = function removeChild (key) {
-  delete this._children[key];
-};
-
-Module.prototype.getChild = function getChild (key) {
-  return this._children[key]
-};
-
-Module.prototype.hasChild = function hasChild (key) {
-  return key in this._children
-};
-
-Module.prototype.update = function update (rawModule) {
-  this._rawModule.namespaced = rawModule.namespaced;
-  if (rawModule.actions) {
-    this._rawModule.actions = rawModule.actions;
-  }
-  if (rawModule.mutations) {
-    this._rawModule.mutations = rawModule.mutations;
-  }
-  if (rawModule.getters) {
-    this._rawModule.getters = rawModule.getters;
-  }
-};
-
-Module.prototype.forEachChild = function forEachChild (fn) {
-  forEachValue(this._children, fn);
-};
-
-Module.prototype.forEachGetter = function forEachGetter (fn) {
-  if (this._rawModule.getters) {
-    forEachValue(this._rawModule.getters, fn);
-  }
-};
-
-Module.prototype.forEachAction = function forEachAction (fn) {
-  if (this._rawModule.actions) {
-    forEachValue(this._rawModule.actions, fn);
-  }
-};
-
-Module.prototype.forEachMutation = function forEachMutation (fn) {
-  if (this._rawModule.mutations) {
-    forEachValue(this._rawModule.mutations, fn);
-  }
-};
-
-Object.defineProperties( Module.prototype, prototypeAccessors );
-
-var ModuleCollection = function ModuleCollection (rawRootModule) {
-  // register root module (Vuex.Store options)
-  this.register([], rawRootModule, false);
-};
-
-ModuleCollection.prototype.get = function get (path) {
-  return path.reduce(function (module, key) {
-    return module.getChild(key)
-  }, this.root)
-};
-
-ModuleCollection.prototype.getNamespace = function getNamespace (path) {
-  var module = this.root;
-  return path.reduce(function (namespace, key) {
-    module = module.getChild(key);
-    return namespace + (module.namespaced ? key + '/' : '')
-  }, '')
-};
-
-ModuleCollection.prototype.update = function update$1 (rawRootModule) {
-  update([], this.root, rawRootModule);
-};
-
-ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
-    var this$1 = this;
-    if ( runtime === void 0 ) runtime = true;
-
-  if ((true)) {
-    assertRawModule(path, rawModule);
-  }
-
-  var newModule = new Module(rawModule, runtime);
-  if (path.length === 0) {
-    this.root = newModule;
-  } else {
-    var parent = this.get(path.slice(0, -1));
-    parent.addChild(path[path.length - 1], newModule);
-  }
-
-  // register nested modules
-  if (rawModule.modules) {
-    forEachValue(rawModule.modules, function (rawChildModule, key) {
-      this$1.register(path.concat(key), rawChildModule, runtime);
-    });
-  }
-};
-
-ModuleCollection.prototype.unregister = function unregister (path) {
-  var parent = this.get(path.slice(0, -1));
-  var key = path[path.length - 1];
-  var child = parent.getChild(key);
-
-  if (!child) {
-    if ((true)) {
-      console.warn(
-        "[vuex] trying to unregister module '" + key + "', which is " +
-        "not registered"
-      );
-    }
-    return
-  }
-
-  if (!child.runtime) {
-    return
-  }
-
-  parent.removeChild(key);
-};
-
-ModuleCollection.prototype.isRegistered = function isRegistered (path) {
-  var parent = this.get(path.slice(0, -1));
-  var key = path[path.length - 1];
-
-  if (parent) {
-    return parent.hasChild(key)
-  }
-
-  return false
-};
-
-function update (path, targetModule, newModule) {
-  if ((true)) {
-    assertRawModule(path, newModule);
-  }
-
-  // update target module
-  targetModule.update(newModule);
-
-  // update nested modules
-  if (newModule.modules) {
-    for (var key in newModule.modules) {
-      if (!targetModule.getChild(key)) {
-        if ((true)) {
-          console.warn(
-            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
-            'manual reload is needed'
-          );
-        }
-        return
-      }
-      update(
-        path.concat(key),
-        targetModule.getChild(key),
-        newModule.modules[key]
-      );
-    }
-  }
-}
-
-var functionAssert = {
-  assert: function (value) { return typeof value === 'function'; },
-  expected: 'function'
-};
-
-var objectAssert = {
-  assert: function (value) { return typeof value === 'function' ||
-    (typeof value === 'object' && typeof value.handler === 'function'); },
-  expected: 'function or object with "handler" function'
-};
-
-var assertTypes = {
-  getters: functionAssert,
-  mutations: functionAssert,
-  actions: objectAssert
-};
-
-function assertRawModule (path, rawModule) {
-  Object.keys(assertTypes).forEach(function (key) {
-    if (!rawModule[key]) { return }
-
-    var assertOptions = assertTypes[key];
-
-    forEachValue(rawModule[key], function (value, type) {
-      assert(
-        assertOptions.assert(value),
-        makeAssertionMessage(path, key, type, value, assertOptions.expected)
-      );
-    });
-  });
-}
-
-function makeAssertionMessage (path, key, type, value, expected) {
-  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
-  if (path.length > 0) {
-    buf += " in module \"" + (path.join('.')) + "\"";
-  }
-  buf += " is " + (JSON.stringify(value)) + ".";
-  return buf
-}
-
-var Vue; // bind on install
-
-var Store = function Store (options) {
-  var this$1 = this;
-  if ( options === void 0 ) options = {};
-
-  // Auto install if it is not done yet and `window` has `Vue`.
-  // To allow users to avoid auto-installation in some cases,
-  // this code should be placed here. See #731
-  if (!Vue && typeof window !== 'undefined' && window.Vue) {
-    install(window.Vue);
-  }
-
-  if ((true)) {
-    assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
-    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
-    assert(this instanceof Store, "store must be called with the new operator.");
-  }
-
-  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
-  var strict = options.strict; if ( strict === void 0 ) strict = false;
-
-  // store internal state
-  this._committing = false;
-  this._actions = Object.create(null);
-  this._actionSubscribers = [];
-  this._mutations = Object.create(null);
-  this._wrappedGetters = Object.create(null);
-  this._modules = new ModuleCollection(options);
-  this._modulesNamespaceMap = Object.create(null);
-  this._subscribers = [];
-  this._watcherVM = new Vue();
-  this._makeLocalGettersCache = Object.create(null);
-
-  // bind commit and dispatch to self
-  var store = this;
-  var ref = this;
-  var dispatch = ref.dispatch;
-  var commit = ref.commit;
-  this.dispatch = function boundDispatch (type, payload) {
-    return dispatch.call(store, type, payload)
-  };
-  this.commit = function boundCommit (type, payload, options) {
-    return commit.call(store, type, payload, options)
-  };
-
-  // strict mode
-  this.strict = strict;
-
-  var state = this._modules.root.state;
-
-  // init root module.
-  // this also recursively registers all sub-modules
-  // and collects all module getters inside this._wrappedGetters
-  installModule(this, state, [], this._modules.root);
-
-  // initialize the store vm, which is responsible for the reactivity
-  // (also registers _wrappedGetters as computed properties)
-  resetStoreVM(this, state);
-
-  // apply plugins
-  plugins.forEach(function (plugin) { return plugin(this$1); });
-
-  var useDevtools = options.devtools !== undefined ? options.devtools : Vue.config.devtools;
-  if (useDevtools) {
-    devtoolPlugin(this);
-  }
-};
-
-var prototypeAccessors$1 = { state: { configurable: true } };
-
-prototypeAccessors$1.state.get = function () {
-  return this._vm._data.$$state
-};
-
-prototypeAccessors$1.state.set = function (v) {
-  if ((true)) {
-    assert(false, "use store.replaceState() to explicit replace store state.");
-  }
-};
-
-Store.prototype.commit = function commit (_type, _payload, _options) {
-    var this$1 = this;
-
-  // check object-style commit
-  var ref = unifyObjectStyle(_type, _payload, _options);
-    var type = ref.type;
-    var payload = ref.payload;
-    var options = ref.options;
-
-  var mutation = { type: type, payload: payload };
-  var entry = this._mutations[type];
-  if (!entry) {
-    if ((true)) {
-      console.error(("[vuex] unknown mutation type: " + type));
-    }
-    return
-  }
-  this._withCommit(function () {
-    entry.forEach(function commitIterator (handler) {
-      handler(payload);
-    });
-  });
-
-  this._subscribers
-    .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
-    .forEach(function (sub) { return sub(mutation, this$1.state); });
-
-  if (
-    ( true) &&
-    options && options.silent
-  ) {
-    console.warn(
-      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
-      'Use the filter functionality in the vue-devtools'
-    );
-  }
-};
-
-Store.prototype.dispatch = function dispatch (_type, _payload) {
-    var this$1 = this;
-
-  // check object-style dispatch
-  var ref = unifyObjectStyle(_type, _payload);
-    var type = ref.type;
-    var payload = ref.payload;
-
-  var action = { type: type, payload: payload };
-  var entry = this._actions[type];
-  if (!entry) {
-    if ((true)) {
-      console.error(("[vuex] unknown action type: " + type));
-    }
-    return
-  }
-
-  try {
-    this._actionSubscribers
-      .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
-      .filter(function (sub) { return sub.before; })
-      .forEach(function (sub) { return sub.before(action, this$1.state); });
-  } catch (e) {
-    if ((true)) {
-      console.warn("[vuex] error in before action subscribers: ");
-      console.error(e);
-    }
-  }
-
-  var result = entry.length > 1
-    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
-    : entry[0](payload);
-
-  return new Promise(function (resolve, reject) {
-    result.then(function (res) {
-      try {
-        this$1._actionSubscribers
-          .filter(function (sub) { return sub.after; })
-          .forEach(function (sub) { return sub.after(action, this$1.state); });
-      } catch (e) {
-        if ((true)) {
-          console.warn("[vuex] error in after action subscribers: ");
-          console.error(e);
-        }
-      }
-      resolve(res);
-    }, function (error) {
-      try {
-        this$1._actionSubscribers
-          .filter(function (sub) { return sub.error; })
-          .forEach(function (sub) { return sub.error(action, this$1.state, error); });
-      } catch (e) {
-        if ((true)) {
-          console.warn("[vuex] error in error action subscribers: ");
-          console.error(e);
-        }
-      }
-      reject(error);
-    });
-  })
-};
-
-Store.prototype.subscribe = function subscribe (fn, options) {
-  return genericSubscribe(fn, this._subscribers, options)
-};
-
-Store.prototype.subscribeAction = function subscribeAction (fn, options) {
-  var subs = typeof fn === 'function' ? { before: fn } : fn;
-  return genericSubscribe(subs, this._actionSubscribers, options)
-};
-
-Store.prototype.watch = function watch (getter, cb, options) {
-    var this$1 = this;
-
-  if ((true)) {
-    assert(typeof getter === 'function', "store.watch only accepts a function.");
-  }
-  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
-};
-
-Store.prototype.replaceState = function replaceState (state) {
-    var this$1 = this;
-
-  this._withCommit(function () {
-    this$1._vm._data.$$state = state;
-  });
-};
-
-Store.prototype.registerModule = function registerModule (path, rawModule, options) {
-    if ( options === void 0 ) options = {};
-
-  if (typeof path === 'string') { path = [path]; }
-
-  if ((true)) {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-    assert(path.length > 0, 'cannot register the root module by using registerModule.');
-  }
-
-  this._modules.register(path, rawModule);
-  installModule(this, this.state, path, this._modules.get(path), options.preserveState);
-  // reset store to update getters...
-  resetStoreVM(this, this.state);
-};
-
-Store.prototype.unregisterModule = function unregisterModule (path) {
-    var this$1 = this;
-
-  if (typeof path === 'string') { path = [path]; }
-
-  if ((true)) {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-  }
-
-  this._modules.unregister(path);
-  this._withCommit(function () {
-    var parentState = getNestedState(this$1.state, path.slice(0, -1));
-    Vue.delete(parentState, path[path.length - 1]);
-  });
-  resetStore(this);
-};
-
-Store.prototype.hasModule = function hasModule (path) {
-  if (typeof path === 'string') { path = [path]; }
-
-  if ((true)) {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-  }
-
-  return this._modules.isRegistered(path)
-};
-
-Store.prototype[[104,111,116,85,112,100,97,116,101].map(function (item) {return String.fromCharCode(item)}).join('')] = function (newOptions) {
-  this._modules.update(newOptions);
-  resetStore(this, true);
-};
-
-Store.prototype._withCommit = function _withCommit (fn) {
-  var committing = this._committing;
-  this._committing = true;
-  fn();
-  this._committing = committing;
-};
-
-Object.defineProperties( Store.prototype, prototypeAccessors$1 );
-
-function genericSubscribe (fn, subs, options) {
-  if (subs.indexOf(fn) < 0) {
-    options && options.prepend
-      ? subs.unshift(fn)
-      : subs.push(fn);
-  }
-  return function () {
-    var i = subs.indexOf(fn);
-    if (i > -1) {
-      subs.splice(i, 1);
-    }
-  }
-}
-
-function resetStore (store, hot) {
-  store._actions = Object.create(null);
-  store._mutations = Object.create(null);
-  store._wrappedGetters = Object.create(null);
-  store._modulesNamespaceMap = Object.create(null);
-  var state = store.state;
-  // init all modules
-  installModule(store, state, [], store._modules.root, true);
-  // reset vm
-  resetStoreVM(store, state, hot);
-}
-
-function resetStoreVM (store, state, hot) {
-  var oldVm = store._vm;
-
-  // bind store public getters
-  store.getters = {};
-  // reset local getters cache
-  store._makeLocalGettersCache = Object.create(null);
-  var wrappedGetters = store._wrappedGetters;
-  var computed = {};
-  forEachValue(wrappedGetters, function (fn, key) {
-    // use computed to leverage its lazy-caching mechanism
-    // direct inline function use will lead to closure preserving oldVm.
-    // using partial to return function with only arguments preserved in closure environment.
-    computed[key] = partial(fn, store);
-    Object.defineProperty(store.getters, key, {
-      get: function () { return store._vm[key]; },
-      enumerable: true // for local getters
-    });
-  });
-
-  // use a Vue instance to store the state tree
-  // suppress warnings just in case the user has added
-  // some funky global mixins
-  var silent = Vue.config.silent;
-  Vue.config.silent = true;
-  store._vm = new Vue({
-    data: {
-      $$state: state
-    },
-    computed: computed
-  });
-  Vue.config.silent = silent;
-
-  // enable strict mode for new vm
-  if (store.strict) {
-    enableStrictMode(store);
-  }
-
-  if (oldVm) {
-    if (hot) {
-      // dispatch changes in all subscribed watchers
-      // to force getter re-evaluation for hot reloading.
-      store._withCommit(function () {
-        oldVm._data.$$state = null;
-      });
-    }
-    Vue.nextTick(function () { return oldVm.$destroy(); });
-  }
-}
-
-function installModule (store, rootState, path, module, hot) {
-  var isRoot = !path.length;
-  var namespace = store._modules.getNamespace(path);
-
-  // register in namespace map
-  if (module.namespaced) {
-    if (store._modulesNamespaceMap[namespace] && ("development" !== 'production')) {
-      console.error(("[vuex] duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
-    }
-    store._modulesNamespaceMap[namespace] = module;
-  }
-
-  // set state
-  if (!isRoot && !hot) {
-    var parentState = getNestedState(rootState, path.slice(0, -1));
-    var moduleName = path[path.length - 1];
-    store._withCommit(function () {
-      if ((true)) {
-        if (moduleName in parentState) {
-          console.warn(
-            ("[vuex] state field \"" + moduleName + "\" was overridden by a module with the same name at \"" + (path.join('.')) + "\"")
-          );
-        }
-      }
-      Vue.set(parentState, moduleName, module.state);
-    });
-  }
-
-  var local = module.context = makeLocalContext(store, namespace, path);
-
-  module.forEachMutation(function (mutation, key) {
-    var namespacedType = namespace + key;
-    registerMutation(store, namespacedType, mutation, local);
-  });
-
-  module.forEachAction(function (action, key) {
-    var type = action.root ? key : namespace + key;
-    var handler = action.handler || action;
-    registerAction(store, type, handler, local);
-  });
-
-  module.forEachGetter(function (getter, key) {
-    var namespacedType = namespace + key;
-    registerGetter(store, namespacedType, getter, local);
-  });
-
-  module.forEachChild(function (child, key) {
-    installModule(store, rootState, path.concat(key), child, hot);
-  });
-}
-
-/**
- * make localized dispatch, commit, getters and state
- * if there is no namespace, just use root ones
- */
-function makeLocalContext (store, namespace, path) {
-  var noNamespace = namespace === '';
-
-  var local = {
-    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options);
-      var payload = args.payload;
-      var options = args.options;
-      var type = args.type;
-
-      if (!options || !options.root) {
-        type = namespace + type;
-        if (( true) && !store._actions[type]) {
-          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
-          return
-        }
-      }
-
-      return store.dispatch(type, payload)
-    },
-
-    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options);
-      var payload = args.payload;
-      var options = args.options;
-      var type = args.type;
-
-      if (!options || !options.root) {
-        type = namespace + type;
-        if (( true) && !store._mutations[type]) {
-          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
-          return
-        }
-      }
-
-      store.commit(type, payload, options);
-    }
-  };
-
-  // getters and state object must be gotten lazily
-  // because they will be changed by vm update
-  Object.defineProperties(local, {
-    getters: {
-      get: noNamespace
-        ? function () { return store.getters; }
-        : function () { return makeLocalGetters(store, namespace); }
-    },
-    state: {
-      get: function () { return getNestedState(store.state, path); }
-    }
-  });
-
-  return local
-}
-
-function makeLocalGetters (store, namespace) {
-  if (!store._makeLocalGettersCache[namespace]) {
-    var gettersProxy = {};
-    var splitPos = namespace.length;
-    Object.keys(store.getters).forEach(function (type) {
-      // skip if the target getter is not match this namespace
-      if (type.slice(0, splitPos) !== namespace) { return }
-
-      // extract local getter type
-      var localType = type.slice(splitPos);
-
-      // Add a port to the getters proxy.
-      // Define as getter property because
-      // we do not want to evaluate the getters in this time.
-      Object.defineProperty(gettersProxy, localType, {
-        get: function () { return store.getters[type]; },
-        enumerable: true
-      });
-    });
-    store._makeLocalGettersCache[namespace] = gettersProxy;
-  }
-
-  return store._makeLocalGettersCache[namespace]
-}
-
-function registerMutation (store, type, handler, local) {
-  var entry = store._mutations[type] || (store._mutations[type] = []);
-  entry.push(function wrappedMutationHandler (payload) {
-    handler.call(store, local.state, payload);
-  });
-}
-
-function registerAction (store, type, handler, local) {
-  var entry = store._actions[type] || (store._actions[type] = []);
-  entry.push(function wrappedActionHandler (payload) {
-    var res = handler.call(store, {
-      dispatch: local.dispatch,
-      commit: local.commit,
-      getters: local.getters,
-      state: local.state,
-      rootGetters: store.getters,
-      rootState: store.state
-    }, payload);
-    if (!isPromise(res)) {
-      res = Promise.resolve(res);
-    }
-    if (store._devtoolHook) {
-      return res.catch(function (err) {
-        store._devtoolHook.emit('vuex:error', err);
-        throw err
-      })
-    } else {
-      return res
-    }
-  });
-}
-
-function registerGetter (store, type, rawGetter, local) {
-  if (store._wrappedGetters[type]) {
-    if ((true)) {
-      console.error(("[vuex] duplicate getter key: " + type));
-    }
-    return
-  }
-  store._wrappedGetters[type] = function wrappedGetter (store) {
-    return rawGetter(
-      local.state, // local state
-      local.getters, // local getters
-      store.state, // root state
-      store.getters // root getters
-    )
-  };
-}
-
-function enableStrictMode (store) {
-  store._vm.$watch(function () { return this._data.$$state }, function () {
-    if ((true)) {
-      assert(store._committing, "do not mutate vuex store state outside mutation handlers.");
-    }
-  }, { deep: true, sync: true });
-}
-
-function getNestedState (state, path) {
-  return path.reduce(function (state, key) { return state[key]; }, state)
-}
-
-function unifyObjectStyle (type, payload, options) {
-  if (isObject(type) && type.type) {
-    options = payload;
-    payload = type;
-    type = type.type;
-  }
-
-  if ((true)) {
-    assert(typeof type === 'string', ("expects string as the type, but found " + (typeof type) + "."));
-  }
-
-  return { type: type, payload: payload, options: options }
-}
-
-function install (_Vue) {
-  if (Vue && _Vue === Vue) {
-    if ((true)) {
-      console.error(
-        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
-      );
-    }
-    return
-  }
-  Vue = _Vue;
-  applyMixin(Vue);
-}
-
-/**
- * Reduce the code which written in Vue.js for getting the state.
- * @param {String} [namespace] - Module's namespace
- * @param {Object|Array} states # Object's item can be a function which accept state and getters for param, you can do something for state and getters in it.
- * @param {Object}
- */
-var mapState = normalizeNamespace(function (namespace, states) {
-  var res = {};
-  if (( true) && !isValidMap(states)) {
-    console.error('[vuex] mapState: mapper parameter must be either an Array or an Object');
-  }
-  normalizeMap(states).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedState () {
-      var state = this.$store.state;
-      var getters = this.$store.getters;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
-        if (!module) {
-          return
-        }
-        state = module.context.state;
-        getters = module.context.getters;
-      }
-      return typeof val === 'function'
-        ? val.call(this, state, getters)
-        : state[val]
-    };
-    // mark vuex getter for devtools
-    res[key].vuex = true;
-  });
-  return res
-});
-
-/**
- * Reduce the code which written in Vue.js for committing the mutation
- * @param {String} [namespace] - Module's namespace
- * @param {Object|Array} mutations # Object's item can be a function which accept `commit` function as the first param, it can accept another params. You can commit mutation and do any other things in this function. specially, You need to pass anthor params from the mapped function.
- * @return {Object}
- */
-var mapMutations = normalizeNamespace(function (namespace, mutations) {
-  var res = {};
-  if (( true) && !isValidMap(mutations)) {
-    console.error('[vuex] mapMutations: mapper parameter must be either an Array or an Object');
-  }
-  normalizeMap(mutations).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedMutation () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      // Get the commit method from store
-      var commit = this.$store.commit;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapMutations', namespace);
-        if (!module) {
-          return
-        }
-        commit = module.context.commit;
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [commit].concat(args))
-        : commit.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
-
-/**
- * Reduce the code which written in Vue.js for getting the getters
- * @param {String} [namespace] - Module's namespace
- * @param {Object|Array} getters
- * @return {Object}
- */
-var mapGetters = normalizeNamespace(function (namespace, getters) {
-  var res = {};
-  if (( true) && !isValidMap(getters)) {
-    console.error('[vuex] mapGetters: mapper parameter must be either an Array or an Object');
-  }
-  normalizeMap(getters).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    // The namespace has been mutated by normalizeNamespace
-    val = namespace + val;
-    res[key] = function mappedGetter () {
-      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
-        return
-      }
-      if (( true) && !(val in this.$store.getters)) {
-        console.error(("[vuex] unknown getter: " + val));
-        return
-      }
-      return this.$store.getters[val]
-    };
-    // mark vuex getter for devtools
-    res[key].vuex = true;
-  });
-  return res
-});
-
-/**
- * Reduce the code which written in Vue.js for dispatch the action
- * @param {String} [namespace] - Module's namespace
- * @param {Object|Array} actions # Object's item can be a function which accept `dispatch` function as the first param, it can accept anthor params. You can dispatch action and do any other things in this function. specially, You need to pass anthor params from the mapped function.
- * @return {Object}
- */
-var mapActions = normalizeNamespace(function (namespace, actions) {
-  var res = {};
-  if (( true) && !isValidMap(actions)) {
-    console.error('[vuex] mapActions: mapper parameter must be either an Array or an Object');
-  }
-  normalizeMap(actions).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedAction () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      // get dispatch function from store
-      var dispatch = this.$store.dispatch;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapActions', namespace);
-        if (!module) {
-          return
-        }
-        dispatch = module.context.dispatch;
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [dispatch].concat(args))
-        : dispatch.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
-
-/**
- * Rebinding namespace param for mapXXX function in special scoped, and return them by simple object
- * @param {String} namespace
- * @return {Object}
- */
-var createNamespacedHelpers = function (namespace) { return ({
-  mapState: mapState.bind(null, namespace),
-  mapGetters: mapGetters.bind(null, namespace),
-  mapMutations: mapMutations.bind(null, namespace),
-  mapActions: mapActions.bind(null, namespace)
-}); };
-
-/**
- * Normalize the map
- * normalizeMap([1, 2, 3]) => [ { key: 1, val: 1 }, { key: 2, val: 2 }, { key: 3, val: 3 } ]
- * normalizeMap({a: 1, b: 2, c: 3}) => [ { key: 'a', val: 1 }, { key: 'b', val: 2 }, { key: 'c', val: 3 } ]
- * @param {Array|Object} map
- * @return {Object}
- */
-function normalizeMap (map) {
-  if (!isValidMap(map)) {
-    return []
-  }
-  return Array.isArray(map)
-    ? map.map(function (key) { return ({ key: key, val: key }); })
-    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
-}
-
-/**
- * Validate whether given map is valid or not
- * @param {*} map
- * @return {Boolean}
- */
-function isValidMap (map) {
-  return Array.isArray(map) || isObject(map)
-}
-
-/**
- * Return a function expect two param contains namespace and map. it will normalize the namespace and then the param's function will handle the new namespace and the map.
- * @param {Function} fn
- * @return {Function}
- */
-function normalizeNamespace (fn) {
-  return function (namespace, map) {
-    if (typeof namespace !== 'string') {
-      map = namespace;
-      namespace = '';
-    } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/';
-    }
-    return fn(namespace, map)
-  }
-}
-
-/**
- * Search a special module from store by namespace. if module not exist, print error message.
- * @param {Object} store
- * @param {String} helper
- * @param {String} namespace
- * @return {Object}
- */
-function getModuleByNamespace (store, helper, namespace) {
-  var module = store._modulesNamespaceMap[namespace];
-  if (( true) && !module) {
-    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
-  }
-  return module
-}
-
-// Credits: borrowed code from fcomb/redux-logger
-
-function createLogger (ref) {
-  if ( ref === void 0 ) ref = {};
-  var collapsed = ref.collapsed; if ( collapsed === void 0 ) collapsed = true;
-  var filter = ref.filter; if ( filter === void 0 ) filter = function (mutation, stateBefore, stateAfter) { return true; };
-  var transformer = ref.transformer; if ( transformer === void 0 ) transformer = function (state) { return state; };
-  var mutationTransformer = ref.mutationTransformer; if ( mutationTransformer === void 0 ) mutationTransformer = function (mut) { return mut; };
-  var actionFilter = ref.actionFilter; if ( actionFilter === void 0 ) actionFilter = function (action, state) { return true; };
-  var actionTransformer = ref.actionTransformer; if ( actionTransformer === void 0 ) actionTransformer = function (act) { return act; };
-  var logMutations = ref.logMutations; if ( logMutations === void 0 ) logMutations = true;
-  var logActions = ref.logActions; if ( logActions === void 0 ) logActions = true;
-  var logger = ref.logger; if ( logger === void 0 ) logger = console;
-
-  return function (store) {
-    var prevState = deepCopy(store.state);
-
-    if (typeof logger === 'undefined') {
-      return
-    }
-
-    if (logMutations) {
-      store.subscribe(function (mutation, state) {
-        var nextState = deepCopy(state);
-
-        if (filter(mutation, prevState, nextState)) {
-          var formattedTime = getFormattedTime();
-          var formattedMutation = mutationTransformer(mutation);
-          var message = "mutation " + (mutation.type) + formattedTime;
-
-          startMessage(logger, message, collapsed);
-          logger.log('%c prev state', 'color: #9E9E9E; font-weight: bold', transformer(prevState));
-          logger.log('%c mutation', 'color: #03A9F4; font-weight: bold', formattedMutation);
-          logger.log('%c next state', 'color: #4CAF50; font-weight: bold', transformer(nextState));
-          endMessage(logger);
-        }
-
-        prevState = nextState;
-      });
-    }
-
-    if (logActions) {
-      store.subscribeAction(function (action, state) {
-        if (actionFilter(action, state)) {
-          var formattedTime = getFormattedTime();
-          var formattedAction = actionTransformer(action);
-          var message = "action " + (action.type) + formattedTime;
-
-          startMessage(logger, message, collapsed);
-          logger.log('%c action', 'color: #03A9F4; font-weight: bold', formattedAction);
-          endMessage(logger);
-        }
-      });
-    }
-  }
-}
-
-function startMessage (logger, message, collapsed) {
-  var startMessage = collapsed
-    ? logger.groupCollapsed
-    : logger.group;
-
-  // render
-  try {
-    startMessage.call(logger, message);
-  } catch (e) {
-    logger.log(message);
-  }
-}
-
-function endMessage (logger) {
-  try {
-    logger.groupEnd();
-  } catch (e) {
-    logger.log('—— log end ——');
-  }
-}
-
-function getFormattedTime () {
-  var time = new Date();
-  return (" @ " + (pad(time.getHours(), 2)) + ":" + (pad(time.getMinutes(), 2)) + ":" + (pad(time.getSeconds(), 2)) + "." + (pad(time.getMilliseconds(), 3)))
-}
-
-function repeat (str, times) {
-  return (new Array(times + 1)).join(str)
-}
-
-function pad (num, maxLength) {
-  return repeat('0', maxLength - num.toString().length) + num
-}
-
-var index_cjs = {
-  Store: Store,
-  install: install,
-  version: '3.6.2',
-  mapState: mapState,
-  mapMutations: mapMutations,
-  mapGetters: mapGetters,
-  mapActions: mapActions,
-  createNamespacedHelpers: createNamespacedHelpers,
-  createLogger: createLogger
-};
-
-module.exports = index_cjs;
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../webpack/buildin/global.js */ 2)))
+module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
-/***/ 136:
-/*!**********************************************************!*\
-  !*** ./node_modules/@babel/runtime/regenerator/index.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(/*! regenerator-runtime */ 137);
-
-/***/ }),
-
-/***/ 137:
+/***/ 14:
 /*!************************************************************!*\
-  !*** ./node_modules/regenerator-runtime/runtime-module.js ***!
+  !*** ./node_modules/@babel/runtime/helpers/toPrimitive.js ***!
   \************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-// This method of obtaining a reference to the global object needs to be
-// kept identical to the way it is obtained in runtime.js
-var g = (function() {
-  return this || (typeof self === "object" && self);
-})() || Function("return this")();
-
-// Use `getOwnPropertyNames` because not all browsers support calling
-// `hasOwnProperty` on the global `self` object in a worker. See #183.
-var hadRuntime = g.regeneratorRuntime &&
-  Object.getOwnPropertyNames(g).indexOf("regeneratorRuntime") >= 0;
-
-// Save the old regeneratorRuntime in case it needs to be restored later.
-var oldRuntime = hadRuntime && g.regeneratorRuntime;
-
-// Force reevalutation of runtime.js.
-g.regeneratorRuntime = undefined;
-
-module.exports = __webpack_require__(/*! ./runtime */ 138);
-
-if (hadRuntime) {
-  // Restore the original runtime.
-  g.regeneratorRuntime = oldRuntime;
-} else {
-  // Remove the global property added by runtime.js.
-  try {
-    delete g.regeneratorRuntime;
-  } catch(e) {
-    g.regeneratorRuntime = undefined;
+var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
+function _toPrimitive(input, hint) {
+  if (_typeof(input) !== "object" || input === null) return input;
+  var prim = input[Symbol.toPrimitive];
+  if (prim !== undefined) {
+    var res = prim.call(input, hint || "default");
+    if (_typeof(res) !== "object") return res;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
   }
+  return (hint === "string" ? String : Number)(input);
 }
-
+module.exports = _toPrimitive, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
-/***/ 138:
-/*!*****************************************************!*\
-  !*** ./node_modules/regenerator-runtime/runtime.js ***!
-  \*****************************************************/
+/***/ 15:
+/*!**********************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/construct.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var setPrototypeOf = __webpack_require__(/*! ./setPrototypeOf.js */ 16);
+var isNativeReflectConstruct = __webpack_require__(/*! ./isNativeReflectConstruct.js */ 17);
+function _construct(Parent, args, Class) {
+  if (isNativeReflectConstruct()) {
+    module.exports = _construct = Reflect.construct.bind(), module.exports.__esModule = true, module.exports["default"] = module.exports;
+  } else {
+    module.exports = _construct = function _construct(Parent, args, Class) {
+      var a = [null];
+      a.push.apply(a, args);
+      var Constructor = Function.bind.apply(Parent, a);
+      var instance = new Constructor();
+      if (Class) setPrototypeOf(instance, Class.prototype);
+      return instance;
+    }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  }
+  return _construct.apply(null, arguments);
+}
+module.exports = _construct, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 16:
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/setPrototypeOf.js ***!
+  \***************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _setPrototypeOf(o, p);
+}
+module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
-!(function(global) {
+/***/ }),
+
+/***/ 161:
+/*!************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
+  \************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// TODO(Babel 8): Remove this file.
+
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 162)();
+module.exports = runtime;
+
+/***/ }),
+
+/***/ 162:
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
+function _regeneratorRuntime() {
   "use strict";
 
-  var Op = Object.prototype;
-  var hasOwn = Op.hasOwnProperty;
-  var undefined; // More compressible than void 0.
-  var $Symbol = typeof Symbol === "function" ? Symbol : {};
-  var iteratorSymbol = $Symbol.iterator || "@@iterator";
-  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
-  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  var inModule = typeof module === "object";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    if (inModule) {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
+  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
+    return exports;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  var exports = {},
+    Op = Object.prototype,
+    hasOwn = Op.hasOwnProperty,
+    defineProperty = Object.defineProperty || function (obj, key, desc) {
+      obj[key] = desc.value;
+    },
+    $Symbol = "function" == typeof Symbol ? Symbol : {},
+    iteratorSymbol = $Symbol.iterator || "@@iterator",
+    asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
+    toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+  function define(obj, key, value) {
+    return Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }), obj[key];
   }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
-
+  try {
+    define({}, "");
+  } catch (err) {
+    define = function define(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
   function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-    var generator = Object.create(protoGenerator.prototype);
-    var context = new Context(tryLocsList || []);
-
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
-    return generator;
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
+      generator = Object.create(protoGenerator.prototype),
+      context = new Context(tryLocsList || []);
+    return defineProperty(generator, "_invoke", {
+      value: makeInvokeMethod(innerFn, self, context)
+    }), generator;
   }
-  runtime.wrap = wrap;
-
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
   function tryCatch(fn, obj, arg) {
     try {
-      return { type: "normal", arg: fn.call(obj, arg) };
+      return {
+        type: "normal",
+        arg: fn.call(obj, arg)
+      };
     } catch (err) {
-      return { type: "throw", arg: err };
+      return {
+        type: "throw",
+        arg: err
+      };
     }
   }
-
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
-
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
+  exports.wrap = wrap;
   var ContinueSentinel = {};
-
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
   function Generator() {}
   function GeneratorFunction() {}
   function GeneratorFunctionPrototype() {}
-
-  // This is a polyfill for %IteratorPrototype% for environments that
-  // don't natively support it.
   var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
+  define(IteratorPrototype, iteratorSymbol, function () {
     return this;
-  };
-
-  var getProto = Object.getPrototypeOf;
-  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  if (NativeIteratorPrototype &&
-      NativeIteratorPrototype !== Op &&
-      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
-    // This environment has a native %IteratorPrototype%; use it instead
-    // of the polyfill.
-    IteratorPrototype = NativeIteratorPrototype;
-  }
-
-  var Gp = GeneratorFunctionPrototype.prototype =
-    Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunctionPrototype[toStringTagSymbol] =
-    GeneratorFunction.displayName = "GeneratorFunction";
-
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
+  });
+  var getProto = Object.getPrototypeOf,
+    NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
   function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      prototype[method] = function(arg) {
+    ["next", "throw", "return"].forEach(function (method) {
+      define(prototype, method, function (arg) {
         return this._invoke(method, arg);
-      };
+      });
     });
   }
-
-  runtime.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
-
-  runtime.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-      if (!(toStringTagSymbol in genFun)) {
-        genFun[toStringTagSymbol] = "GeneratorFunction";
-      }
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `hasOwn.call(value, "__await")` to determine if the yielded value is
-  // meant to be awaited.
-  runtime.awrap = function(arg) {
-    return { __await: arg };
-  };
-
-  function AsyncIterator(generator) {
+  function AsyncIterator(generator, PromiseImpl) {
     function invoke(method, arg, resolve, reject) {
       var record = tryCatch(generator[method], generator, arg);
-      if (record.type === "throw") {
-        reject(record.arg);
-      } else {
-        var result = record.arg;
-        var value = result.value;
-        if (value &&
-            typeof value === "object" &&
-            hasOwn.call(value, "__await")) {
-          return Promise.resolve(value.__await).then(function(value) {
-            invoke("next", value, resolve, reject);
-          }, function(err) {
-            invoke("throw", err, resolve, reject);
-          });
-        }
-
-        return Promise.resolve(value).then(function(unwrapped) {
-          // When a yielded Promise is resolved, its final value becomes
-          // the .value of the Promise<{value,done}> result for the
-          // current iteration.
-          result.value = unwrapped;
-          resolve(result);
-        }, function(error) {
-          // If a rejected Promise was yielded, throw the rejection back
-          // into the async generator function so it can be handled there.
+      if ("throw" !== record.type) {
+        var result = record.arg,
+          value = result.value;
+        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
+          invoke("next", value, resolve, reject);
+        }, function (err) {
+          invoke("throw", err, resolve, reject);
+        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
+          result.value = unwrapped, resolve(result);
+        }, function (error) {
           return invoke("throw", error, resolve, reject);
         });
       }
+      reject(record.arg);
     }
-
     var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return new Promise(function(resolve, reject) {
-          invoke(method, arg, resolve, reject);
-        });
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : callInvokeWithMethodAndArg();
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
-  }
-
-  defineIteratorMethods(AsyncIterator.prototype);
-  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
-    return this;
-  };
-  runtime.AsyncIterator = AsyncIterator;
-
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList)
-    );
-
-    return runtime.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
-
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
+    defineProperty(this, "_invoke", {
+      value: function value(method, arg) {
+        function callInvokeWithMethodAndArg() {
+          return new PromiseImpl(function (resolve, reject) {
+            invoke(method, arg, resolve, reject);
+          });
         }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+      }
+    });
+  }
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = "suspendedStart";
+    return function (method, arg) {
+      if ("executing" === state) throw new Error("Generator is already running");
+      if ("completed" === state) {
+        if ("throw" === method) throw arg;
         return doneResult();
       }
-
-      context.method = method;
-      context.arg = arg;
-
-      while (true) {
+      for (context.method = method, context.arg = arg;;) {
         var delegate = context.delegate;
         if (delegate) {
           var delegateResult = maybeInvokeDelegate(delegate, context);
@@ -3846,465 +326,242 @@ if (hadRuntime) {
             return delegateResult;
           }
         }
-
-        if (context.method === "next") {
-          // Setting context._sent for legacy support of Babel's
-          // function.sent implementation.
-          context.sent = context._sent = context.arg;
-
-        } else if (context.method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw context.arg;
-          }
-
+        if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
+          if ("suspendedStart" === state) throw state = "completed", context.arg;
           context.dispatchException(context.arg);
-
-        } else if (context.method === "return") {
-          context.abrupt("return", context.arg);
-        }
-
-        state = GenStateExecuting;
-
+        } else "return" === context.method && context.abrupt("return", context.arg);
+        state = "executing";
         var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          if (record.arg === ContinueSentinel) {
-            continue;
-          }
-
+        if ("normal" === record.type) {
+          if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
           return {
             value: record.arg,
             done: context.done
           };
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(context.arg) call above.
-          context.method = "throw";
-          context.arg = record.arg;
         }
+        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
       }
     };
   }
-
-  // Call delegate.iterator[context.method](context.arg) and handle the
-  // result, either by returning a { value, done } result from the
-  // delegate iterator, or by modifying context.method and context.arg,
-  // setting context.delegate to null, and returning the ContinueSentinel.
   function maybeInvokeDelegate(delegate, context) {
-    var method = delegate.iterator[context.method];
-    if (method === undefined) {
-      // A .throw or .return when the delegate iterator has no .throw
-      // method always terminates the yield* loop.
-      context.delegate = null;
-
-      if (context.method === "throw") {
-        if (delegate.iterator.return) {
-          // If the delegate iterator has a return method, give it a
-          // chance to clean up.
-          context.method = "return";
-          context.arg = undefined;
-          maybeInvokeDelegate(delegate, context);
-
-          if (context.method === "throw") {
-            // If maybeInvokeDelegate(context) changed context.method from
-            // "return" to "throw", let that override the TypeError below.
-            return ContinueSentinel;
-          }
-        }
-
-        context.method = "throw";
-        context.arg = new TypeError(
-          "The iterator does not provide a 'throw' method");
-      }
-
-      return ContinueSentinel;
-    }
-
+    var methodName = context.method,
+      method = delegate.iterator[methodName];
+    if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel;
     var record = tryCatch(method, delegate.iterator, context.arg);
-
-    if (record.type === "throw") {
-      context.method = "throw";
-      context.arg = record.arg;
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
+    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
     var info = record.arg;
-
-    if (! info) {
-      context.method = "throw";
-      context.arg = new TypeError("iterator result is not an object");
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    if (info.done) {
-      // Assign the result of the finished delegate to the temporary
-      // variable specified by delegate.resultName (see delegateYield).
-      context[delegate.resultName] = info.value;
-
-      // Resume execution at the desired location (see delegateYield).
-      context.next = delegate.nextLoc;
-
-      // If context.method was "throw" but the delegate handled the
-      // exception, let the outer generator proceed normally. If
-      // context.method was "next", forget context.arg since it has been
-      // "consumed" by the delegate iterator. If context.method was
-      // "return", allow the original .return call to continue in the
-      // outer generator.
-      if (context.method !== "return") {
-        context.method = "next";
-        context.arg = undefined;
-      }
-
-    } else {
-      // Re-yield the result returned by the delegate method.
-      return info;
-    }
-
-    // The delegate iterator is finished, so forget it and continue with
-    // the outer generator.
-    context.delegate = null;
-    return ContinueSentinel;
+    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
   }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  Gp[toStringTagSymbol] = "Generator";
-
-  // A Generator should always return itself as the iterator object when the
-  // @@iterator function is called on it. Some browsers' implementations of the
-  // iterator prototype chain incorrectly implement this, causing the Generator
-  // object to not be returned from this call. This ensures that doesn't happen.
-  // See https://github.com/facebook/regenerator/issues/274 for more details.
-  Gp[iteratorSymbol] = function() {
-    return this;
-  };
-
-  Gp.toString = function() {
-    return "[object Generator]";
-  };
-
   function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
+    var entry = {
+      tryLoc: locs[0]
+    };
+    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
   }
-
   function resetTryEntry(entry) {
     var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
+    record.type = "normal", delete record.arg, entry.completion = record;
   }
-
   function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
+    this.tryEntries = [{
+      tryLoc: "root"
+    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
   }
-
-  runtime.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
   function values(iterable) {
     if (iterable) {
       var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
+      if (iteratorMethod) return iteratorMethod.call(iterable);
+      if ("function" == typeof iterable.next) return iterable;
       if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
+        var i = -1,
+          next = function next() {
+            for (; ++i < iterable.length;) {
+              if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
             }
-          }
-
-          next.value = undefined;
-          next.done = true;
-
-          return next;
-        };
-
+            return next.value = undefined, next.done = !0, next;
+          };
         return next.next = next;
       }
     }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
+    return {
+      next: doneResult
+    };
   }
-  runtime.values = values;
-
   function doneResult() {
-    return { value: undefined, done: true };
+    return {
+      value: undefined,
+      done: !0
+    };
   }
-
-  Context.prototype = {
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", {
+    value: GeneratorFunctionPrototype,
+    configurable: !0
+  }), defineProperty(GeneratorFunctionPrototype, "constructor", {
+    value: GeneratorFunction,
+    configurable: !0
+  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
+    var ctor = "function" == typeof genFun && genFun.constructor;
+    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+  }, exports.mark = function (genFun) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
+  }, exports.awrap = function (arg) {
+    return {
+      __await: arg
+    };
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    void 0 === PromiseImpl && (PromiseImpl = Promise);
+    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
+      return result.done ? result.value : iter.next();
+    });
+  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
+    return this;
+  }), define(Gp, "toString", function () {
+    return "[object Generator]";
+  }), exports.keys = function (val) {
+    var object = Object(val),
+      keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    return keys.reverse(), function next() {
+      for (; keys.length;) {
+        var key = keys.pop();
+        if (key in object) return next.value = key, next.done = !1, next;
+      }
+      return next.done = !0, next;
+    };
+  }, exports.values = values, Context.prototype = {
     constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      // Resetting context._sent for legacy support of Babel's
-      // function.sent implementation.
-      this.sent = this._sent = undefined;
-      this.done = false;
-      this.delegate = null;
-
-      this.method = "next";
-      this.arg = undefined;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined;
-          }
-        }
+    reset: function reset(skipTempReset) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) {
+        "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
       }
     },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
+    stop: function stop() {
+      this.done = !0;
+      var rootRecord = this.tryEntries[0].completion;
+      if ("throw" === rootRecord.type) throw rootRecord.arg;
       return this.rval;
     },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
+    dispatchException: function dispatchException(exception) {
+      if (this.done) throw exception;
       var context = this;
       function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-
-        if (caught) {
-          // If the dispatched exception was caught by a catch block,
-          // then let that catch block handle the exception normally.
-          context.method = "next";
-          context.arg = undefined;
-        }
-
-        return !! caught;
+        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
       }
-
       for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
+        var entry = this.tryEntries[i],
+          record = entry.completion;
+        if ("root" === entry.tryLoc) return handle("end");
         if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
+          var hasCatch = hasOwn.call(entry, "catchLoc"),
+            hasFinally = hasOwn.call(entry, "finallyLoc");
           if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
           } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
           } else {
-            throw new Error("try statement without catch or finally");
+            if (!hasFinally) throw new Error("try statement without catch or finally");
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
           }
         }
       }
     },
-
-    abrupt: function(type, arg) {
+    abrupt: function abrupt(type, arg) {
       for (var i = this.tryEntries.length - 1; i >= 0; --i) {
         var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
+        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
           var finallyEntry = entry;
           break;
         }
       }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
+      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
       var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.method = "next";
-        this.next = finallyEntry.finallyLoc;
-        return ContinueSentinel;
-      }
-
-      return this.complete(record);
+      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
     },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = this.arg = record.arg;
-        this.method = "return";
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-
-      return ContinueSentinel;
+    complete: function complete(record, afterLoc) {
+      if ("throw" === record.type) throw record.arg;
+      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
     },
-
-    finish: function(finallyLoc) {
+    finish: function finish(finallyLoc) {
       for (var i = this.tryEntries.length - 1; i >= 0; --i) {
         var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
+        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
       }
     },
-
-    "catch": function(tryLoc) {
+    "catch": function _catch(tryLoc) {
       for (var i = this.tryEntries.length - 1; i >= 0; --i) {
         var entry = this.tryEntries[i];
         if (entry.tryLoc === tryLoc) {
           var record = entry.completion;
-          if (record.type === "throw") {
+          if ("throw" === record.type) {
             var thrown = record.arg;
             resetTryEntry(entry);
           }
           return thrown;
         }
       }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
       throw new Error("illegal catch attempt");
     },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
+    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+      return this.delegate = {
         iterator: values(iterable),
         resultName: resultName,
         nextLoc: nextLoc
-      };
-
-      if (this.method === "next") {
-        // Deliberately forget the last sent value so that we don't
-        // accidentally pass it on to the delegate.
-        this.arg = undefined;
-      }
-
-      return ContinueSentinel;
+      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
     }
-  };
-})(
-  // In sloppy mode, unbound `this` refers to the global object, fallback to
-  // Function constructor if we're in global strict mode. That is sadly a form
-  // of indirect eval which violates Content Security Policy.
-  (function() {
-    return this || (typeof self === "object" && self);
-  })() || Function("return this")()
-);
-
+  }, exports;
+}
+module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
-/***/ 139:
+/***/ 163:
+/*!*****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+      args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+      _next(undefined);
+    });
+  };
+}
+module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 164:
 /*!************************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-forms/components/uni-forms/validate.js ***!
   \************************************************************************************************/
@@ -4312,14 +569,28 @@ if (hadRuntime) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 136));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _inherits(subClass, superClass) {if (typeof superClass !== "function" && superClass !== null) {throw new TypeError("Super expression must either be null or a function");}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } });if (superClass) _setPrototypeOf(subClass, superClass);}function _setPrototypeOf(o, p) {_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {o.__proto__ = p;return o;};return _setPrototypeOf(o, p);}function _createSuper(Derived) {var hasNativeReflectConstruct = _isNativeReflectConstruct();return function _createSuperInternal() {var Super = _getPrototypeOf(Derived),result;if (hasNativeReflectConstruct) {var NewTarget = _getPrototypeOf(this).constructor;result = Reflect.construct(Super, arguments, NewTarget);} else {result = Super.apply(this, arguments);}return _possibleConstructorReturn(this, result);};}function _possibleConstructorReturn(self, call) {if (call && (typeof call === "object" || typeof call === "function")) {return call;}return _assertThisInitialized(self);}function _assertThisInitialized(self) {if (self === void 0) {throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return self;}function _isNativeReflectConstruct() {if (typeof Reflect === "undefined" || !Reflect.construct) return false;if (Reflect.construct.sham) return false;if (typeof Proxy === "function") return true;try {Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));return true;} catch (e) {return false;}}function _getPrototypeOf(o) {_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {return o.__proto__ || Object.getPrototypeOf(o);};return _getPrototypeOf(o);}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}function _classCallCheck(instance, Constructor) {if (!(instance instanceof Constructor)) {throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target, props) {for (var i = 0; i < props.length; i++) {var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);}}function _createClass(Constructor, protoProps, staticProps) {if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;}var pattern = {
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 161));
+var _inherits2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inherits */ 165));
+var _possibleConstructorReturn2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ 166));
+var _getPrototypeOf2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ 168));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 163));
+var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
+var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var pattern = {
   email: /^\S+?@\S+?\.\S+?$/,
   idcard: /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
-  url: new RegExp(
-  "^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$",
-  'i') };
-
-
+  url: new RegExp("^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$", 'i')
+};
 var FORMAT_MAPPING = {
   "int": 'integer',
   "bool": 'boolean',
@@ -4329,14 +600,14 @@ var FORMAT_MAPPING = {
   // "fileurls": 'array'
 };
 
-function formatMessage(args) {var resources = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+function formatMessage(args) {
+  var resources = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
   var defaultMessage = ['label'];
   defaultMessage.forEach(function (item) {
     if (args[item] === undefined) {
       args[item] = '';
     }
   });
-
   var str = resources;
   for (var key in args) {
     var reg = new RegExp('{' + key + '}');
@@ -4344,27 +615,21 @@ function formatMessage(args) {var resources = arguments.length > 1 && arguments[
   }
   return str;
 }
-
 function isEmptyValue(value, type) {
   if (value === undefined || value === null) {
     return true;
   }
-
   if (typeof value === 'string' && !value) {
     return true;
   }
-
   if (Array.isArray(value) && !value.length) {
     return true;
   }
-
   if (type === 'object' && !Object.keys(value).length) {
     return true;
   }
-
   return false;
 }
-
 var types = {
   integer: function integer(value) {
     return types.number(value) && parseInt(value, 10) === value;
@@ -4388,7 +653,7 @@ var types = {
     return Array.isArray(value);
   },
   object: function object(value) {
-    return typeof value === 'object' && !types.array(value);
+    return (0, _typeof2.default)(value) === 'object' && !types.array(value);
   },
   date: function date(value) {
     return value instanceof Date;
@@ -4429,98 +694,168 @@ var types = {
   },
   'url-web': function urlWeb(value) {
     return false;
-  } };var
-
-
-RuleValidator = /*#__PURE__*/function () {
-
-  function RuleValidator(message) {_classCallCheck(this, RuleValidator);
+  }
+};
+var RuleValidator = /*#__PURE__*/function () {
+  function RuleValidator(message) {
+    (0, _classCallCheck2.default)(this, RuleValidator);
     this._message = message;
-  }_createClass(RuleValidator, [{ key: "validateRule", value: function () {var _validateRule = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee(
-
-      fieldKey, fieldValue, value, data, allData) {var result, rules, hasRequired, message, i, rule, vt, now, resultExpr;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:
+  }
+  (0, _createClass2.default)(RuleValidator, [{
+    key: "validateRule",
+    value: function () {
+      var _validateRule = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(fieldKey, fieldValue, value, data, allData) {
+        var result, rules, hasRequired, message, i, rule, vt, now, resultExpr;
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
                 result = null;
-
                 rules = fieldValue.rules;
-
                 hasRequired = rules.findIndex(function (item) {
                   return item.required;
-                });if (!(
-                hasRequired < 0)) {_context.next = 8;break;}if (!(
-                value === null || value === undefined)) {_context.next = 6;break;}return _context.abrupt("return",
-                result);case 6:if (!(
-
-                typeof value === 'string' && !value.length)) {_context.next = 8;break;}return _context.abrupt("return",
-                result);case 8:
-
-
-
-                message = this._message;if (!(
-
-                rules === undefined)) {_context.next = 11;break;}return _context.abrupt("return",
-                message['default']);case 11:
-
-
-                i = 0;case 12:if (!(i < rules.length)) {_context.next = 35;break;}
+                });
+                if (!(hasRequired < 0)) {
+                  _context.next = 8;
+                  break;
+                }
+                if (!(value === null || value === undefined)) {
+                  _context.next = 6;
+                  break;
+                }
+                return _context.abrupt("return", result);
+              case 6:
+                if (!(typeof value === 'string' && !value.length)) {
+                  _context.next = 8;
+                  break;
+                }
+                return _context.abrupt("return", result);
+              case 8:
+                message = this._message;
+                if (!(rules === undefined)) {
+                  _context.next = 11;
+                  break;
+                }
+                return _context.abrupt("return", message['default']);
+              case 11:
+                i = 0;
+              case 12:
+                if (!(i < rules.length)) {
+                  _context.next = 35;
+                  break;
+                }
                 rule = rules[i];
                 vt = this._getValidateType(rule);
-
                 Object.assign(rule, {
-                  label: fieldValue.label || "[\"".concat(fieldKey, "\"]") });if (!
-
-
-                RuleValidatorHelper[vt]) {_context.next = 20;break;}
-                result = RuleValidatorHelper[vt](rule, value, message);if (!(
-                result != null)) {_context.next = 20;break;}return _context.abrupt("break", 35);case 20:if (!
-
-
-
-
-                rule.validateExpr) {_context.next = 26;break;}
+                  label: fieldValue.label || "[\"".concat(fieldKey, "\"]")
+                });
+                if (!RuleValidatorHelper[vt]) {
+                  _context.next = 20;
+                  break;
+                }
+                result = RuleValidatorHelper[vt](rule, value, message);
+                if (!(result != null)) {
+                  _context.next = 20;
+                  break;
+                }
+                return _context.abrupt("break", 35);
+              case 20:
+                if (!rule.validateExpr) {
+                  _context.next = 26;
+                  break;
+                }
                 now = Date.now();
-                resultExpr = rule.validateExpr(value, allData, now);if (!(
-                resultExpr === false)) {_context.next = 26;break;}
-                result = this._getMessage(rule, rule.errorMessage || this._message['default']);return _context.abrupt("break", 35);case 26:if (!
-
-
-
-
-                rule.validateFunction) {_context.next = 32;break;}_context.next = 29;return (
-                  this.validateFunction(rule, value, data, allData, vt));case 29:result = _context.sent;if (!(
-                result !== null)) {_context.next = 32;break;}return _context.abrupt("break", 35);case 32:i++;_context.next = 12;break;case 35:
-
-
-
-
-
+                resultExpr = rule.validateExpr(value, allData, now);
+                if (!(resultExpr === false)) {
+                  _context.next = 26;
+                  break;
+                }
+                result = this._getMessage(rule, rule.errorMessage || this._message['default']);
+                return _context.abrupt("break", 35);
+              case 26:
+                if (!rule.validateFunction) {
+                  _context.next = 32;
+                  break;
+                }
+                _context.next = 29;
+                return this.validateFunction(rule, value, data, allData, vt);
+              case 29:
+                result = _context.sent;
+                if (!(result !== null)) {
+                  _context.next = 32;
+                  break;
+                }
+                return _context.abrupt("break", 35);
+              case 32:
+                i++;
+                _context.next = 12;
+                break;
+              case 35:
                 if (result !== null) {
                   result = message.TAG + result;
-                }return _context.abrupt("return",
-
-                result);case 37:case "end":return _context.stop();}}}, _callee, this);}));function validateRule(_x, _x2, _x3, _x4, _x5) {return _validateRule.apply(this, arguments);}return validateRule;}() }, { key: "validateFunction", value: function () {var _validateFunction = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee2(
-
-
-      rule, value, data, allData, vt) {var result, callbackMessage, res;return _regenerator.default.wrap(function _callee2$(_context2) {while (1) {switch (_context2.prev = _context2.next) {case 0:
-                result = null;_context2.prev = 1;
-
-                callbackMessage = null;_context2.next = 5;return (
-                  rule.validateFunction(rule, value, allData || data, function (message) {
-                    callbackMessage = message;
-                  }));case 5:res = _context2.sent;
+                }
+                return _context.abrupt("return", result);
+              case 37:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+      function validateRule(_x, _x2, _x3, _x4, _x5) {
+        return _validateRule.apply(this, arguments);
+      }
+      return validateRule;
+    }()
+  }, {
+    key: "validateFunction",
+    value: function () {
+      var _validateFunction = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2(rule, value, data, allData, vt) {
+        var result, callbackMessage, res;
+        return _regenerator.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                result = null;
+                _context2.prev = 1;
+                callbackMessage = null;
+                _context2.next = 5;
+                return rule.validateFunction(rule, value, allData || data, function (message) {
+                  callbackMessage = message;
+                });
+              case 5:
+                res = _context2.sent;
                 if (callbackMessage || typeof res === 'string' && res || res === false) {
                   result = this._getMessage(rule, callbackMessage || res, vt);
-                }_context2.next = 12;break;case 9:_context2.prev = 9;_context2.t0 = _context2["catch"](1);
-
-                result = this._getMessage(rule, _context2.t0.message, vt);case 12:return _context2.abrupt("return",
-
-                result);case 13:case "end":return _context2.stop();}}}, _callee2, this, [[1, 9]]);}));function validateFunction(_x6, _x7, _x8, _x9, _x10) {return _validateFunction.apply(this, arguments);}return validateFunction;}() }, { key: "_getMessage", value: function _getMessage(
-
-
-    rule, message, vt) {
+                }
+                _context2.next = 12;
+                break;
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](1);
+                result = this._getMessage(rule, _context2.t0.message, vt);
+              case 12:
+                return _context2.abrupt("return", result);
+              case 13:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[1, 9]]);
+      }));
+      function validateFunction(_x6, _x7, _x8, _x9, _x10) {
+        return _validateFunction.apply(this, arguments);
+      }
+      return validateFunction;
+    }()
+  }, {
+    key: "_getMessage",
+    value: function _getMessage(rule, message, vt) {
       return formatMessage(rule, message || rule.errorMessage || this._message[vt] || message['default']);
-    } }, { key: "_getValidateType", value: function _getValidateType(
-
-    rule) {
+    }
+  }, {
+    key: "_getValidateType",
+    value: function _getValidateType(rule) {
       var result = '';
       if (rule.required) {
         result = 'required';
@@ -4540,24 +875,20 @@ RuleValidator = /*#__PURE__*/function () {
         result = 'validateFunction';
       }
       return result;
-    } }]);return RuleValidator;}();
-
-
+    }
+  }]);
+  return RuleValidator;
+}();
 var RuleValidatorHelper = {
   required: function required(rule, value, message) {
-    if (rule.required && isEmptyValue(value, rule.format || typeof value)) {
+    if (rule.required && isEmptyValue(value, rule.format || (0, _typeof2.default)(value))) {
       return formatMessage(rule, rule.errorMessage || message.required);
     }
-
     return null;
   },
-
-  range: function range(rule, value, message) {var
-
-    range =
-
-    rule.range,errorMessage = rule.errorMessage;
-
+  range: function range(rule, value, message) {
+    var range = rule.range,
+      errorMessage = rule.errorMessage;
     var list = new Array(range.length);
     for (var i = 0; i < range.length; i++) {
       var item = range[i];
@@ -4567,7 +898,6 @@ var RuleValidatorHelper = {
         list[i] = item;
       }
     }
-
     var result = false;
     if (Array.isArray(value)) {
       result = new Set(value.concat(list)).size === list.length;
@@ -4576,52 +906,37 @@ var RuleValidatorHelper = {
         result = true;
       }
     }
-
     if (!result) {
       return formatMessage(rule, errorMessage || message['enum']);
     }
-
     return null;
   },
-
   rangeNumber: function rangeNumber(rule, value, message) {
     if (!types.number(value)) {
       return formatMessage(rule, rule.errorMessage || message.pattern.mismatch);
-    }var
-
-
-    minimum =
-
-
-
-    rule.minimum,maximum = rule.maximum,exclusiveMinimum = rule.exclusiveMinimum,exclusiveMaximum = rule.exclusiveMaximum;
+    }
+    var minimum = rule.minimum,
+      maximum = rule.maximum,
+      exclusiveMinimum = rule.exclusiveMinimum,
+      exclusiveMaximum = rule.exclusiveMaximum;
     var min = exclusiveMinimum ? value <= minimum : value < minimum;
     var max = exclusiveMaximum ? value >= maximum : value > maximum;
-
     if (minimum !== undefined && min) {
-      return formatMessage(rule, rule.errorMessage || message['number'][exclusiveMinimum ?
-      'exclusiveMinimum' : 'minimum']);
-
+      return formatMessage(rule, rule.errorMessage || message['number'][exclusiveMinimum ? 'exclusiveMinimum' : 'minimum']);
     } else if (maximum !== undefined && max) {
-      return formatMessage(rule, rule.errorMessage || message['number'][exclusiveMaximum ?
-      'exclusiveMaximum' : 'maximum']);
-
+      return formatMessage(rule, rule.errorMessage || message['number'][exclusiveMaximum ? 'exclusiveMaximum' : 'maximum']);
     } else if (minimum !== undefined && maximum !== undefined && (min || max)) {
       return formatMessage(rule, rule.errorMessage || message['number'].range);
     }
-
     return null;
   },
-
   rangeLength: function rangeLength(rule, value, message) {
     if (!types.string(value) && !types.array(value)) {
       return formatMessage(rule, rule.errorMessage || message.pattern.mismatch);
     }
-
     var min = rule.minLength;
     var max = rule.maxLength;
     var val = value.length;
-
     if (min !== undefined && val < min) {
       return formatMessage(rule, rule.errorMessage || message['length'].minLength);
     } else if (max !== undefined && val > max) {
@@ -4629,36 +944,28 @@ var RuleValidatorHelper = {
     } else if (min !== undefined && max !== undefined && (val < min || val > max)) {
       return formatMessage(rule, rule.errorMessage || message['length'].range);
     }
-
     return null;
   },
-
   pattern: function pattern(rule, value, message) {
     if (!types['pattern'](rule.pattern, value)) {
       return formatMessage(rule, rule.errorMessage || message.pattern.mismatch);
     }
-
     return null;
   },
-
   format: function format(rule, value, message) {
     var customTypes = Object.keys(types);
     var format = FORMAT_MAPPING[rule.format] ? FORMAT_MAPPING[rule.format] : rule.format || rule.arrayType;
-
     if (customTypes.indexOf(format) > -1) {
       if (!types[format](value)) {
         return formatMessage(rule, rule.errorMessage || message.typeError);
       }
     }
-
     return null;
   },
-
   arrayTypeFormat: function arrayTypeFormat(rule, value, message) {
     if (!Array.isArray(value)) {
       return formatMessage(rule, rule.errorMessage || message.typeError);
     }
-
     for (var i = 0; i < value.length; i++) {
       var element = value[i];
       var formatResult = this.format(rule, element, message);
@@ -4666,100 +973,247 @@ var RuleValidatorHelper = {
         return formatResult;
       }
     }
-
     return null;
-  } };var
-
-
-SchemaValidator = /*#__PURE__*/function (_RuleValidator) {_inherits(SchemaValidator, _RuleValidator);var _super = _createSuper(SchemaValidator);
-
-  function SchemaValidator(schema, options) {var _this;_classCallCheck(this, SchemaValidator);
+  }
+};
+var SchemaValidator = /*#__PURE__*/function (_RuleValidator) {
+  (0, _inherits2.default)(SchemaValidator, _RuleValidator);
+  var _super = _createSuper(SchemaValidator);
+  function SchemaValidator(schema, options) {
+    var _this;
+    (0, _classCallCheck2.default)(this, SchemaValidator);
     _this = _super.call(this, SchemaValidator.message);
-
     _this._schema = schema;
-    _this._options = options || null;return _this;
-  }_createClass(SchemaValidator, [{ key: "updateSchema", value: function updateSchema(
-
-    schema) {
+    _this._options = options || null;
+    return _this;
+  }
+  (0, _createClass2.default)(SchemaValidator, [{
+    key: "updateSchema",
+    value: function updateSchema(schema) {
       this._schema = schema;
-    } }, { key: "validate", value: function () {var _validate = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee3(
-
-      data, allData) {var result;return _regenerator.default.wrap(function _callee3$(_context3) {while (1) {switch (_context3.prev = _context3.next) {case 0:
-                result = this._checkFieldInSchema(data);if (
-                result) {_context3.next = 5;break;}_context3.next = 4;return (
-                  this.invokeValidate(data, false, allData));case 4:result = _context3.sent;case 5:return _context3.abrupt("return",
-
-                result.length ? result[0] : null);case 6:case "end":return _context3.stop();}}}, _callee3, this);}));function validate(_x11, _x12) {return _validate.apply(this, arguments);}return validate;}() }, { key: "validateAll", value: function () {var _validateAll = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee4(
-
-
-      data, allData) {var result;return _regenerator.default.wrap(function _callee4$(_context4) {while (1) {switch (_context4.prev = _context4.next) {case 0:
-                result = this._checkFieldInSchema(data);if (
-                result) {_context4.next = 5;break;}_context4.next = 4;return (
-                  this.invokeValidate(data, true, allData));case 4:result = _context4.sent;case 5:return _context4.abrupt("return",
-
-                result);case 6:case "end":return _context4.stop();}}}, _callee4, this);}));function validateAll(_x13, _x14) {return _validateAll.apply(this, arguments);}return validateAll;}() }, { key: "validateUpdate", value: function () {var _validateUpdate = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee5(
-
-
-      data, allData) {var result;return _regenerator.default.wrap(function _callee5$(_context5) {while (1) {switch (_context5.prev = _context5.next) {case 0:
-                result = this._checkFieldInSchema(data);if (
-                result) {_context5.next = 5;break;}_context5.next = 4;return (
-                  this.invokeValidateUpdate(data, false, allData));case 4:result = _context5.sent;case 5:return _context5.abrupt("return",
-
-                result.length ? result[0] : null);case 6:case "end":return _context5.stop();}}}, _callee5, this);}));function validateUpdate(_x15, _x16) {return _validateUpdate.apply(this, arguments);}return validateUpdate;}() }, { key: "invokeValidate", value: function () {var _invokeValidate = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee6(
-
-
-      data, all, allData) {var result, schema, key, value, errorMessage;return _regenerator.default.wrap(function _callee6$(_context6) {while (1) {switch (_context6.prev = _context6.next) {case 0:
+    }
+  }, {
+    key: "validate",
+    value: function () {
+      var _validate = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3(data, allData) {
+        var result;
+        return _regenerator.default.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                result = this._checkFieldInSchema(data);
+                if (result) {
+                  _context3.next = 5;
+                  break;
+                }
+                _context3.next = 4;
+                return this.invokeValidate(data, false, allData);
+              case 4:
+                result = _context3.sent;
+              case 5:
+                return _context3.abrupt("return", result.length ? result[0] : null);
+              case 6:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+      function validate(_x11, _x12) {
+        return _validate.apply(this, arguments);
+      }
+      return validate;
+    }()
+  }, {
+    key: "validateAll",
+    value: function () {
+      var _validateAll = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4(data, allData) {
+        var result;
+        return _regenerator.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                result = this._checkFieldInSchema(data);
+                if (result) {
+                  _context4.next = 5;
+                  break;
+                }
+                _context4.next = 4;
+                return this.invokeValidate(data, true, allData);
+              case 4:
+                result = _context4.sent;
+              case 5:
+                return _context4.abrupt("return", result);
+              case 6:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
+      function validateAll(_x13, _x14) {
+        return _validateAll.apply(this, arguments);
+      }
+      return validateAll;
+    }()
+  }, {
+    key: "validateUpdate",
+    value: function () {
+      var _validateUpdate = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5(data, allData) {
+        var result;
+        return _regenerator.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                result = this._checkFieldInSchema(data);
+                if (result) {
+                  _context5.next = 5;
+                  break;
+                }
+                _context5.next = 4;
+                return this.invokeValidateUpdate(data, false, allData);
+              case 4:
+                result = _context5.sent;
+              case 5:
+                return _context5.abrupt("return", result.length ? result[0] : null);
+              case 6:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+      function validateUpdate(_x15, _x16) {
+        return _validateUpdate.apply(this, arguments);
+      }
+      return validateUpdate;
+    }()
+  }, {
+    key: "invokeValidate",
+    value: function () {
+      var _invokeValidate = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6(data, all, allData) {
+        var result, schema, key, value, errorMessage;
+        return _regenerator.default.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
                 result = [];
-                schema = this._schema;_context6.t0 = _regenerator.default.keys(
-                schema);case 3:if ((_context6.t1 = _context6.t0()).done) {_context6.next = 15;break;}key = _context6.t1.value;
-                value = schema[key];_context6.next = 8;return (
-                  this.validateRule(key, value, data[key], data, allData));case 8:errorMessage = _context6.sent;if (!(
-                errorMessage != null)) {_context6.next = 13;break;}
+                schema = this._schema;
+                _context6.t0 = _regenerator.default.keys(schema);
+              case 3:
+                if ((_context6.t1 = _context6.t0()).done) {
+                  _context6.next = 15;
+                  break;
+                }
+                key = _context6.t1.value;
+                value = schema[key];
+                _context6.next = 8;
+                return this.validateRule(key, value, data[key], data, allData);
+              case 8:
+                errorMessage = _context6.sent;
+                if (!(errorMessage != null)) {
+                  _context6.next = 13;
+                  break;
+                }
                 result.push({
                   key: key,
-                  errorMessage: errorMessage });if (
-
-                all) {_context6.next = 13;break;}return _context6.abrupt("break", 15);case 13:_context6.next = 3;break;case 15:return _context6.abrupt("return",
-
-
-                result);case 16:case "end":return _context6.stop();}}}, _callee6, this);}));function invokeValidate(_x17, _x18, _x19) {return _invokeValidate.apply(this, arguments);}return invokeValidate;}() }, { key: "invokeValidateUpdate", value: function () {var _invokeValidateUpdate = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee7(
-
-
-      data, all, allData) {var result, key, errorMessage;return _regenerator.default.wrap(function _callee7$(_context7) {while (1) {switch (_context7.prev = _context7.next) {case 0:
-                result = [];_context7.t0 = _regenerator.default.keys(
-                data);case 2:if ((_context7.t1 = _context7.t0()).done) {_context7.next = 13;break;}key = _context7.t1.value;_context7.next = 6;return (
-                  this.validateRule(key, this._schema[key], data[key], data, allData));case 6:errorMessage = _context7.sent;if (!(
-                errorMessage != null)) {_context7.next = 11;break;}
+                  errorMessage: errorMessage
+                });
+                if (all) {
+                  _context6.next = 13;
+                  break;
+                }
+                return _context6.abrupt("break", 15);
+              case 13:
+                _context6.next = 3;
+                break;
+              case 15:
+                return _context6.abrupt("return", result);
+              case 16:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this);
+      }));
+      function invokeValidate(_x17, _x18, _x19) {
+        return _invokeValidate.apply(this, arguments);
+      }
+      return invokeValidate;
+    }()
+  }, {
+    key: "invokeValidateUpdate",
+    value: function () {
+      var _invokeValidateUpdate = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7(data, all, allData) {
+        var result, key, errorMessage;
+        return _regenerator.default.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                result = [];
+                _context7.t0 = _regenerator.default.keys(data);
+              case 2:
+                if ((_context7.t1 = _context7.t0()).done) {
+                  _context7.next = 13;
+                  break;
+                }
+                key = _context7.t1.value;
+                _context7.next = 6;
+                return this.validateRule(key, this._schema[key], data[key], data, allData);
+              case 6:
+                errorMessage = _context7.sent;
+                if (!(errorMessage != null)) {
+                  _context7.next = 11;
+                  break;
+                }
                 result.push({
                   key: key,
-                  errorMessage: errorMessage });if (
-
-                all) {_context7.next = 11;break;}return _context7.abrupt("break", 13);case 11:_context7.next = 2;break;case 13:return _context7.abrupt("return",
-
-
-                result);case 14:case "end":return _context7.stop();}}}, _callee7, this);}));function invokeValidateUpdate(_x20, _x21, _x22) {return _invokeValidateUpdate.apply(this, arguments);}return invokeValidateUpdate;}() }, { key: "_checkFieldInSchema", value: function _checkFieldInSchema(
-
-
-    data) {
+                  errorMessage: errorMessage
+                });
+                if (all) {
+                  _context7.next = 11;
+                  break;
+                }
+                return _context7.abrupt("break", 13);
+              case 11:
+                _context7.next = 2;
+                break;
+              case 13:
+                return _context7.abrupt("return", result);
+              case 14:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7, this);
+      }));
+      function invokeValidateUpdate(_x20, _x21, _x22) {
+        return _invokeValidateUpdate.apply(this, arguments);
+      }
+      return invokeValidateUpdate;
+    }()
+  }, {
+    key: "_checkFieldInSchema",
+    value: function _checkFieldInSchema(data) {
       var keys = Object.keys(data);
       var keys2 = Object.keys(this._schema);
       if (new Set(keys.concat(keys2)).size === keys2.length) {
         return '';
       }
-
       var noExistFields = keys.filter(function (key) {
         return keys2.indexOf(key) < 0;
       });
       var errorMessage = formatMessage({
-        field: JSON.stringify(noExistFields) },
-      SchemaValidator.message.TAG + SchemaValidator.message['defaultInvalid']);
+        field: JSON.stringify(noExistFields)
+      }, SchemaValidator.message.TAG + SchemaValidator.message['defaultInvalid']);
       return [{
         key: 'invalid',
-        errorMessage: errorMessage }];
-
-    } }]);return SchemaValidator;}(RuleValidator);
-
-
+        errorMessage: errorMessage
+      }];
+    }
+  }]);
+  return SchemaValidator;
+}(RuleValidator);
 function Message() {
   return {
     TAG: "",
@@ -4774,34 +1228,115 @@ function Message() {
     date: {
       format: '{label}日期{value}格式无效',
       parse: '{label}日期无法解析,{value}无效',
-      invalid: '{label}日期{value}无效' },
-
+      invalid: '{label}日期{value}无效'
+    },
     length: {
       minLength: '{label}长度不能少于{minLength}',
       maxLength: '{label}长度不能超过{maxLength}',
-      range: '{label}必须介于{minLength}和{maxLength}之间' },
-
+      range: '{label}必须介于{minLength}和{maxLength}之间'
+    },
     number: {
       minimum: '{label}不能小于{minimum}',
       maximum: '{label}不能大于{maximum}',
       exclusiveMinimum: '{label}不能小于等于{minimum}',
       exclusiveMaximum: '{label}不能大于等于{maximum}',
-      range: '{label}必须介于{minimum}and{maximum}之间' },
-
+      range: '{label}必须介于{minimum}and{maximum}之间'
+    },
     pattern: {
-      mismatch: '{label}格式不匹配' } };
-
-
+      mismatch: '{label}格式不匹配'
+    }
+  };
 }
-
-
-SchemaValidator.message = new Message();var _default =
-
-SchemaValidator;exports.default = _default;
+SchemaValidator.message = new Message();
+var _default = SchemaValidator;
+exports.default = _default;
 
 /***/ }),
 
-/***/ 140:
+/***/ 165:
+/*!*********************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/inherits.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var setPrototypeOf = __webpack_require__(/*! ./setPrototypeOf.js */ 16);
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
+  });
+  if (superClass) setPrototypeOf(subClass, superClass);
+}
+module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 166:
+/*!**************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
+var assertThisInitialized = __webpack_require__(/*! ./assertThisInitialized.js */ 167);
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return assertThisInitialized(self);
+}
+module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 167:
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/assertThisInitialized.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 168:
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/getPrototypeOf.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _getPrototypeOf(o) {
+  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _getPrototypeOf(o);
+}
+module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 169:
 /*!*********************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-forms/components/uni-forms/utils.js ***!
   \*********************************************************************************************/
@@ -4809,32 +1344,46 @@ SchemaValidator;exports.default = _default;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.isEqual = exports.type = exports.isRequiredField = exports.isBoolean = exports.isNumber = exports.objGet = exports.objSet = exports.name2arr = exports.rawData = exports.isRealName = exports.realName = exports.getDataValueType = exports.getDataValue = exports.setDataValue = exports.getValue = exports.typeFilter = exports.deepCopy = void 0; /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                         * 简单处理对象拷贝
-                                                                                                                                                                                                                                                                                                                                                                                                                                         * @param {Obejct} 被拷贝对象
-                                                                                                                                                                                                                                                                                                                                                                                                                                         * @@return {Object} 拷贝对象
-                                                                                                                                                                                                                                                                                                                                                                                                                                         */
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.typeFilter = exports.type = exports.setDataValue = exports.realName = exports.rawData = exports.objSet = exports.objGet = exports.name2arr = exports.isRequiredField = exports.isRealName = exports.isNumber = exports.isEqual = exports.isBoolean = exports.getValue = exports.getDataValueType = exports.getDataValue = exports.deepCopy = void 0;
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+/**
+ * 简单处理对象拷贝
+ * @param {Obejct} 被拷贝对象
+ * @@return {Object} 拷贝对象
+ */
 var deepCopy = function deepCopy(val) {
   return JSON.parse(JSON.stringify(val));
 };
 /**
-    * 过滤数字类型
-    * @param {String} format 数字类型
-    * @@return {Boolean} 返回是否为数字类型
-    */exports.deepCopy = deepCopy;
+ * 过滤数字类型
+ * @param {String} format 数字类型
+ * @@return {Boolean} 返回是否为数字类型
+ */
+exports.deepCopy = deepCopy;
 var typeFilter = function typeFilter(format) {
   return format === 'int' || format === 'double' || format === 'number' || format === 'timestamp';
 };
 
 /**
-    * 把 value 转换成指定的类型，用于处理初始值，原因是初始值需要入库不能为 undefined
-    * @param {String} key 字段名
-    * @param {any} value 字段值
-    * @param {Object} rules 表单校验规则
-    */exports.typeFilter = typeFilter;
+ * 把 value 转换成指定的类型，用于处理初始值，原因是初始值需要入库不能为 undefined
+ * @param {String} key 字段名
+ * @param {any} value 字段值
+ * @param {Object} rules 表单校验规则
+ */
+exports.typeFilter = typeFilter;
 var getValue = function getValue(key, value, rules) {
-  var isRuleNumType = rules.find(function (val) {return val.format && typeFilter(val.format);});
-  var isRuleBoolType = rules.find(function (val) {return val.format && val.format === 'boolean' || val.format === 'bool';});
+  var isRuleNumType = rules.find(function (val) {
+    return val.format && typeFilter(val.format);
+  });
+  var isRuleBoolType = rules.find(function (val) {
+    return val.format && val.format === 'boolean' || val.format === 'bool';
+  });
   // 输入类型为 number
   if (!!isRuleNumType) {
     if (!value && value !== 0) {
@@ -4848,71 +1397,81 @@ var getValue = function getValue(key, value, rules) {
   if (!!isRuleBoolType) {
     value = isBoolean(value) ? value : false;
   }
-
   return value;
 };
 
 /**
-    * 获取表单数据
-    * @param {String|Array} name 真实名称，需要使用 realName 获取
-    * @param {Object} data 原始数据
-    * @param {any} value  需要设置的值
-    */exports.getValue = getValue;
+ * 获取表单数据
+ * @param {String|Array} name 真实名称，需要使用 realName 获取
+ * @param {Object} data 原始数据
+ * @param {any} value  需要设置的值
+ */
+exports.getValue = getValue;
 var setDataValue = function setDataValue(field, formdata, value) {
   formdata[field] = value;
   return value || '';
 };
 
 /**
-    * 获取表单数据
-    * @param {String|Array} field 真实名称，需要使用 realName 获取
-    * @param {Object} data 原始数据
-    */exports.setDataValue = setDataValue;
+ * 获取表单数据
+ * @param {String|Array} field 真实名称，需要使用 realName 获取
+ * @param {Object} data 原始数据
+ */
+exports.setDataValue = setDataValue;
 var getDataValue = function getDataValue(field, data) {
   return objGet(data, field);
 };
 
 /**
-    * 获取表单类型
-    * @param {String|Array} field 真实名称，需要使用 realName 获取
-    */exports.getDataValue = getDataValue;
+ * 获取表单类型
+ * @param {String|Array} field 真实名称，需要使用 realName 获取
+ */
+exports.getDataValue = getDataValue;
 var getDataValueType = function getDataValueType(field, data) {
   var value = getDataValue(field, data);
   return {
     type: type(value),
-    value: value };
-
+    value: value
+  };
 };
 
 /**
-    * 获取表单可用的真实name
-    * @param {String|Array} name 表单name
-    * @@return {String} 表单可用的真实name
-    */exports.getDataValueType = getDataValueType;
-var realName = function realName(name) {var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+ * 获取表单可用的真实name
+ * @param {String|Array} name 表单name
+ * @@return {String} 表单可用的真实name
+ */
+exports.getDataValueType = getDataValueType;
+var realName = function realName(name) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var base_name = _basePath(name);
-  if (typeof base_name === 'object' && Array.isArray(base_name) && base_name.length > 1) {
-    var realname = base_name.reduce(function (a, b) {return a += "#".concat(b);}, '_formdata_');
+  if ((0, _typeof2.default)(base_name) === 'object' && Array.isArray(base_name) && base_name.length > 1) {
+    var realname = base_name.reduce(function (a, b) {
+      return a += "#".concat(b);
+    }, '_formdata_');
     return realname;
   }
   return base_name[0] || name;
 };
 
 /**
-    * 判断是否表单可用的真实name
-    * @param {String|Array} name 表单name
-    * @@return {String} 表单可用的真实name
-    */exports.realName = realName;
+ * 判断是否表单可用的真实name
+ * @param {String|Array} name 表单name
+ * @@return {String} 表单可用的真实name
+ */
+exports.realName = realName;
 var isRealName = function isRealName(name) {
   var reg = /^_formdata_#*/;
   return reg.test(name);
 };
 
 /**
-    * 获取表单数据的原始格式
-    * @@return {Object|Array} object 需要解析的数据
-    */exports.isRealName = isRealName;
-var rawData = function rawData() {var object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};var name = arguments.length > 1 ? arguments[1] : undefined;
+ * 获取表单数据的原始格式
+ * @@return {Object|Array} object 需要解析的数据
+ */
+exports.isRealName = isRealName;
+var rawData = function rawData() {
+  var object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var name = arguments.length > 1 ? arguments[1] : undefined;
   var newData = JSON.parse(JSON.stringify(object));
   var formData = {};
   for (var i in newData) {
@@ -4923,23 +1482,27 @@ var rawData = function rawData() {var object = arguments.length > 0 && arguments
 };
 
 /**
-    * 真实name还原为 array
-    * @param {*} name 
-    */exports.rawData = rawData;
+ * 真实name还原为 array
+ * @param {*} name 
+ */
+exports.rawData = rawData;
 var name2arr = function name2arr(name) {
   var field = name.replace('_formdata_#', '');
-  field = field.split('#').map(function (v) {return isNumber(v) ? Number(v) : v;});
+  field = field.split('#').map(function (v) {
+    return isNumber(v) ? Number(v) : v;
+  });
   return field;
 };
 
 /**
-    * 对象中设置值
-    * @param {Object|Array} object 源数据
-    * @param {String| Array} path 'a.b.c' 或 ['a',0,'b','c']
-    * @param {String} value 需要设置的值
-    */exports.name2arr = name2arr;
+ * 对象中设置值
+ * @param {Object|Array} object 源数据
+ * @param {String| Array} path 'a.b.c' 或 ['a',0,'b','c']
+ * @param {String} value 需要设置的值
+ */
+exports.name2arr = name2arr;
 var objSet = function objSet(object, path, value) {
-  if (typeof object !== 'object') return object;
+  if ((0, _typeof2.default)(object) !== 'object') return object;
   _basePath(path).reduce(function (o, k, i, _) {
     if (i === _.length - 1) {
       // 若遍历结束直接赋值
@@ -4959,7 +1522,8 @@ var objSet = function objSet(object, path, value) {
 };
 
 // 处理 path， path有三种形式：'a[0].b.c'、'a.0.b.c' 和 ['a','0','b','c']，需要统一处理成数组，便于后续使用
-exports.objSet = objSet;function _basePath(path) {
+exports.objSet = objSet;
+function _basePath(path) {
   // 若是数组，则直接返回
   if (Array.isArray(path)) return path;
   // 若有 '[',']'，则替换成将 '[' 替换成 '.',去掉 ']'
@@ -4967,12 +1531,13 @@ exports.objSet = objSet;function _basePath(path) {
 }
 
 /**
-   * 从对象中获取值
-   * @param {Object|Array} object 源数据
-   * @param {String| Array} path 'a.b.c' 或 ['a',0,'b','c']
-   * @param {String} defaultVal 如果无法从调用链中获取值的默认值
-   */
-var objGet = function objGet(object, path) {var defaultVal = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'undefined';
+ * 从对象中获取值
+ * @param {Object|Array} object 源数据
+ * @param {String| Array} path 'a.b.c' 或 ['a',0,'b','c']
+ * @param {String} defaultVal 如果无法从调用链中获取值的默认值
+ */
+var objGet = function objGet(object, path) {
+  var defaultVal = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'undefined';
   // 先将path处理成统一格式
   var newPath = _basePath(path);
   // 递归处理，返回最后结果
@@ -4982,29 +1547,31 @@ var objGet = function objGet(object, path) {var defaultVal = arguments.length > 
   return !val || val !== undefined ? val : defaultVal;
 };
 
-
 /**
-    * 是否为 number 类型 
-    * @param {any} num 需要判断的值
-    * @return {Boolean} 是否为 number
-    */exports.objGet = objGet;
+ * 是否为 number 类型 
+ * @param {any} num 需要判断的值
+ * @return {Boolean} 是否为 number
+ */
+exports.objGet = objGet;
 var isNumber = function isNumber(num) {
   return !isNaN(Number(num));
 };
 
 /**
-    * 是否为 boolean 类型 
-    * @param {any} bool 需要判断的值
-    * @return {Boolean} 是否为 boolean
-    */exports.isNumber = isNumber;
+ * 是否为 boolean 类型 
+ * @param {any} bool 需要判断的值
+ * @return {Boolean} 是否为 boolean
+ */
+exports.isNumber = isNumber;
 var isBoolean = function isBoolean(bool) {
   return typeof bool === 'boolean';
 };
 /**
-    * 是否有必填字段
-    * @param {Object} rules 规则
-    * @return {Boolean} 是否有必填字段
-    */exports.isBoolean = isBoolean;
+ * 是否有必填字段
+ * @param {Object} rules 规则
+ * @return {Boolean} 是否有必填字段
+ */
+exports.isBoolean = isBoolean;
 var isRequiredField = function isRequiredField(rules) {
   var isNoField = false;
   for (var i = 0; i < rules.length; i++) {
@@ -5017,11 +1584,11 @@ var isRequiredField = function isRequiredField(rules) {
   return isNoField;
 };
 
-
 /**
-    * 获取数据类型
-    * @param {Any} obj 需要获取数据类型的值
-    */exports.isRequiredField = isRequiredField;
+ * 获取数据类型
+ * @param {Any} obj 需要获取数据类型的值
+ */
+exports.isRequiredField = isRequiredField;
 var type = function type(obj) {
   var class2type = {};
 
@@ -5032,17 +1599,16 @@ var type = function type(obj) {
   if (obj == null) {
     return obj + "";
   }
-  return typeof obj === "object" || typeof obj === "function" ?
-  class2type[Object.prototype.toString.call(obj)] || "object" :
-  typeof obj;
+  return (0, _typeof2.default)(obj) === "object" || typeof obj === "function" ? class2type[Object.prototype.toString.call(obj)] || "object" : (0, _typeof2.default)(obj);
 };
 
 /**
-    * 判断两个值是否相等
-    * @param {any} a 值  
-    * @param {any} b 值  
-    * @return {Boolean} 是否相等
-    */exports.type = type;
+ * 判断两个值是否相等
+ * @param {any} a 值  
+ * @param {any} b 值  
+ * @return {Boolean} 是否相等
+ */
+exports.type = type;
 var isEqual = function isEqual(a, b) {
   //如果a和b本来就全等
   if (a === b) {
@@ -5055,7 +1621,7 @@ var isEqual = function isEqual(a, b) {
   }
   //接下来判断a和b的数据类型
   var classNameA = toString.call(a),
-  classNameB = toString.call(b);
+    classNameB = toString.call(b);
   //如果数据类型不相等，则返回false
   if (classNameA !== classNameB) {
     return false;
@@ -5075,13 +1641,13 @@ var isEqual = function isEqual(a, b) {
       return +a === 0 ? 1 / +a === 1 / b : +a === +b;
     case '[object Date]':
     case '[object Boolean]':
-      return +a === +b;}
-
+      return +a === +b;
+  }
   //如果是对象类型
   if (classNameA == '[object Object]') {
     //获取a和b的属性长度
     var propsA = Object.getOwnPropertyNames(a),
-    propsB = Object.getOwnPropertyNames(b);
+      propsB = Object.getOwnPropertyNames(b);
     if (propsA.length != propsB.length) {
       return false;
     }
@@ -5101,11 +1667,52 @@ var isEqual = function isEqual(a, b) {
     }
     return false;
   }
-};exports.isEqual = isEqual;
+};
+exports.isEqual = isEqual;
 
 /***/ }),
 
-/***/ 155:
+/***/ 17:
+/*!*************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/isNativeReflectConstruct.js ***!
+  \*************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+module.exports = _isNativeReflectConstruct, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 18:
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/toConsumableArray.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithoutHoles = __webpack_require__(/*! ./arrayWithoutHoles.js */ 19);
+var iterableToArray = __webpack_require__(/*! ./iterableToArray.js */ 20);
+var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ 8);
+var nonIterableSpread = __webpack_require__(/*! ./nonIterableSpread.js */ 21);
+function _toConsumableArray(arr) {
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+}
+module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 184:
 /*!**********************************************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-datetime-picker/components/uni-datetime-picker/i18n/index.js ***!
   \**********************************************************************************************************************/
@@ -5113,17 +1720,26 @@ var isEqual = function isEqual(a, b) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _en = _interopRequireDefault(__webpack_require__(/*! ./en.json */ 156));
-var _zhHans = _interopRequireDefault(__webpack_require__(/*! ./zh-Hans.json */ 157));
-var _zhHant = _interopRequireDefault(__webpack_require__(/*! ./zh-Hant.json */ 158));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var _default =
-{
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _en = _interopRequireDefault(__webpack_require__(/*! ./en.json */ 185));
+var _zhHans = _interopRequireDefault(__webpack_require__(/*! ./zh-Hans.json */ 186));
+var _zhHant = _interopRequireDefault(__webpack_require__(/*! ./zh-Hant.json */ 187));
+var _default = {
   en: _en.default,
   'zh-Hans': _zhHans.default,
-  'zh-Hant': _zhHant.default };exports.default = _default;
+  'zh-Hant': _zhHant.default
+};
+exports.default = _default;
 
 /***/ }),
 
-/***/ 156:
+/***/ 185:
 /*!*********************************************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-datetime-picker/components/uni-datetime-picker/i18n/en.json ***!
   \*********************************************************************************************************************/
@@ -5134,7 +1750,7 @@ module.exports = JSON.parse("{\"uni-datetime-picker.selectDate\":\"select date\"
 
 /***/ }),
 
-/***/ 157:
+/***/ 186:
 /*!**************************************************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-datetime-picker/components/uni-datetime-picker/i18n/zh-Hans.json ***!
   \**************************************************************************************************************************/
@@ -5145,7 +1761,7 @@ module.exports = JSON.parse("{\"uni-datetime-picker.selectDate\":\"选择日期\
 
 /***/ }),
 
-/***/ 158:
+/***/ 187:
 /*!**************************************************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-datetime-picker/components/uni-datetime-picker/i18n/zh-Hant.json ***!
   \**************************************************************************************************************************/
@@ -5156,7 +1772,22 @@ module.exports = JSON.parse("{\"uni-datetime-picker.selectDate\":\"選擇日期\
 
 /***/ }),
 
-/***/ 166:
+/***/ 19:
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ 9);
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+}
+module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 195:
 /*!*************************************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-dateformat/components/uni-dateformat/date-format.js ***!
   \*************************************************************************************************************/
@@ -5164,15 +1795,24 @@ module.exports = JSON.parse("{\"uni-datetime-picker.selectDate\":\"選擇日期\
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.formatDate = formatDate;exports.friendlyDate = friendlyDate; // yyyy-MM-dd hh:mm:ss.SSS 所有支持的类型
-function pad(str) {var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.formatDate = formatDate;
+exports.friendlyDate = friendlyDate;
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+// yyyy-MM-dd hh:mm:ss.SSS 所有支持的类型
+function pad(str) {
+  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
   str += '';
   while (str.length < length) {
     str = '0' + str;
   }
   return str.slice(-length);
 }
-
 var parser = {
   yyyy: function yyyy(dateObj) {
     return pad(dateObj.year, 4);
@@ -5215,15 +1855,15 @@ var parser = {
   },
   S: function S(dateObj) {
     return dateObj.millisecond;
-  } };
-
+  }
+};
 
 // 这都n年了iOS依然不认识2020-12-12，需要转换为2020/12/12
 function getDate(time) {
   if (time instanceof Date) {
     return time;
   }
-  switch (typeof time) {
+  switch ((0, _typeof2.default)(time)) {
     case 'string':
       {
         // 2020-12-12T12:12:12.000Z、2020-12-12T12:12:12.000
@@ -5233,11 +1873,11 @@ function getDate(time) {
         return new Date(time.replace(/-/g, '/'));
       }
     default:
-      return new Date(time);}
-
+      return new Date(time);
+  }
 }
-
-function formatDate(date) {var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy/MM/dd hh:mm:ss';
+function formatDate(date) {
+  var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy/MM/dd hh:mm:ss';
   if (!date && date !== 0) {
     return '';
   }
@@ -5249,8 +1889,8 @@ function formatDate(date) {var format = arguments.length > 1 && arguments[1] !==
     hour: date.getHours(),
     minute: date.getMinutes(),
     second: date.getSeconds(),
-    millisecond: date.getMilliseconds() };
-
+    millisecond: date.getMilliseconds()
+  };
   var tokenRegExp = /yyyy|yy|MM|M|dd|d|hh|h|mm|m|ss|s|SSS|SS|S/;
   var flag = true;
   var result = format;
@@ -5263,12 +1903,13 @@ function formatDate(date) {var format = arguments.length > 1 && arguments[1] !==
   }
   return result;
 }
-
-function friendlyDate(time, _ref)
-
-
-
-{var _ref$locale = _ref.locale,locale = _ref$locale === void 0 ? 'zh' : _ref$locale,_ref$threshold = _ref.threshold,threshold = _ref$threshold === void 0 ? [60000, 3600000] : _ref$threshold,_ref$format = _ref.format,format = _ref$format === void 0 ? 'yyyy/MM/dd hh:mm:ss' : _ref$format;
+function friendlyDate(time, _ref) {
+  var _ref$locale = _ref.locale,
+    locale = _ref$locale === void 0 ? 'zh' : _ref$locale,
+    _ref$threshold = _ref.threshold,
+    threshold = _ref$threshold === void 0 ? [60000, 3600000] : _ref$threshold,
+    _ref$format = _ref.format,
+    format = _ref$format === void 0 ? 'yyyy/MM/dd hh:mm:ss' : _ref$format;
   if (time === '-') {
     return time;
   }
@@ -5287,8 +1928,8 @@ function friendlyDate(time, _ref)
       later: '后',
       justNow: '刚刚',
       soon: '马上',
-      template: '{num}{unit}{suffix}' },
-
+      template: '{num}{unit}{suffix}'
+    },
     en: {
       year: 'year',
       month: 'month',
@@ -5300,9 +1941,9 @@ function friendlyDate(time, _ref)
       later: 'later',
       justNow: 'just now',
       soon: 'soon',
-      template: '{num} {unit} {suffix}' } };
-
-
+      template: '{num} {unit} {suffix}'
+    }
+  };
   var text = localeText[locale] || localeText.zh;
   var date = getDate(time);
   var ms = date.getTime() - Date.now();
@@ -5350,9 +1991,8 @@ function friendlyDate(time, _ref)
     default:
       num = seconds;
       unit = text.second;
-      break;}
-
-
+      break;
+  }
   if (locale === 'en') {
     if (num === 1) {
       num = 'a';
@@ -5360,14 +2000,2390 @@ function friendlyDate(time, _ref)
       unit += 's';
     }
   }
-
-  return text.template.replace(/{\s*num\s*}/g, num + '').replace(/{\s*unit\s*}/g, unit).replace(/{\s*suffix\s*}/g,
-  suffix);
+  return text.template.replace(/{\s*num\s*}/g, num + '').replace(/{\s*unit\s*}/g, unit).replace(/{\s*suffix\s*}/g, suffix);
 }
 
 /***/ }),
 
-/***/ 172:
+/***/ 2:
+/*!************************************************************!*\
+  !*** ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(wx, global) {
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createApp = createApp;
+exports.createComponent = createComponent;
+exports.createPage = createPage;
+exports.createPlugin = createPlugin;
+exports.createSubpackageApp = createSubpackageApp;
+exports.default = void 0;
+var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ 5));
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _construct2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/construct */ 15));
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+var _uniI18n = __webpack_require__(/*! @dcloudio/uni-i18n */ 22);
+var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var realAtob;
+var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+var b64re = /^(?:[A-Za-z\d+/]{4})*?(?:[A-Za-z\d+/]{2}(?:==)?|[A-Za-z\d+/]{3}=?)?$/;
+if (typeof atob !== 'function') {
+  realAtob = function realAtob(str) {
+    str = String(str).replace(/[\t\n\f\r ]+/g, '');
+    if (!b64re.test(str)) {
+      throw new Error("Failed to execute 'atob' on 'Window': The string to be decoded is not correctly encoded.");
+    }
+
+    // Adding the padding if missing, for semplicity
+    str += '=='.slice(2 - (str.length & 3));
+    var bitmap;
+    var result = '';
+    var r1;
+    var r2;
+    var i = 0;
+    for (; i < str.length;) {
+      bitmap = b64.indexOf(str.charAt(i++)) << 18 | b64.indexOf(str.charAt(i++)) << 12 | (r1 = b64.indexOf(str.charAt(i++))) << 6 | (r2 = b64.indexOf(str.charAt(i++)));
+      result += r1 === 64 ? String.fromCharCode(bitmap >> 16 & 255) : r2 === 64 ? String.fromCharCode(bitmap >> 16 & 255, bitmap >> 8 & 255) : String.fromCharCode(bitmap >> 16 & 255, bitmap >> 8 & 255, bitmap & 255);
+    }
+    return result;
+  };
+} else {
+  // 注意atob只能在全局对象上调用，例如：`const Base64 = {atob};Base64.atob('xxxx')`是错误的用法
+  realAtob = atob;
+}
+function b64DecodeUnicode(str) {
+  return decodeURIComponent(realAtob(str).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+}
+function getCurrentUserInfo() {
+  var token = wx.getStorageSync('uni_id_token') || '';
+  var tokenArr = token.split('.');
+  if (!token || tokenArr.length !== 3) {
+    return {
+      uid: null,
+      role: [],
+      permission: [],
+      tokenExpired: 0
+    };
+  }
+  var userInfo;
+  try {
+    userInfo = JSON.parse(b64DecodeUnicode(tokenArr[1]));
+  } catch (error) {
+    throw new Error('获取当前用户信息出错，详细错误信息为：' + error.message);
+  }
+  userInfo.tokenExpired = userInfo.exp * 1000;
+  delete userInfo.exp;
+  delete userInfo.iat;
+  return userInfo;
+}
+function uniIdMixin(Vue) {
+  Vue.prototype.uniIDHasRole = function (roleId) {
+    var _getCurrentUserInfo = getCurrentUserInfo(),
+      role = _getCurrentUserInfo.role;
+    return role.indexOf(roleId) > -1;
+  };
+  Vue.prototype.uniIDHasPermission = function (permissionId) {
+    var _getCurrentUserInfo2 = getCurrentUserInfo(),
+      permission = _getCurrentUserInfo2.permission;
+    return this.uniIDHasRole('admin') || permission.indexOf(permissionId) > -1;
+  };
+  Vue.prototype.uniIDTokenValid = function () {
+    var _getCurrentUserInfo3 = getCurrentUserInfo(),
+      tokenExpired = _getCurrentUserInfo3.tokenExpired;
+    return tokenExpired > Date.now();
+  };
+}
+var _toString = Object.prototype.toString;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+function isFn(fn) {
+  return typeof fn === 'function';
+}
+function isStr(str) {
+  return typeof str === 'string';
+}
+function isObject(obj) {
+  return obj !== null && (0, _typeof2.default)(obj) === 'object';
+}
+function isPlainObject(obj) {
+  return _toString.call(obj) === '[object Object]';
+}
+function hasOwn(obj, key) {
+  return hasOwnProperty.call(obj, key);
+}
+function noop() {}
+
+/**
+ * Create a cached version of a pure function.
+ */
+function cached(fn) {
+  var cache = Object.create(null);
+  return function cachedFn(str) {
+    var hit = cache[str];
+    return hit || (cache[str] = fn(str));
+  };
+}
+
+/**
+ * Camelize a hyphen-delimited string.
+ */
+var camelizeRE = /-(\w)/g;
+var camelize = cached(function (str) {
+  return str.replace(camelizeRE, function (_, c) {
+    return c ? c.toUpperCase() : '';
+  });
+});
+function sortObject(obj) {
+  var sortObj = {};
+  if (isPlainObject(obj)) {
+    Object.keys(obj).sort().forEach(function (key) {
+      sortObj[key] = obj[key];
+    });
+  }
+  return !Object.keys(sortObj) ? obj : sortObj;
+}
+var HOOKS = ['invoke', 'success', 'fail', 'complete', 'returnValue'];
+var globalInterceptors = {};
+var scopedInterceptors = {};
+function mergeHook(parentVal, childVal) {
+  var res = childVal ? parentVal ? parentVal.concat(childVal) : Array.isArray(childVal) ? childVal : [childVal] : parentVal;
+  return res ? dedupeHooks(res) : res;
+}
+function dedupeHooks(hooks) {
+  var res = [];
+  for (var i = 0; i < hooks.length; i++) {
+    if (res.indexOf(hooks[i]) === -1) {
+      res.push(hooks[i]);
+    }
+  }
+  return res;
+}
+function removeHook(hooks, hook) {
+  var index = hooks.indexOf(hook);
+  if (index !== -1) {
+    hooks.splice(index, 1);
+  }
+}
+function mergeInterceptorHook(interceptor, option) {
+  Object.keys(option).forEach(function (hook) {
+    if (HOOKS.indexOf(hook) !== -1 && isFn(option[hook])) {
+      interceptor[hook] = mergeHook(interceptor[hook], option[hook]);
+    }
+  });
+}
+function removeInterceptorHook(interceptor, option) {
+  if (!interceptor || !option) {
+    return;
+  }
+  Object.keys(option).forEach(function (hook) {
+    if (HOOKS.indexOf(hook) !== -1 && isFn(option[hook])) {
+      removeHook(interceptor[hook], option[hook]);
+    }
+  });
+}
+function addInterceptor(method, option) {
+  if (typeof method === 'string' && isPlainObject(option)) {
+    mergeInterceptorHook(scopedInterceptors[method] || (scopedInterceptors[method] = {}), option);
+  } else if (isPlainObject(method)) {
+    mergeInterceptorHook(globalInterceptors, method);
+  }
+}
+function removeInterceptor(method, option) {
+  if (typeof method === 'string') {
+    if (isPlainObject(option)) {
+      removeInterceptorHook(scopedInterceptors[method], option);
+    } else {
+      delete scopedInterceptors[method];
+    }
+  } else if (isPlainObject(method)) {
+    removeInterceptorHook(globalInterceptors, method);
+  }
+}
+function wrapperHook(hook) {
+  return function (data) {
+    return hook(data) || data;
+  };
+}
+function isPromise(obj) {
+  return !!obj && ((0, _typeof2.default)(obj) === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
+}
+function queue(hooks, data) {
+  var promise = false;
+  for (var i = 0; i < hooks.length; i++) {
+    var hook = hooks[i];
+    if (promise) {
+      promise = Promise.resolve(wrapperHook(hook));
+    } else {
+      var res = hook(data);
+      if (isPromise(res)) {
+        promise = Promise.resolve(res);
+      }
+      if (res === false) {
+        return {
+          then: function then() {}
+        };
+      }
+    }
+  }
+  return promise || {
+    then: function then(callback) {
+      return callback(data);
+    }
+  };
+}
+function wrapperOptions(interceptor) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  ['success', 'fail', 'complete'].forEach(function (name) {
+    if (Array.isArray(interceptor[name])) {
+      var oldCallback = options[name];
+      options[name] = function callbackInterceptor(res) {
+        queue(interceptor[name], res).then(function (res) {
+          /* eslint-disable no-mixed-operators */
+          return isFn(oldCallback) && oldCallback(res) || res;
+        });
+      };
+    }
+  });
+  return options;
+}
+function wrapperReturnValue(method, returnValue) {
+  var returnValueHooks = [];
+  if (Array.isArray(globalInterceptors.returnValue)) {
+    returnValueHooks.push.apply(returnValueHooks, (0, _toConsumableArray2.default)(globalInterceptors.returnValue));
+  }
+  var interceptor = scopedInterceptors[method];
+  if (interceptor && Array.isArray(interceptor.returnValue)) {
+    returnValueHooks.push.apply(returnValueHooks, (0, _toConsumableArray2.default)(interceptor.returnValue));
+  }
+  returnValueHooks.forEach(function (hook) {
+    returnValue = hook(returnValue) || returnValue;
+  });
+  return returnValue;
+}
+function getApiInterceptorHooks(method) {
+  var interceptor = Object.create(null);
+  Object.keys(globalInterceptors).forEach(function (hook) {
+    if (hook !== 'returnValue') {
+      interceptor[hook] = globalInterceptors[hook].slice();
+    }
+  });
+  var scopedInterceptor = scopedInterceptors[method];
+  if (scopedInterceptor) {
+    Object.keys(scopedInterceptor).forEach(function (hook) {
+      if (hook !== 'returnValue') {
+        interceptor[hook] = (interceptor[hook] || []).concat(scopedInterceptor[hook]);
+      }
+    });
+  }
+  return interceptor;
+}
+function invokeApi(method, api, options) {
+  for (var _len = arguments.length, params = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+    params[_key - 3] = arguments[_key];
+  }
+  var interceptor = getApiInterceptorHooks(method);
+  if (interceptor && Object.keys(interceptor).length) {
+    if (Array.isArray(interceptor.invoke)) {
+      var res = queue(interceptor.invoke, options);
+      return res.then(function (options) {
+        return api.apply(void 0, [wrapperOptions(interceptor, options)].concat(params));
+      });
+    } else {
+      return api.apply(void 0, [wrapperOptions(interceptor, options)].concat(params));
+    }
+  }
+  return api.apply(void 0, [options].concat(params));
+}
+var promiseInterceptor = {
+  returnValue: function returnValue(res) {
+    if (!isPromise(res)) {
+      return res;
+    }
+    return new Promise(function (resolve, reject) {
+      res.then(function (res) {
+        if (res[0]) {
+          reject(res[0]);
+        } else {
+          resolve(res[1]);
+        }
+      });
+    });
+  }
+};
+var SYNC_API_RE = /^\$|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale|invokePushCallback|getWindowInfo|getDeviceInfo|getAppBaseInfo|getSystemSetting|getAppAuthorizeSetting/;
+var CONTEXT_API_RE = /^create|Manager$/;
+
+// Context例外情况
+var CONTEXT_API_RE_EXC = ['createBLEConnection'];
+
+// 同步例外情况
+var ASYNC_API = ['createBLEConnection', 'createPushMessage'];
+var CALLBACK_API_RE = /^on|^off/;
+function isContextApi(name) {
+  return CONTEXT_API_RE.test(name) && CONTEXT_API_RE_EXC.indexOf(name) === -1;
+}
+function isSyncApi(name) {
+  return SYNC_API_RE.test(name) && ASYNC_API.indexOf(name) === -1;
+}
+function isCallbackApi(name) {
+  return CALLBACK_API_RE.test(name) && name !== 'onPush';
+}
+function handlePromise(promise) {
+  return promise.then(function (data) {
+    return [null, data];
+  }).catch(function (err) {
+    return [err];
+  });
+}
+function shouldPromise(name) {
+  if (isContextApi(name) || isSyncApi(name) || isCallbackApi(name)) {
+    return false;
+  }
+  return true;
+}
+
+/* eslint-disable no-extend-native */
+if (!Promise.prototype.finally) {
+  Promise.prototype.finally = function (callback) {
+    var promise = this.constructor;
+    return this.then(function (value) {
+      return promise.resolve(callback()).then(function () {
+        return value;
+      });
+    }, function (reason) {
+      return promise.resolve(callback()).then(function () {
+        throw reason;
+      });
+    });
+  };
+}
+function promisify(name, api) {
+  if (!shouldPromise(name) || !isFn(api)) {
+    return api;
+  }
+  return function promiseApi() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    for (var _len2 = arguments.length, params = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+      params[_key2 - 1] = arguments[_key2];
+    }
+    if (isFn(options.success) || isFn(options.fail) || isFn(options.complete)) {
+      return wrapperReturnValue(name, invokeApi.apply(void 0, [name, api, options].concat(params)));
+    }
+    return wrapperReturnValue(name, handlePromise(new Promise(function (resolve, reject) {
+      invokeApi.apply(void 0, [name, api, Object.assign({}, options, {
+        success: resolve,
+        fail: reject
+      })].concat(params));
+    })));
+  };
+}
+var EPS = 1e-4;
+var BASE_DEVICE_WIDTH = 750;
+var isIOS = false;
+var deviceWidth = 0;
+var deviceDPR = 0;
+function checkDeviceWidth() {
+  var _wx$getSystemInfoSync = wx.getSystemInfoSync(),
+    platform = _wx$getSystemInfoSync.platform,
+    pixelRatio = _wx$getSystemInfoSync.pixelRatio,
+    windowWidth = _wx$getSystemInfoSync.windowWidth; // uni=>wx runtime 编译目标是 uni 对象，内部不允许直接使用 uni
+
+  deviceWidth = windowWidth;
+  deviceDPR = pixelRatio;
+  isIOS = platform === 'ios';
+}
+function upx2px(number, newDeviceWidth) {
+  if (deviceWidth === 0) {
+    checkDeviceWidth();
+  }
+  number = Number(number);
+  if (number === 0) {
+    return 0;
+  }
+  var result = number / BASE_DEVICE_WIDTH * (newDeviceWidth || deviceWidth);
+  if (result < 0) {
+    result = -result;
+  }
+  result = Math.floor(result + EPS);
+  if (result === 0) {
+    if (deviceDPR === 1 || !isIOS) {
+      result = 1;
+    } else {
+      result = 0.5;
+    }
+  }
+  return number < 0 ? -result : result;
+}
+var LOCALE_ZH_HANS = 'zh-Hans';
+var LOCALE_ZH_HANT = 'zh-Hant';
+var LOCALE_EN = 'en';
+var LOCALE_FR = 'fr';
+var LOCALE_ES = 'es';
+var messages = {};
+var locale;
+{
+  locale = normalizeLocale(wx.getSystemInfoSync().language) || LOCALE_EN;
+}
+function initI18nMessages() {
+  if (!isEnableLocale()) {
+    return;
+  }
+  var localeKeys = Object.keys(__uniConfig.locales);
+  if (localeKeys.length) {
+    localeKeys.forEach(function (locale) {
+      var curMessages = messages[locale];
+      var userMessages = __uniConfig.locales[locale];
+      if (curMessages) {
+        Object.assign(curMessages, userMessages);
+      } else {
+        messages[locale] = userMessages;
+      }
+    });
+  }
+}
+initI18nMessages();
+var i18n = (0, _uniI18n.initVueI18n)(locale, {});
+var t = i18n.t;
+var i18nMixin = i18n.mixin = {
+  beforeCreate: function beforeCreate() {
+    var _this = this;
+    var unwatch = i18n.i18n.watchLocale(function () {
+      _this.$forceUpdate();
+    });
+    this.$once('hook:beforeDestroy', function () {
+      unwatch();
+    });
+  },
+  methods: {
+    $$t: function $$t(key, values) {
+      return t(key, values);
+    }
+  }
+};
+var setLocale = i18n.setLocale;
+var getLocale = i18n.getLocale;
+function initAppLocale(Vue, appVm, locale) {
+  var state = Vue.observable({
+    locale: locale || i18n.getLocale()
+  });
+  var localeWatchers = [];
+  appVm.$watchLocale = function (fn) {
+    localeWatchers.push(fn);
+  };
+  Object.defineProperty(appVm, '$locale', {
+    get: function get() {
+      return state.locale;
+    },
+    set: function set(v) {
+      state.locale = v;
+      localeWatchers.forEach(function (watch) {
+        return watch(v);
+      });
+    }
+  });
+}
+function isEnableLocale() {
+  return typeof __uniConfig !== 'undefined' && __uniConfig.locales && !!Object.keys(__uniConfig.locales).length;
+}
+function include(str, parts) {
+  return !!parts.find(function (part) {
+    return str.indexOf(part) !== -1;
+  });
+}
+function startsWith(str, parts) {
+  return parts.find(function (part) {
+    return str.indexOf(part) === 0;
+  });
+}
+function normalizeLocale(locale, messages) {
+  if (!locale) {
+    return;
+  }
+  locale = locale.trim().replace(/_/g, '-');
+  if (messages && messages[locale]) {
+    return locale;
+  }
+  locale = locale.toLowerCase();
+  if (locale === 'chinese') {
+    // 支付宝
+    return LOCALE_ZH_HANS;
+  }
+  if (locale.indexOf('zh') === 0) {
+    if (locale.indexOf('-hans') > -1) {
+      return LOCALE_ZH_HANS;
+    }
+    if (locale.indexOf('-hant') > -1) {
+      return LOCALE_ZH_HANT;
+    }
+    if (include(locale, ['-tw', '-hk', '-mo', '-cht'])) {
+      return LOCALE_ZH_HANT;
+    }
+    return LOCALE_ZH_HANS;
+  }
+  var lang = startsWith(locale, [LOCALE_EN, LOCALE_FR, LOCALE_ES]);
+  if (lang) {
+    return lang;
+  }
+}
+// export function initI18n() {
+//   const localeKeys = Object.keys(__uniConfig.locales || {})
+//   if (localeKeys.length) {
+//     localeKeys.forEach((locale) =>
+//       i18n.add(locale, __uniConfig.locales[locale])
+//     )
+//   }
+// }
+
+function getLocale$1() {
+  // 优先使用 $locale
+  if (isFn(getApp)) {
+    var app = getApp({
+      allowDefault: true
+    });
+    if (app && app.$vm) {
+      return app.$vm.$locale;
+    }
+  }
+  return normalizeLocale(wx.getSystemInfoSync().language) || LOCALE_EN;
+}
+function setLocale$1(locale) {
+  var app = isFn(getApp) ? getApp() : false;
+  if (!app) {
+    return false;
+  }
+  var oldLocale = app.$vm.$locale;
+  if (oldLocale !== locale) {
+    app.$vm.$locale = locale;
+    onLocaleChangeCallbacks.forEach(function (fn) {
+      return fn({
+        locale: locale
+      });
+    });
+    return true;
+  }
+  return false;
+}
+var onLocaleChangeCallbacks = [];
+function onLocaleChange(fn) {
+  if (onLocaleChangeCallbacks.indexOf(fn) === -1) {
+    onLocaleChangeCallbacks.push(fn);
+  }
+}
+if (typeof global !== 'undefined') {
+  global.getLocale = getLocale$1;
+}
+var interceptors = {
+  promiseInterceptor: promiseInterceptor
+};
+var baseApi = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  upx2px: upx2px,
+  getLocale: getLocale$1,
+  setLocale: setLocale$1,
+  onLocaleChange: onLocaleChange,
+  addInterceptor: addInterceptor,
+  removeInterceptor: removeInterceptor,
+  interceptors: interceptors
+});
+function findExistsPageIndex(url) {
+  var pages = getCurrentPages();
+  var len = pages.length;
+  while (len--) {
+    var page = pages[len];
+    if (page.$page && page.$page.fullPath === url) {
+      return len;
+    }
+  }
+  return -1;
+}
+var redirectTo = {
+  name: function name(fromArgs) {
+    if (fromArgs.exists === 'back' && fromArgs.delta) {
+      return 'navigateBack';
+    }
+    return 'redirectTo';
+  },
+  args: function args(fromArgs) {
+    if (fromArgs.exists === 'back' && fromArgs.url) {
+      var existsPageIndex = findExistsPageIndex(fromArgs.url);
+      if (existsPageIndex !== -1) {
+        var delta = getCurrentPages().length - 1 - existsPageIndex;
+        if (delta > 0) {
+          fromArgs.delta = delta;
+        }
+      }
+    }
+  }
+};
+var previewImage = {
+  args: function args(fromArgs) {
+    var currentIndex = parseInt(fromArgs.current);
+    if (isNaN(currentIndex)) {
+      return;
+    }
+    var urls = fromArgs.urls;
+    if (!Array.isArray(urls)) {
+      return;
+    }
+    var len = urls.length;
+    if (!len) {
+      return;
+    }
+    if (currentIndex < 0) {
+      currentIndex = 0;
+    } else if (currentIndex >= len) {
+      currentIndex = len - 1;
+    }
+    if (currentIndex > 0) {
+      fromArgs.current = urls[currentIndex];
+      fromArgs.urls = urls.filter(function (item, index) {
+        return index < currentIndex ? item !== urls[currentIndex] : true;
+      });
+    } else {
+      fromArgs.current = urls[0];
+    }
+    return {
+      indicator: false,
+      loop: false
+    };
+  }
+};
+var UUID_KEY = '__DC_STAT_UUID';
+var deviceId;
+function useDeviceId(result) {
+  deviceId = deviceId || wx.getStorageSync(UUID_KEY);
+  if (!deviceId) {
+    deviceId = Date.now() + '' + Math.floor(Math.random() * 1e7);
+    wx.setStorage({
+      key: UUID_KEY,
+      data: deviceId
+    });
+  }
+  result.deviceId = deviceId;
+}
+function addSafeAreaInsets(result) {
+  if (result.safeArea) {
+    var safeArea = result.safeArea;
+    result.safeAreaInsets = {
+      top: safeArea.top,
+      left: safeArea.left,
+      right: result.windowWidth - safeArea.right,
+      bottom: result.screenHeight - safeArea.bottom
+    };
+  }
+}
+function populateParameters(result) {
+  var _result$brand = result.brand,
+    brand = _result$brand === void 0 ? '' : _result$brand,
+    _result$model = result.model,
+    model = _result$model === void 0 ? '' : _result$model,
+    _result$system = result.system,
+    system = _result$system === void 0 ? '' : _result$system,
+    _result$language = result.language,
+    language = _result$language === void 0 ? '' : _result$language,
+    theme = result.theme,
+    version = result.version,
+    platform = result.platform,
+    fontSizeSetting = result.fontSizeSetting,
+    SDKVersion = result.SDKVersion,
+    pixelRatio = result.pixelRatio,
+    deviceOrientation = result.deviceOrientation;
+  // const isQuickApp = "mp-weixin".indexOf('quickapp-webview') !== -1
+
+  // osName osVersion
+  var osName = '';
+  var osVersion = '';
+  {
+    osName = system.split(' ')[0] || '';
+    osVersion = system.split(' ')[1] || '';
+  }
+  var hostVersion = version;
+
+  // deviceType
+  var deviceType = getGetDeviceType(result, model);
+
+  // deviceModel
+  var deviceBrand = getDeviceBrand(brand);
+
+  // hostName
+  var _hostName = getHostName(result);
+
+  // deviceOrientation
+  var _deviceOrientation = deviceOrientation; // 仅 微信 百度 支持
+
+  // devicePixelRatio
+  var _devicePixelRatio = pixelRatio;
+
+  // SDKVersion
+  var _SDKVersion = SDKVersion;
+
+  // hostLanguage
+  var hostLanguage = language.replace(/_/g, '-');
+
+  // wx.getAccountInfoSync
+
+  var parameters = {
+    appId: "__UNI__DA15003",
+    appName: "my-app",
+    appVersion: "1.0.0",
+    appVersionCode: "100",
+    appLanguage: getAppLanguage(hostLanguage),
+    uniCompileVersion: "3.6.18",
+    uniRuntimeVersion: "3.6.18",
+    uniPlatform: undefined || "mp-weixin",
+    deviceBrand: deviceBrand,
+    deviceModel: model,
+    deviceType: deviceType,
+    devicePixelRatio: _devicePixelRatio,
+    deviceOrientation: _deviceOrientation,
+    osName: osName.toLocaleLowerCase(),
+    osVersion: osVersion,
+    hostTheme: theme,
+    hostVersion: hostVersion,
+    hostLanguage: hostLanguage,
+    hostName: _hostName,
+    hostSDKVersion: _SDKVersion,
+    hostFontSizeSetting: fontSizeSetting,
+    windowTop: 0,
+    windowBottom: 0,
+    // TODO
+    osLanguage: undefined,
+    osTheme: undefined,
+    ua: undefined,
+    hostPackageName: undefined,
+    browserName: undefined,
+    browserVersion: undefined
+  };
+  Object.assign(result, parameters);
+}
+function getGetDeviceType(result, model) {
+  var deviceType = result.deviceType || 'phone';
+  {
+    var deviceTypeMaps = {
+      ipad: 'pad',
+      windows: 'pc',
+      mac: 'pc'
+    };
+    var deviceTypeMapsKeys = Object.keys(deviceTypeMaps);
+    var _model = model.toLocaleLowerCase();
+    for (var index = 0; index < deviceTypeMapsKeys.length; index++) {
+      var _m = deviceTypeMapsKeys[index];
+      if (_model.indexOf(_m) !== -1) {
+        deviceType = deviceTypeMaps[_m];
+        break;
+      }
+    }
+  }
+  return deviceType;
+}
+function getDeviceBrand(brand) {
+  var deviceBrand = brand;
+  if (deviceBrand) {
+    deviceBrand = brand.toLocaleLowerCase();
+  }
+  return deviceBrand;
+}
+function getAppLanguage(defaultLanguage) {
+  return getLocale$1 ? getLocale$1() : defaultLanguage;
+}
+function getHostName(result) {
+  var _platform = 'WeChat';
+  var _hostName = result.hostName || _platform; // mp-jd
+  {
+    if (result.environment) {
+      _hostName = result.environment;
+    } else if (result.host && result.host.env) {
+      _hostName = result.host.env;
+    }
+  }
+  return _hostName;
+}
+var getSystemInfo = {
+  returnValue: function returnValue(result) {
+    useDeviceId(result);
+    addSafeAreaInsets(result);
+    populateParameters(result);
+  }
+};
+var showActionSheet = {
+  args: function args(fromArgs) {
+    if ((0, _typeof2.default)(fromArgs) === 'object') {
+      fromArgs.alertText = fromArgs.title;
+    }
+  }
+};
+var getAppBaseInfo = {
+  returnValue: function returnValue(result) {
+    var _result = result,
+      version = _result.version,
+      language = _result.language,
+      SDKVersion = _result.SDKVersion,
+      theme = _result.theme;
+    var _hostName = getHostName(result);
+    var hostLanguage = language.replace('_', '-');
+    result = sortObject(Object.assign(result, {
+      appId: "__UNI__DA15003",
+      appName: "my-app",
+      appVersion: "1.0.0",
+      appVersionCode: "100",
+      appLanguage: getAppLanguage(hostLanguage),
+      hostVersion: version,
+      hostLanguage: hostLanguage,
+      hostName: _hostName,
+      hostSDKVersion: SDKVersion,
+      hostTheme: theme
+    }));
+  }
+};
+var getDeviceInfo = {
+  returnValue: function returnValue(result) {
+    var _result2 = result,
+      brand = _result2.brand,
+      model = _result2.model;
+    var deviceType = getGetDeviceType(result, model);
+    var deviceBrand = getDeviceBrand(brand);
+    useDeviceId(result);
+    result = sortObject(Object.assign(result, {
+      deviceType: deviceType,
+      deviceBrand: deviceBrand,
+      deviceModel: model
+    }));
+  }
+};
+var getWindowInfo = {
+  returnValue: function returnValue(result) {
+    addSafeAreaInsets(result);
+    result = sortObject(Object.assign(result, {
+      windowTop: 0,
+      windowBottom: 0
+    }));
+  }
+};
+var getAppAuthorizeSetting = {
+  returnValue: function returnValue(result) {
+    var locationReducedAccuracy = result.locationReducedAccuracy;
+    result.locationAccuracy = 'unsupported';
+    if (locationReducedAccuracy === true) {
+      result.locationAccuracy = 'reduced';
+    } else if (locationReducedAccuracy === false) {
+      result.locationAccuracy = 'full';
+    }
+  }
+};
+
+// import navigateTo from 'uni-helpers/navigate-to'
+
+var protocols = {
+  redirectTo: redirectTo,
+  // navigateTo,  // 由于在微信开发者工具的页面参数，会显示__id__参数，因此暂时关闭mp-weixin对于navigateTo的AOP
+  previewImage: previewImage,
+  getSystemInfo: getSystemInfo,
+  getSystemInfoSync: getSystemInfo,
+  showActionSheet: showActionSheet,
+  getAppBaseInfo: getAppBaseInfo,
+  getDeviceInfo: getDeviceInfo,
+  getWindowInfo: getWindowInfo,
+  getAppAuthorizeSetting: getAppAuthorizeSetting
+};
+var todos = ['vibrate', 'preloadPage', 'unPreloadPage', 'loadSubPackage'];
+var canIUses = [];
+var CALLBACKS = ['success', 'fail', 'cancel', 'complete'];
+function processCallback(methodName, method, returnValue) {
+  return function (res) {
+    return method(processReturnValue(methodName, res, returnValue));
+  };
+}
+function processArgs(methodName, fromArgs) {
+  var argsOption = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var returnValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var keepFromArgs = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+  if (isPlainObject(fromArgs)) {
+    // 一般 api 的参数解析
+    var toArgs = keepFromArgs === true ? fromArgs : {}; // returnValue 为 false 时，说明是格式化返回值，直接在返回值对象上修改赋值
+    if (isFn(argsOption)) {
+      argsOption = argsOption(fromArgs, toArgs) || {};
+    }
+    for (var key in fromArgs) {
+      if (hasOwn(argsOption, key)) {
+        var keyOption = argsOption[key];
+        if (isFn(keyOption)) {
+          keyOption = keyOption(fromArgs[key], fromArgs, toArgs);
+        }
+        if (!keyOption) {
+          // 不支持的参数
+          console.warn("The '".concat(methodName, "' method of platform '\u5FAE\u4FE1\u5C0F\u7A0B\u5E8F' does not support option '").concat(key, "'"));
+        } else if (isStr(keyOption)) {
+          // 重写参数 key
+          toArgs[keyOption] = fromArgs[key];
+        } else if (isPlainObject(keyOption)) {
+          // {name:newName,value:value}可重新指定参数 key:value
+          toArgs[keyOption.name ? keyOption.name : key] = keyOption.value;
+        }
+      } else if (CALLBACKS.indexOf(key) !== -1) {
+        if (isFn(fromArgs[key])) {
+          toArgs[key] = processCallback(methodName, fromArgs[key], returnValue);
+        }
+      } else {
+        if (!keepFromArgs) {
+          toArgs[key] = fromArgs[key];
+        }
+      }
+    }
+    return toArgs;
+  } else if (isFn(fromArgs)) {
+    fromArgs = processCallback(methodName, fromArgs, returnValue);
+  }
+  return fromArgs;
+}
+function processReturnValue(methodName, res, returnValue) {
+  var keepReturnValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  if (isFn(protocols.returnValue)) {
+    // 处理通用 returnValue
+    res = protocols.returnValue(methodName, res);
+  }
+  return processArgs(methodName, res, returnValue, {}, keepReturnValue);
+}
+function wrapper(methodName, method) {
+  if (hasOwn(protocols, methodName)) {
+    var protocol = protocols[methodName];
+    if (!protocol) {
+      // 暂不支持的 api
+      return function () {
+        console.error("Platform '\u5FAE\u4FE1\u5C0F\u7A0B\u5E8F' does not support '".concat(methodName, "'."));
+      };
+    }
+    return function (arg1, arg2) {
+      // 目前 api 最多两个参数
+      var options = protocol;
+      if (isFn(protocol)) {
+        options = protocol(arg1);
+      }
+      arg1 = processArgs(methodName, arg1, options.args, options.returnValue);
+      var args = [arg1];
+      if (typeof arg2 !== 'undefined') {
+        args.push(arg2);
+      }
+      if (isFn(options.name)) {
+        methodName = options.name(arg1);
+      } else if (isStr(options.name)) {
+        methodName = options.name;
+      }
+      var returnValue = wx[methodName].apply(wx, args);
+      if (isSyncApi(methodName)) {
+        // 同步 api
+        return processReturnValue(methodName, returnValue, options.returnValue, isContextApi(methodName));
+      }
+      return returnValue;
+    };
+  }
+  return method;
+}
+var todoApis = Object.create(null);
+var TODOS = ['onTabBarMidButtonTap', 'subscribePush', 'unsubscribePush', 'onPush', 'offPush', 'share'];
+function createTodoApi(name) {
+  return function todoApi(_ref) {
+    var fail = _ref.fail,
+      complete = _ref.complete;
+    var res = {
+      errMsg: "".concat(name, ":fail method '").concat(name, "' not supported")
+    };
+    isFn(fail) && fail(res);
+    isFn(complete) && complete(res);
+  };
+}
+TODOS.forEach(function (name) {
+  todoApis[name] = createTodoApi(name);
+});
+var providers = {
+  oauth: ['weixin'],
+  share: ['weixin'],
+  payment: ['wxpay'],
+  push: ['weixin']
+};
+function getProvider(_ref2) {
+  var service = _ref2.service,
+    success = _ref2.success,
+    fail = _ref2.fail,
+    complete = _ref2.complete;
+  var res = false;
+  if (providers[service]) {
+    res = {
+      errMsg: 'getProvider:ok',
+      service: service,
+      provider: providers[service]
+    };
+    isFn(success) && success(res);
+  } else {
+    res = {
+      errMsg: 'getProvider:fail service not found'
+    };
+    isFn(fail) && fail(res);
+  }
+  isFn(complete) && complete(res);
+}
+var extraApi = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  getProvider: getProvider
+});
+var getEmitter = function () {
+  var Emitter;
+  return function getUniEmitter() {
+    if (!Emitter) {
+      Emitter = new _vue.default();
+    }
+    return Emitter;
+  };
+}();
+function apply(ctx, method, args) {
+  return ctx[method].apply(ctx, args);
+}
+function $on() {
+  return apply(getEmitter(), '$on', Array.prototype.slice.call(arguments));
+}
+function $off() {
+  return apply(getEmitter(), '$off', Array.prototype.slice.call(arguments));
+}
+function $once() {
+  return apply(getEmitter(), '$once', Array.prototype.slice.call(arguments));
+}
+function $emit() {
+  return apply(getEmitter(), '$emit', Array.prototype.slice.call(arguments));
+}
+var eventApi = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  $on: $on,
+  $off: $off,
+  $once: $once,
+  $emit: $emit
+});
+
+/**
+ * 框架内 try-catch
+ */
+/**
+ * 开发者 try-catch
+ */
+function tryCatch(fn) {
+  return function () {
+    try {
+      return fn.apply(fn, arguments);
+    } catch (e) {
+      // TODO
+      console.error(e);
+    }
+  };
+}
+function getApiCallbacks(params) {
+  var apiCallbacks = {};
+  for (var name in params) {
+    var param = params[name];
+    if (isFn(param)) {
+      apiCallbacks[name] = tryCatch(param);
+      delete params[name];
+    }
+  }
+  return apiCallbacks;
+}
+var cid;
+var cidErrMsg;
+var enabled;
+function normalizePushMessage(message) {
+  try {
+    return JSON.parse(message);
+  } catch (e) {}
+  return message;
+}
+function invokePushCallback(args) {
+  if (args.type === 'enabled') {
+    enabled = true;
+  } else if (args.type === 'clientId') {
+    cid = args.cid;
+    cidErrMsg = args.errMsg;
+    invokeGetPushCidCallbacks(cid, args.errMsg);
+  } else if (args.type === 'pushMsg') {
+    var message = {
+      type: 'receive',
+      data: normalizePushMessage(args.message)
+    };
+    for (var i = 0; i < onPushMessageCallbacks.length; i++) {
+      var callback = onPushMessageCallbacks[i];
+      callback(message);
+      // 该消息已被阻止
+      if (message.stopped) {
+        break;
+      }
+    }
+  } else if (args.type === 'click') {
+    onPushMessageCallbacks.forEach(function (callback) {
+      callback({
+        type: 'click',
+        data: normalizePushMessage(args.message)
+      });
+    });
+  }
+}
+var getPushCidCallbacks = [];
+function invokeGetPushCidCallbacks(cid, errMsg) {
+  getPushCidCallbacks.forEach(function (callback) {
+    callback(cid, errMsg);
+  });
+  getPushCidCallbacks.length = 0;
+}
+function getPushClientId(args) {
+  if (!isPlainObject(args)) {
+    args = {};
+  }
+  var _getApiCallbacks = getApiCallbacks(args),
+    success = _getApiCallbacks.success,
+    fail = _getApiCallbacks.fail,
+    complete = _getApiCallbacks.complete;
+  var hasSuccess = isFn(success);
+  var hasFail = isFn(fail);
+  var hasComplete = isFn(complete);
+  Promise.resolve().then(function () {
+    if (typeof enabled === 'undefined') {
+      enabled = false;
+      cid = '';
+      cidErrMsg = 'uniPush is not enabled';
+    }
+    getPushCidCallbacks.push(function (cid, errMsg) {
+      var res;
+      if (cid) {
+        res = {
+          errMsg: 'getPushClientId:ok',
+          cid: cid
+        };
+        hasSuccess && success(res);
+      } else {
+        res = {
+          errMsg: 'getPushClientId:fail' + (errMsg ? ' ' + errMsg : '')
+        };
+        hasFail && fail(res);
+      }
+      hasComplete && complete(res);
+    });
+    if (typeof cid !== 'undefined') {
+      invokeGetPushCidCallbacks(cid, cidErrMsg);
+    }
+  });
+}
+var onPushMessageCallbacks = [];
+// 不使用 defineOnApi 实现，是因为 defineOnApi 依赖 UniServiceJSBridge ，该对象目前在小程序上未提供，故简单实现
+var onPushMessage = function onPushMessage(fn) {
+  if (onPushMessageCallbacks.indexOf(fn) === -1) {
+    onPushMessageCallbacks.push(fn);
+  }
+};
+var offPushMessage = function offPushMessage(fn) {
+  if (!fn) {
+    onPushMessageCallbacks.length = 0;
+  } else {
+    var index = onPushMessageCallbacks.indexOf(fn);
+    if (index > -1) {
+      onPushMessageCallbacks.splice(index, 1);
+    }
+  }
+};
+var baseInfo = wx.getAppBaseInfo && wx.getAppBaseInfo();
+if (!baseInfo) {
+  baseInfo = wx.getSystemInfoSync();
+}
+var host = baseInfo ? baseInfo.host : null;
+var shareVideoMessage = host && host.env === 'SAAASDK' ? wx.miniapp.shareVideoMessage : wx.shareVideoMessage;
+var api = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  shareVideoMessage: shareVideoMessage,
+  getPushClientId: getPushClientId,
+  onPushMessage: onPushMessage,
+  offPushMessage: offPushMessage,
+  invokePushCallback: invokePushCallback
+});
+var mocks = ['__route__', '__wxExparserNodeId__', '__wxWebviewId__'];
+function findVmByVueId(vm, vuePid) {
+  var $children = vm.$children;
+  // 优先查找直属(反向查找:https://github.com/dcloudio/uni-app/issues/1200)
+  for (var i = $children.length - 1; i >= 0; i--) {
+    var childVm = $children[i];
+    if (childVm.$scope._$vueId === vuePid) {
+      return childVm;
+    }
+  }
+  // 反向递归查找
+  var parentVm;
+  for (var _i = $children.length - 1; _i >= 0; _i--) {
+    parentVm = findVmByVueId($children[_i], vuePid);
+    if (parentVm) {
+      return parentVm;
+    }
+  }
+}
+function initBehavior(options) {
+  return Behavior(options);
+}
+function isPage() {
+  return !!this.route;
+}
+function initRelation(detail) {
+  this.triggerEvent('__l', detail);
+}
+function selectAllComponents(mpInstance, selector, $refs) {
+  var components = mpInstance.selectAllComponents(selector) || [];
+  components.forEach(function (component) {
+    var ref = component.dataset.ref;
+    $refs[ref] = component.$vm || toSkip(component);
+    {
+      if (component.dataset.vueGeneric === 'scoped') {
+        component.selectAllComponents('.scoped-ref').forEach(function (scopedComponent) {
+          selectAllComponents(scopedComponent, selector, $refs);
+        });
+      }
+    }
+  });
+}
+function syncRefs(refs, newRefs) {
+  var oldKeys = (0, _construct2.default)(Set, (0, _toConsumableArray2.default)(Object.keys(refs)));
+  var newKeys = Object.keys(newRefs);
+  newKeys.forEach(function (key) {
+    var oldValue = refs[key];
+    var newValue = newRefs[key];
+    if (Array.isArray(oldValue) && Array.isArray(newValue) && oldValue.length === newValue.length && newValue.every(function (value) {
+      return oldValue.includes(value);
+    })) {
+      return;
+    }
+    refs[key] = newValue;
+    oldKeys.delete(key);
+  });
+  oldKeys.forEach(function (key) {
+    delete refs[key];
+  });
+  return refs;
+}
+function initRefs(vm) {
+  var mpInstance = vm.$scope;
+  var refs = {};
+  Object.defineProperty(vm, '$refs', {
+    get: function get() {
+      var $refs = {};
+      selectAllComponents(mpInstance, '.vue-ref', $refs);
+      // TODO 暂不考虑 for 中的 scoped
+      var forComponents = mpInstance.selectAllComponents('.vue-ref-in-for') || [];
+      forComponents.forEach(function (component) {
+        var ref = component.dataset.ref;
+        if (!$refs[ref]) {
+          $refs[ref] = [];
+        }
+        $refs[ref].push(component.$vm || toSkip(component));
+      });
+      return syncRefs(refs, $refs);
+    }
+  });
+}
+function handleLink(event) {
+  var _ref3 = event.detail || event.value,
+    vuePid = _ref3.vuePid,
+    vueOptions = _ref3.vueOptions; // detail 是微信,value 是百度(dipatch)
+
+  var parentVm;
+  if (vuePid) {
+    parentVm = findVmByVueId(this.$vm, vuePid);
+  }
+  if (!parentVm) {
+    parentVm = this.$vm;
+  }
+  vueOptions.parent = parentVm;
+}
+function markMPComponent(component) {
+  // 在 Vue 中标记为小程序组件
+  var IS_MP = '__v_isMPComponent';
+  Object.defineProperty(component, IS_MP, {
+    configurable: true,
+    enumerable: false,
+    value: true
+  });
+  return component;
+}
+function toSkip(obj) {
+  var OB = '__ob__';
+  var SKIP = '__v_skip';
+  if (isObject(obj) && Object.isExtensible(obj)) {
+    // 避免被 @vue/composition-api 观测
+    Object.defineProperty(obj, OB, {
+      configurable: true,
+      enumerable: false,
+      value: (0, _defineProperty2.default)({}, SKIP, true)
+    });
+  }
+  return obj;
+}
+var MPPage = Page;
+var MPComponent = Component;
+var customizeRE = /:/g;
+var customize = cached(function (str) {
+  return camelize(str.replace(customizeRE, '-'));
+});
+function initTriggerEvent(mpInstance) {
+  var oldTriggerEvent = mpInstance.triggerEvent;
+  var newTriggerEvent = function newTriggerEvent(event) {
+    for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+      args[_key3 - 1] = arguments[_key3];
+    }
+    // 事件名统一转驼峰格式，仅处理：当前组件为 vue 组件、当前组件为 vue 组件子组件
+    if (this.$vm || this.dataset && this.dataset.comType) {
+      event = customize(event);
+    } else {
+      // 针对微信/QQ小程序单独补充驼峰格式事件，以兼容历史项目
+      var newEvent = customize(event);
+      if (newEvent !== event) {
+        oldTriggerEvent.apply(this, [newEvent].concat(args));
+      }
+    }
+    return oldTriggerEvent.apply(this, [event].concat(args));
+  };
+  try {
+    // 京东小程序 triggerEvent 为只读
+    mpInstance.triggerEvent = newTriggerEvent;
+  } catch (error) {
+    mpInstance._triggerEvent = newTriggerEvent;
+  }
+}
+function initHook(name, options, isComponent) {
+  var oldHook = options[name];
+  options[name] = function () {
+    markMPComponent(this);
+    initTriggerEvent(this);
+    if (oldHook) {
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+      return oldHook.apply(this, args);
+    }
+  };
+}
+if (!MPPage.__$wrappered) {
+  MPPage.__$wrappered = true;
+  Page = function Page() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    initHook('onLoad', options);
+    return MPPage(options);
+  };
+  Page.after = MPPage.after;
+  Component = function Component() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    initHook('created', options);
+    return MPComponent(options);
+  };
+}
+var PAGE_EVENT_HOOKS = ['onPullDownRefresh', 'onReachBottom', 'onAddToFavorites', 'onShareTimeline', 'onShareAppMessage', 'onPageScroll', 'onResize', 'onTabItemTap'];
+function initMocks(vm, mocks) {
+  var mpInstance = vm.$mp[vm.mpType];
+  mocks.forEach(function (mock) {
+    if (hasOwn(mpInstance, mock)) {
+      vm[mock] = mpInstance[mock];
+    }
+  });
+}
+function hasHook(hook, vueOptions) {
+  if (!vueOptions) {
+    return true;
+  }
+  if (_vue.default.options && Array.isArray(_vue.default.options[hook])) {
+    return true;
+  }
+  vueOptions = vueOptions.default || vueOptions;
+  if (isFn(vueOptions)) {
+    if (isFn(vueOptions.extendOptions[hook])) {
+      return true;
+    }
+    if (vueOptions.super && vueOptions.super.options && Array.isArray(vueOptions.super.options[hook])) {
+      return true;
+    }
+    return false;
+  }
+  if (isFn(vueOptions[hook]) || Array.isArray(vueOptions[hook])) {
+    return true;
+  }
+  var mixins = vueOptions.mixins;
+  if (Array.isArray(mixins)) {
+    return !!mixins.find(function (mixin) {
+      return hasHook(hook, mixin);
+    });
+  }
+}
+function initHooks(mpOptions, hooks, vueOptions) {
+  hooks.forEach(function (hook) {
+    if (hasHook(hook, vueOptions)) {
+      mpOptions[hook] = function (args) {
+        return this.$vm && this.$vm.__call_hook(hook, args);
+      };
+    }
+  });
+}
+function initUnknownHooks(mpOptions, vueOptions) {
+  var excludes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  findHooks(vueOptions).forEach(function (hook) {
+    return initHook$1(mpOptions, hook, excludes);
+  });
+}
+function findHooks(vueOptions) {
+  var hooks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  if (vueOptions) {
+    Object.keys(vueOptions).forEach(function (name) {
+      if (name.indexOf('on') === 0 && isFn(vueOptions[name])) {
+        hooks.push(name);
+      }
+    });
+  }
+  return hooks;
+}
+function initHook$1(mpOptions, hook, excludes) {
+  if (excludes.indexOf(hook) === -1 && !hasOwn(mpOptions, hook)) {
+    mpOptions[hook] = function (args) {
+      return this.$vm && this.$vm.__call_hook(hook, args);
+    };
+  }
+}
+function initVueComponent(Vue, vueOptions) {
+  vueOptions = vueOptions.default || vueOptions;
+  var VueComponent;
+  if (isFn(vueOptions)) {
+    VueComponent = vueOptions;
+  } else {
+    VueComponent = Vue.extend(vueOptions);
+  }
+  vueOptions = VueComponent.options;
+  return [VueComponent, vueOptions];
+}
+function initSlots(vm, vueSlots) {
+  if (Array.isArray(vueSlots) && vueSlots.length) {
+    var $slots = Object.create(null);
+    vueSlots.forEach(function (slotName) {
+      $slots[slotName] = true;
+    });
+    vm.$scopedSlots = vm.$slots = $slots;
+  }
+}
+function initVueIds(vueIds, mpInstance) {
+  vueIds = (vueIds || '').split(',');
+  var len = vueIds.length;
+  if (len === 1) {
+    mpInstance._$vueId = vueIds[0];
+  } else if (len === 2) {
+    mpInstance._$vueId = vueIds[0];
+    mpInstance._$vuePid = vueIds[1];
+  }
+}
+function initData(vueOptions, context) {
+  var data = vueOptions.data || {};
+  var methods = vueOptions.methods || {};
+  if (typeof data === 'function') {
+    try {
+      data = data.call(context); // 支持 Vue.prototype 上挂的数据
+    } catch (e) {
+      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+        console.warn('根据 Vue 的 data 函数初始化小程序 data 失败，请尽量确保 data 函数中不访问 vm 对象，否则可能影响首次数据渲染速度。', data);
+      }
+    }
+  } else {
+    try {
+      // 对 data 格式化
+      data = JSON.parse(JSON.stringify(data));
+    } catch (e) {}
+  }
+  if (!isPlainObject(data)) {
+    data = {};
+  }
+  Object.keys(methods).forEach(function (methodName) {
+    if (context.__lifecycle_hooks__.indexOf(methodName) === -1 && !hasOwn(data, methodName)) {
+      data[methodName] = methods[methodName];
+    }
+  });
+  return data;
+}
+var PROP_TYPES = [String, Number, Boolean, Object, Array, null];
+function createObserver(name) {
+  return function observer(newVal, oldVal) {
+    if (this.$vm) {
+      this.$vm[name] = newVal; // 为了触发其他非 render watcher
+    }
+  };
+}
+
+function initBehaviors(vueOptions, initBehavior) {
+  var vueBehaviors = vueOptions.behaviors;
+  var vueExtends = vueOptions.extends;
+  var vueMixins = vueOptions.mixins;
+  var vueProps = vueOptions.props;
+  if (!vueProps) {
+    vueOptions.props = vueProps = [];
+  }
+  var behaviors = [];
+  if (Array.isArray(vueBehaviors)) {
+    vueBehaviors.forEach(function (behavior) {
+      behaviors.push(behavior.replace('uni://', "wx".concat("://")));
+      if (behavior === 'uni://form-field') {
+        if (Array.isArray(vueProps)) {
+          vueProps.push('name');
+          vueProps.push('value');
+        } else {
+          vueProps.name = {
+            type: String,
+            default: ''
+          };
+          vueProps.value = {
+            type: [String, Number, Boolean, Array, Object, Date],
+            default: ''
+          };
+        }
+      }
+    });
+  }
+  if (isPlainObject(vueExtends) && vueExtends.props) {
+    behaviors.push(initBehavior({
+      properties: initProperties(vueExtends.props, true)
+    }));
+  }
+  if (Array.isArray(vueMixins)) {
+    vueMixins.forEach(function (vueMixin) {
+      if (isPlainObject(vueMixin) && vueMixin.props) {
+        behaviors.push(initBehavior({
+          properties: initProperties(vueMixin.props, true)
+        }));
+      }
+    });
+  }
+  return behaviors;
+}
+function parsePropType(key, type, defaultValue, file) {
+  // [String]=>String
+  if (Array.isArray(type) && type.length === 1) {
+    return type[0];
+  }
+  return type;
+}
+function initProperties(props) {
+  var isBehavior = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var file = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var options = arguments.length > 3 ? arguments[3] : undefined;
+  var properties = {};
+  if (!isBehavior) {
+    properties.vueId = {
+      type: String,
+      value: ''
+    };
+    {
+      if (options.virtualHost) {
+        properties.virtualHostStyle = {
+          type: null,
+          value: ''
+        };
+        properties.virtualHostClass = {
+          type: null,
+          value: ''
+        };
+      }
+    }
+    // scopedSlotsCompiler auto
+    properties.scopedSlotsCompiler = {
+      type: String,
+      value: ''
+    };
+    properties.vueSlots = {
+      // 小程序不能直接定义 $slots 的 props，所以通过 vueSlots 转换到 $slots
+      type: null,
+      value: [],
+      observer: function observer(newVal, oldVal) {
+        var $slots = Object.create(null);
+        newVal.forEach(function (slotName) {
+          $slots[slotName] = true;
+        });
+        this.setData({
+          $slots: $slots
+        });
+      }
+    };
+  }
+  if (Array.isArray(props)) {
+    // ['title']
+    props.forEach(function (key) {
+      properties[key] = {
+        type: null,
+        observer: createObserver(key)
+      };
+    });
+  } else if (isPlainObject(props)) {
+    // {title:{type:String,default:''},content:String}
+    Object.keys(props).forEach(function (key) {
+      var opts = props[key];
+      if (isPlainObject(opts)) {
+        // title:{type:String,default:''}
+        var value = opts.default;
+        if (isFn(value)) {
+          value = value();
+        }
+        opts.type = parsePropType(key, opts.type);
+        properties[key] = {
+          type: PROP_TYPES.indexOf(opts.type) !== -1 ? opts.type : null,
+          value: value,
+          observer: createObserver(key)
+        };
+      } else {
+        // content:String
+        var type = parsePropType(key, opts);
+        properties[key] = {
+          type: PROP_TYPES.indexOf(type) !== -1 ? type : null,
+          observer: createObserver(key)
+        };
+      }
+    });
+  }
+  return properties;
+}
+function wrapper$1(event) {
+  // TODO 又得兼容 mpvue 的 mp 对象
+  try {
+    event.mp = JSON.parse(JSON.stringify(event));
+  } catch (e) {}
+  event.stopPropagation = noop;
+  event.preventDefault = noop;
+  event.target = event.target || {};
+  if (!hasOwn(event, 'detail')) {
+    event.detail = {};
+  }
+  if (hasOwn(event, 'markerId')) {
+    event.detail = (0, _typeof2.default)(event.detail) === 'object' ? event.detail : {};
+    event.detail.markerId = event.markerId;
+  }
+  if (isPlainObject(event.detail)) {
+    event.target = Object.assign({}, event.target, event.detail);
+  }
+  return event;
+}
+function getExtraValue(vm, dataPathsArray) {
+  var context = vm;
+  dataPathsArray.forEach(function (dataPathArray) {
+    var dataPath = dataPathArray[0];
+    var value = dataPathArray[2];
+    if (dataPath || typeof value !== 'undefined') {
+      // ['','',index,'disable']
+      var propPath = dataPathArray[1];
+      var valuePath = dataPathArray[3];
+      var vFor;
+      if (Number.isInteger(dataPath)) {
+        vFor = dataPath;
+      } else if (!dataPath) {
+        vFor = context;
+      } else if (typeof dataPath === 'string' && dataPath) {
+        if (dataPath.indexOf('#s#') === 0) {
+          vFor = dataPath.substr(3);
+        } else {
+          vFor = vm.__get_value(dataPath, context);
+        }
+      }
+      if (Number.isInteger(vFor)) {
+        context = value;
+      } else if (!propPath) {
+        context = vFor[value];
+      } else {
+        if (Array.isArray(vFor)) {
+          context = vFor.find(function (vForItem) {
+            return vm.__get_value(propPath, vForItem) === value;
+          });
+        } else if (isPlainObject(vFor)) {
+          context = Object.keys(vFor).find(function (vForKey) {
+            return vm.__get_value(propPath, vFor[vForKey]) === value;
+          });
+        } else {
+          console.error('v-for 暂不支持循环数据：', vFor);
+        }
+      }
+      if (valuePath) {
+        context = vm.__get_value(valuePath, context);
+      }
+    }
+  });
+  return context;
+}
+function processEventExtra(vm, extra, event, __args__) {
+  var extraObj = {};
+  if (Array.isArray(extra) && extra.length) {
+    /**
+     *[
+     *    ['data.items', 'data.id', item.data.id],
+     *    ['metas', 'id', meta.id]
+     *],
+     *[
+     *    ['data.items', 'data.id', item.data.id],
+     *    ['metas', 'id', meta.id]
+     *],
+     *'test'
+     */
+    extra.forEach(function (dataPath, index) {
+      if (typeof dataPath === 'string') {
+        if (!dataPath) {
+          // model,prop.sync
+          extraObj['$' + index] = vm;
+        } else {
+          if (dataPath === '$event') {
+            // $event
+            extraObj['$' + index] = event;
+          } else if (dataPath === 'arguments') {
+            extraObj['$' + index] = event.detail ? event.detail.__args__ || __args__ : __args__;
+          } else if (dataPath.indexOf('$event.') === 0) {
+            // $event.target.value
+            extraObj['$' + index] = vm.__get_value(dataPath.replace('$event.', ''), event);
+          } else {
+            extraObj['$' + index] = vm.__get_value(dataPath);
+          }
+        }
+      } else {
+        extraObj['$' + index] = getExtraValue(vm, dataPath);
+      }
+    });
+  }
+  return extraObj;
+}
+function getObjByArray(arr) {
+  var obj = {};
+  for (var i = 1; i < arr.length; i++) {
+    var element = arr[i];
+    obj[element[0]] = element[1];
+  }
+  return obj;
+}
+function processEventArgs(vm, event) {
+  var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var extra = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  var isCustom = arguments.length > 4 ? arguments[4] : undefined;
+  var methodName = arguments.length > 5 ? arguments[5] : undefined;
+  var isCustomMPEvent = false; // wxcomponent 组件，传递原始 event 对象
+
+  // fixed 用户直接触发 mpInstance.triggerEvent
+  var __args__ = isPlainObject(event.detail) ? event.detail.__args__ || [event.detail] : [event.detail];
+  if (isCustom) {
+    // 自定义事件
+    isCustomMPEvent = event.currentTarget && event.currentTarget.dataset && event.currentTarget.dataset.comType === 'wx';
+    if (!args.length) {
+      // 无参数，直接传入 event 或 detail 数组
+      if (isCustomMPEvent) {
+        return [event];
+      }
+      return __args__;
+    }
+  }
+  var extraObj = processEventExtra(vm, extra, event, __args__);
+  var ret = [];
+  args.forEach(function (arg) {
+    if (arg === '$event') {
+      if (methodName === '__set_model' && !isCustom) {
+        // input v-model value
+        ret.push(event.target.value);
+      } else {
+        if (isCustom && !isCustomMPEvent) {
+          ret.push(__args__[0]);
+        } else {
+          // wxcomponent 组件或内置组件
+          ret.push(event);
+        }
+      }
+    } else {
+      if (Array.isArray(arg) && arg[0] === 'o') {
+        ret.push(getObjByArray(arg));
+      } else if (typeof arg === 'string' && hasOwn(extraObj, arg)) {
+        ret.push(extraObj[arg]);
+      } else {
+        ret.push(arg);
+      }
+    }
+  });
+  return ret;
+}
+var ONCE = '~';
+var CUSTOM = '^';
+function isMatchEventType(eventType, optType) {
+  return eventType === optType || optType === 'regionchange' && (eventType === 'begin' || eventType === 'end');
+}
+function getContextVm(vm) {
+  var $parent = vm.$parent;
+  // 父组件是 scoped slots 或者其他自定义组件时继续查找
+  while ($parent && $parent.$parent && ($parent.$options.generic || $parent.$parent.$options.generic || $parent.$scope._$vuePid)) {
+    $parent = $parent.$parent;
+  }
+  return $parent && $parent.$parent;
+}
+function handleEvent(event) {
+  var _this2 = this;
+  event = wrapper$1(event);
+
+  // [['tap',[['handle',[1,2,a]],['handle1',[1,2,a]]]]]
+  var dataset = (event.currentTarget || event.target).dataset;
+  if (!dataset) {
+    return console.warn('事件信息不存在');
+  }
+  var eventOpts = dataset.eventOpts || dataset['event-opts']; // 支付宝 web-view 组件 dataset 非驼峰
+  if (!eventOpts) {
+    return console.warn('事件信息不存在');
+  }
+
+  // [['handle',[1,2,a]],['handle1',[1,2,a]]]
+  var eventType = event.type;
+  var ret = [];
+  eventOpts.forEach(function (eventOpt) {
+    var type = eventOpt[0];
+    var eventsArray = eventOpt[1];
+    var isCustom = type.charAt(0) === CUSTOM;
+    type = isCustom ? type.slice(1) : type;
+    var isOnce = type.charAt(0) === ONCE;
+    type = isOnce ? type.slice(1) : type;
+    if (eventsArray && isMatchEventType(eventType, type)) {
+      eventsArray.forEach(function (eventArray) {
+        var methodName = eventArray[0];
+        if (methodName) {
+          var handlerCtx = _this2.$vm;
+          if (handlerCtx.$options.generic) {
+            // mp-weixin,mp-toutiao 抽象节点模拟 scoped slots
+            handlerCtx = getContextVm(handlerCtx) || handlerCtx;
+          }
+          if (methodName === '$emit') {
+            handlerCtx.$emit.apply(handlerCtx, processEventArgs(_this2.$vm, event, eventArray[1], eventArray[2], isCustom, methodName));
+            return;
+          }
+          var handler = handlerCtx[methodName];
+          if (!isFn(handler)) {
+            var _type = _this2.$vm.mpType === 'page' ? 'Page' : 'Component';
+            var path = _this2.route || _this2.is;
+            throw new Error("".concat(_type, " \"").concat(path, "\" does not have a method \"").concat(methodName, "\""));
+          }
+          if (isOnce) {
+            if (handler.once) {
+              return;
+            }
+            handler.once = true;
+          }
+          var params = processEventArgs(_this2.$vm, event, eventArray[1], eventArray[2], isCustom, methodName);
+          params = Array.isArray(params) ? params : [];
+          // 参数尾部增加原始事件对象用于复杂表达式内获取额外数据
+          if (/=\s*\S+\.eventParams\s*\|\|\s*\S+\[['"]event-params['"]\]/.test(handler.toString())) {
+            // eslint-disable-next-line no-sparse-arrays
+            params = params.concat([,,,,,,,,,, event]);
+          }
+          ret.push(handler.apply(handlerCtx, params));
+        }
+      });
+    }
+  });
+  if (eventType === 'input' && ret.length === 1 && typeof ret[0] !== 'undefined') {
+    return ret[0];
+  }
+}
+var eventChannels = {};
+var eventChannelStack = [];
+function getEventChannel(id) {
+  if (id) {
+    var eventChannel = eventChannels[id];
+    delete eventChannels[id];
+    return eventChannel;
+  }
+  return eventChannelStack.shift();
+}
+var hooks = ['onShow', 'onHide', 'onError', 'onPageNotFound', 'onThemeChange', 'onUnhandledRejection'];
+function initEventChannel() {
+  _vue.default.prototype.getOpenerEventChannel = function () {
+    // 微信小程序使用自身getOpenerEventChannel
+    {
+      return this.$scope.getOpenerEventChannel();
+    }
+  };
+  var callHook = _vue.default.prototype.__call_hook;
+  _vue.default.prototype.__call_hook = function (hook, args) {
+    if (hook === 'onLoad' && args && args.__id__) {
+      this.__eventChannel__ = getEventChannel(args.__id__);
+      delete args.__id__;
+    }
+    return callHook.call(this, hook, args);
+  };
+}
+function initScopedSlotsParams() {
+  var center = {};
+  var parents = {};
+  _vue.default.prototype.$hasScopedSlotsParams = function (vueId) {
+    var has = center[vueId];
+    if (!has) {
+      parents[vueId] = this;
+      this.$on('hook:destroyed', function () {
+        delete parents[vueId];
+      });
+    }
+    return has;
+  };
+  _vue.default.prototype.$getScopedSlotsParams = function (vueId, name, key) {
+    var data = center[vueId];
+    if (data) {
+      var object = data[name] || {};
+      return key ? object[key] : object;
+    } else {
+      parents[vueId] = this;
+      this.$on('hook:destroyed', function () {
+        delete parents[vueId];
+      });
+    }
+  };
+  _vue.default.prototype.$setScopedSlotsParams = function (name, value) {
+    var vueIds = this.$options.propsData.vueId;
+    if (vueIds) {
+      var vueId = vueIds.split(',')[0];
+      var object = center[vueId] = center[vueId] || {};
+      object[name] = value;
+      if (parents[vueId]) {
+        parents[vueId].$forceUpdate();
+      }
+    }
+  };
+  _vue.default.mixin({
+    destroyed: function destroyed() {
+      var propsData = this.$options.propsData;
+      var vueId = propsData && propsData.vueId;
+      if (vueId) {
+        delete center[vueId];
+        delete parents[vueId];
+      }
+    }
+  });
+}
+function parseBaseApp(vm, _ref4) {
+  var mocks = _ref4.mocks,
+    initRefs = _ref4.initRefs;
+  initEventChannel();
+  {
+    initScopedSlotsParams();
+  }
+  if (vm.$options.store) {
+    _vue.default.prototype.$store = vm.$options.store;
+  }
+  uniIdMixin(_vue.default);
+  _vue.default.prototype.mpHost = "mp-weixin";
+  _vue.default.mixin({
+    beforeCreate: function beforeCreate() {
+      if (!this.$options.mpType) {
+        return;
+      }
+      this.mpType = this.$options.mpType;
+      this.$mp = (0, _defineProperty2.default)({
+        data: {}
+      }, this.mpType, this.$options.mpInstance);
+      this.$scope = this.$options.mpInstance;
+      delete this.$options.mpType;
+      delete this.$options.mpInstance;
+      if (this.mpType === 'page' && typeof getApp === 'function') {
+        // hack vue-i18n
+        var app = getApp();
+        if (app.$vm && app.$vm.$i18n) {
+          this._i18n = app.$vm.$i18n;
+        }
+      }
+      if (this.mpType !== 'app') {
+        initRefs(this);
+        initMocks(this, mocks);
+      }
+    }
+  });
+  var appOptions = {
+    onLaunch: function onLaunch(args) {
+      if (this.$vm) {
+        // 已经初始化过了，主要是为了百度，百度 onShow 在 onLaunch 之前
+        return;
+      }
+      {
+        if (wx.canIUse && !wx.canIUse('nextTick')) {
+          // 事实 上2.2.3 即可，简单使用 2.3.0 的 nextTick 判断
+          console.error('当前微信基础库版本过低，请将 微信开发者工具-详情-项目设置-调试基础库版本 更换为`2.3.0`以上');
+        }
+      }
+      this.$vm = vm;
+      this.$vm.$mp = {
+        app: this
+      };
+      this.$vm.$scope = this;
+      // vm 上也挂载 globalData
+      this.$vm.globalData = this.globalData;
+      this.$vm._isMounted = true;
+      this.$vm.__call_hook('mounted', args);
+      this.$vm.__call_hook('onLaunch', args);
+    }
+  };
+
+  // 兼容旧版本 globalData
+  appOptions.globalData = vm.$options.globalData || {};
+  // 将 methods 中的方法挂在 getApp() 中
+  var methods = vm.$options.methods;
+  if (methods) {
+    Object.keys(methods).forEach(function (name) {
+      appOptions[name] = methods[name];
+    });
+  }
+  initAppLocale(_vue.default, vm, normalizeLocale(wx.getSystemInfoSync().language) || LOCALE_EN);
+  initHooks(appOptions, hooks);
+  initUnknownHooks(appOptions, vm.$options);
+  return appOptions;
+}
+function parseApp(vm) {
+  return parseBaseApp(vm, {
+    mocks: mocks,
+    initRefs: initRefs
+  });
+}
+function createApp(vm) {
+  App(parseApp(vm));
+  return vm;
+}
+var encodeReserveRE = /[!'()*]/g;
+var encodeReserveReplacer = function encodeReserveReplacer(c) {
+  return '%' + c.charCodeAt(0).toString(16);
+};
+var commaRE = /%2C/g;
+
+// fixed encodeURIComponent which is more conformant to RFC3986:
+// - escapes [!'()*]
+// - preserve commas
+var encode = function encode(str) {
+  return encodeURIComponent(str).replace(encodeReserveRE, encodeReserveReplacer).replace(commaRE, ',');
+};
+function stringifyQuery(obj) {
+  var encodeStr = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : encode;
+  var res = obj ? Object.keys(obj).map(function (key) {
+    var val = obj[key];
+    if (val === undefined) {
+      return '';
+    }
+    if (val === null) {
+      return encodeStr(key);
+    }
+    if (Array.isArray(val)) {
+      var result = [];
+      val.forEach(function (val2) {
+        if (val2 === undefined) {
+          return;
+        }
+        if (val2 === null) {
+          result.push(encodeStr(key));
+        } else {
+          result.push(encodeStr(key) + '=' + encodeStr(val2));
+        }
+      });
+      return result.join('&');
+    }
+    return encodeStr(key) + '=' + encodeStr(val);
+  }).filter(function (x) {
+    return x.length > 0;
+  }).join('&') : null;
+  return res ? "?".concat(res) : '';
+}
+function parseBaseComponent(vueComponentOptions) {
+  var _ref5 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    isPage = _ref5.isPage,
+    initRelation = _ref5.initRelation;
+  var needVueOptions = arguments.length > 2 ? arguments[2] : undefined;
+  var _initVueComponent = initVueComponent(_vue.default, vueComponentOptions),
+    _initVueComponent2 = (0, _slicedToArray2.default)(_initVueComponent, 2),
+    VueComponent = _initVueComponent2[0],
+    vueOptions = _initVueComponent2[1];
+  var options = _objectSpread({
+    multipleSlots: true,
+    addGlobalClass: true
+  }, vueOptions.options || {});
+  {
+    // 微信 multipleSlots 部分情况有 bug，导致内容顺序错乱 如 u-list，提供覆盖选项
+    if (vueOptions['mp-weixin'] && vueOptions['mp-weixin'].options) {
+      Object.assign(options, vueOptions['mp-weixin'].options);
+    }
+  }
+  var componentOptions = {
+    options: options,
+    data: initData(vueOptions, _vue.default.prototype),
+    behaviors: initBehaviors(vueOptions, initBehavior),
+    properties: initProperties(vueOptions.props, false, vueOptions.__file, options),
+    lifetimes: {
+      attached: function attached() {
+        var properties = this.properties;
+        var options = {
+          mpType: isPage.call(this) ? 'page' : 'component',
+          mpInstance: this,
+          propsData: properties
+        };
+        initVueIds(properties.vueId, this);
+
+        // 处理父子关系
+        initRelation.call(this, {
+          vuePid: this._$vuePid,
+          vueOptions: options
+        });
+
+        // 初始化 vue 实例
+        this.$vm = new VueComponent(options);
+
+        // 处理$slots,$scopedSlots（暂不支持动态变化$slots）
+        initSlots(this.$vm, properties.vueSlots);
+
+        // 触发首次 setData
+        this.$vm.$mount();
+      },
+      ready: function ready() {
+        // 当组件 props 默认值为 true，初始化时传入 false 会导致 created,ready 触发, 但 attached 不触发
+        // https://developers.weixin.qq.com/community/develop/doc/00066ae2844cc0f8eb883e2a557800
+        if (this.$vm) {
+          this.$vm._isMounted = true;
+          this.$vm.__call_hook('mounted');
+          this.$vm.__call_hook('onReady');
+        }
+      },
+      detached: function detached() {
+        this.$vm && this.$vm.$destroy();
+      }
+    },
+    pageLifetimes: {
+      show: function show(args) {
+        this.$vm && this.$vm.__call_hook('onPageShow', args);
+      },
+      hide: function hide() {
+        this.$vm && this.$vm.__call_hook('onPageHide');
+      },
+      resize: function resize(size) {
+        this.$vm && this.$vm.__call_hook('onPageResize', size);
+      }
+    },
+    methods: {
+      __l: handleLink,
+      __e: handleEvent
+    }
+  };
+  // externalClasses
+  if (vueOptions.externalClasses) {
+    componentOptions.externalClasses = vueOptions.externalClasses;
+  }
+  if (Array.isArray(vueOptions.wxsCallMethods)) {
+    vueOptions.wxsCallMethods.forEach(function (callMethod) {
+      componentOptions.methods[callMethod] = function (args) {
+        return this.$vm[callMethod](args);
+      };
+    });
+  }
+  if (needVueOptions) {
+    return [componentOptions, vueOptions, VueComponent];
+  }
+  if (isPage) {
+    return componentOptions;
+  }
+  return [componentOptions, VueComponent];
+}
+function parseComponent(vueComponentOptions, needVueOptions) {
+  return parseBaseComponent(vueComponentOptions, {
+    isPage: isPage,
+    initRelation: initRelation
+  }, needVueOptions);
+}
+var hooks$1 = ['onShow', 'onHide', 'onUnload'];
+hooks$1.push.apply(hooks$1, PAGE_EVENT_HOOKS);
+function parseBasePage(vuePageOptions) {
+  var _parseComponent = parseComponent(vuePageOptions, true),
+    _parseComponent2 = (0, _slicedToArray2.default)(_parseComponent, 2),
+    pageOptions = _parseComponent2[0],
+    vueOptions = _parseComponent2[1];
+  initHooks(pageOptions.methods, hooks$1, vueOptions);
+  pageOptions.methods.onLoad = function (query) {
+    this.options = query;
+    var copyQuery = Object.assign({}, query);
+    delete copyQuery.__id__;
+    this.$page = {
+      fullPath: '/' + (this.route || this.is) + stringifyQuery(copyQuery)
+    };
+    this.$vm.$mp.query = query; // 兼容 mpvue
+    this.$vm.__call_hook('onLoad', query);
+  };
+  {
+    initUnknownHooks(pageOptions.methods, vuePageOptions, ['onReady']);
+  }
+  return pageOptions;
+}
+function parsePage(vuePageOptions) {
+  return parseBasePage(vuePageOptions);
+}
+function createPage(vuePageOptions) {
+  {
+    return Component(parsePage(vuePageOptions));
+  }
+}
+function createComponent(vueOptions) {
+  {
+    return Component(parseComponent(vueOptions));
+  }
+}
+function createSubpackageApp(vm) {
+  var appOptions = parseApp(vm);
+  var app = getApp({
+    allowDefault: true
+  });
+  vm.$scope = app;
+  var globalData = app.globalData;
+  if (globalData) {
+    Object.keys(appOptions.globalData).forEach(function (name) {
+      if (!hasOwn(globalData, name)) {
+        globalData[name] = appOptions.globalData[name];
+      }
+    });
+  }
+  Object.keys(appOptions).forEach(function (name) {
+    if (!hasOwn(app, name)) {
+      app[name] = appOptions[name];
+    }
+  });
+  if (isFn(appOptions.onShow) && wx.onAppShow) {
+    wx.onAppShow(function () {
+      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+      }
+      vm.__call_hook('onShow', args);
+    });
+  }
+  if (isFn(appOptions.onHide) && wx.onAppHide) {
+    wx.onAppHide(function () {
+      for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
+      }
+      vm.__call_hook('onHide', args);
+    });
+  }
+  if (isFn(appOptions.onLaunch)) {
+    var args = wx.getLaunchOptionsSync && wx.getLaunchOptionsSync();
+    vm.__call_hook('onLaunch', args);
+  }
+  return vm;
+}
+function createPlugin(vm) {
+  var appOptions = parseApp(vm);
+  if (isFn(appOptions.onShow) && wx.onAppShow) {
+    wx.onAppShow(function () {
+      for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
+      }
+      vm.__call_hook('onShow', args);
+    });
+  }
+  if (isFn(appOptions.onHide) && wx.onAppHide) {
+    wx.onAppHide(function () {
+      for (var _len8 = arguments.length, args = new Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
+      }
+      vm.__call_hook('onHide', args);
+    });
+  }
+  if (isFn(appOptions.onLaunch)) {
+    var args = wx.getLaunchOptionsSync && wx.getLaunchOptionsSync();
+    vm.__call_hook('onLaunch', args);
+  }
+  return vm;
+}
+todos.forEach(function (todoApi) {
+  protocols[todoApi] = false;
+});
+canIUses.forEach(function (canIUseApi) {
+  var apiName = protocols[canIUseApi] && protocols[canIUseApi].name ? protocols[canIUseApi].name : canIUseApi;
+  if (!wx.canIUse(apiName)) {
+    protocols[canIUseApi] = false;
+  }
+});
+var uni = {};
+if (typeof Proxy !== 'undefined' && "mp-weixin" !== 'app-plus') {
+  uni = new Proxy({}, {
+    get: function get(target, name) {
+      if (hasOwn(target, name)) {
+        return target[name];
+      }
+      if (baseApi[name]) {
+        return baseApi[name];
+      }
+      if (api[name]) {
+        return promisify(name, api[name]);
+      }
+      {
+        if (extraApi[name]) {
+          return promisify(name, extraApi[name]);
+        }
+        if (todoApis[name]) {
+          return promisify(name, todoApis[name]);
+        }
+      }
+      if (eventApi[name]) {
+        return eventApi[name];
+      }
+      return promisify(name, wrapper(name, wx[name]));
+    },
+    set: function set(target, name, value) {
+      target[name] = value;
+      return true;
+    }
+  });
+} else {
+  Object.keys(baseApi).forEach(function (name) {
+    uni[name] = baseApi[name];
+  });
+  {
+    Object.keys(todoApis).forEach(function (name) {
+      uni[name] = promisify(name, todoApis[name]);
+    });
+    Object.keys(extraApi).forEach(function (name) {
+      uni[name] = promisify(name, todoApis[name]);
+    });
+  }
+  Object.keys(eventApi).forEach(function (name) {
+    uni[name] = eventApi[name];
+  });
+  Object.keys(api).forEach(function (name) {
+    uni[name] = promisify(name, api[name]);
+  });
+  Object.keys(wx).forEach(function (name) {
+    if (hasOwn(wx, name) || hasOwn(protocols, name)) {
+      uni[name] = promisify(name, wrapper(name, wx[name]));
+    }
+  });
+}
+wx.createApp = createApp;
+wx.createPage = createPage;
+wx.createComponent = createComponent;
+wx.createSubpackageApp = createSubpackageApp;
+wx.createPlugin = createPlugin;
+var uni$1 = uni;
+var _default = uni$1;
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./../../../webpack/buildin/global.js */ 3)))
+
+/***/ }),
+
+/***/ 20:
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArray.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 201:
 /*!*********************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-icons/components/uni-icons/icons.js ***!
   \*********************************************************************************************/
@@ -5375,1176 +4391,1035 @@ function friendlyDate(time, _ref)
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _default = {
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
   "id": "2852637",
   "name": "uniui图标库",
   "font_family": "uniicons",
   "css_prefix_text": "uniui-",
   "description": "",
-  "glyphs": [
-  {
+  "glyphs": [{
     "icon_id": "25027049",
     "name": "yanse",
     "font_class": "color",
     "unicode": "e6cf",
-    "unicode_decimal": 59087 },
-
-  {
+    "unicode_decimal": 59087
+  }, {
     "icon_id": "25027048",
     "name": "wallet",
     "font_class": "wallet",
     "unicode": "e6b1",
-    "unicode_decimal": 59057 },
-
-  {
+    "unicode_decimal": 59057
+  }, {
     "icon_id": "25015720",
     "name": "settings-filled",
     "font_class": "settings-filled",
     "unicode": "e6ce",
-    "unicode_decimal": 59086 },
-
-  {
+    "unicode_decimal": 59086
+  }, {
     "icon_id": "25015434",
     "name": "shimingrenzheng-filled",
     "font_class": "auth-filled",
     "unicode": "e6cc",
-    "unicode_decimal": 59084 },
-
-  {
+    "unicode_decimal": 59084
+  }, {
     "icon_id": "24934246",
     "name": "shop-filled",
     "font_class": "shop-filled",
     "unicode": "e6cd",
-    "unicode_decimal": 59085 },
-
-  {
+    "unicode_decimal": 59085
+  }, {
     "icon_id": "24934159",
     "name": "staff-filled-01",
     "font_class": "staff-filled",
     "unicode": "e6cb",
-    "unicode_decimal": 59083 },
-
-  {
+    "unicode_decimal": 59083
+  }, {
     "icon_id": "24932461",
     "name": "VIP-filled",
     "font_class": "vip-filled",
     "unicode": "e6c6",
-    "unicode_decimal": 59078 },
-
-  {
+    "unicode_decimal": 59078
+  }, {
     "icon_id": "24932462",
     "name": "plus_circle_fill",
     "font_class": "plus-filled",
     "unicode": "e6c7",
-    "unicode_decimal": 59079 },
-
-  {
+    "unicode_decimal": 59079
+  }, {
     "icon_id": "24932463",
     "name": "folder_add-filled",
     "font_class": "folder-add-filled",
     "unicode": "e6c8",
-    "unicode_decimal": 59080 },
-
-  {
+    "unicode_decimal": 59080
+  }, {
     "icon_id": "24932464",
     "name": "yanse-filled",
     "font_class": "color-filled",
     "unicode": "e6c9",
-    "unicode_decimal": 59081 },
-
-  {
+    "unicode_decimal": 59081
+  }, {
     "icon_id": "24932465",
     "name": "tune-filled",
     "font_class": "tune-filled",
     "unicode": "e6ca",
-    "unicode_decimal": 59082 },
-
-  {
+    "unicode_decimal": 59082
+  }, {
     "icon_id": "24932455",
     "name": "a-rilidaka-filled",
     "font_class": "calendar-filled",
     "unicode": "e6c0",
-    "unicode_decimal": 59072 },
-
-  {
+    "unicode_decimal": 59072
+  }, {
     "icon_id": "24932456",
     "name": "notification-filled",
     "font_class": "notification-filled",
     "unicode": "e6c1",
-    "unicode_decimal": 59073 },
-
-  {
+    "unicode_decimal": 59073
+  }, {
     "icon_id": "24932457",
     "name": "wallet-filled",
     "font_class": "wallet-filled",
     "unicode": "e6c2",
-    "unicode_decimal": 59074 },
-
-  {
+    "unicode_decimal": 59074
+  }, {
     "icon_id": "24932458",
     "name": "paihangbang-filled",
     "font_class": "medal-filled",
     "unicode": "e6c3",
-    "unicode_decimal": 59075 },
-
-  {
+    "unicode_decimal": 59075
+  }, {
     "icon_id": "24932459",
     "name": "gift-filled",
     "font_class": "gift-filled",
     "unicode": "e6c4",
-    "unicode_decimal": 59076 },
-
-  {
+    "unicode_decimal": 59076
+  }, {
     "icon_id": "24932460",
     "name": "fire-filled",
     "font_class": "fire-filled",
     "unicode": "e6c5",
-    "unicode_decimal": 59077 },
-
-  {
+    "unicode_decimal": 59077
+  }, {
     "icon_id": "24928001",
     "name": "refreshempty",
     "font_class": "refreshempty",
     "unicode": "e6bf",
-    "unicode_decimal": 59071 },
-
-  {
+    "unicode_decimal": 59071
+  }, {
     "icon_id": "24926853",
     "name": "location-ellipse",
     "font_class": "location-filled",
     "unicode": "e6af",
-    "unicode_decimal": 59055 },
-
-  {
+    "unicode_decimal": 59055
+  }, {
     "icon_id": "24926735",
     "name": "person-filled",
     "font_class": "person-filled",
     "unicode": "e69d",
-    "unicode_decimal": 59037 },
-
-  {
+    "unicode_decimal": 59037
+  }, {
     "icon_id": "24926703",
     "name": "personadd-filled",
     "font_class": "personadd-filled",
     "unicode": "e698",
-    "unicode_decimal": 59032 },
-
-  {
+    "unicode_decimal": 59032
+  }, {
     "icon_id": "24923351",
     "name": "back",
     "font_class": "back",
     "unicode": "e6b9",
-    "unicode_decimal": 59065 },
-
-  {
+    "unicode_decimal": 59065
+  }, {
     "icon_id": "24923352",
     "name": "forward",
     "font_class": "forward",
     "unicode": "e6ba",
-    "unicode_decimal": 59066 },
-
-  {
+    "unicode_decimal": 59066
+  }, {
     "icon_id": "24923353",
     "name": "arrowthinright",
     "font_class": "arrow-right",
     "unicode": "e6bb",
-    "unicode_decimal": 59067 },
-
-  {
+    "unicode_decimal": 59067
+  }, {
     "icon_id": "24923353",
     "name": "arrowthinright",
     "font_class": "arrowthinright",
     "unicode": "e6bb",
-    "unicode_decimal": 59067 },
-
-  {
+    "unicode_decimal": 59067
+  }, {
     "icon_id": "24923354",
     "name": "arrowthinleft",
     "font_class": "arrow-left",
     "unicode": "e6bc",
-    "unicode_decimal": 59068 },
-
-  {
+    "unicode_decimal": 59068
+  }, {
     "icon_id": "24923354",
     "name": "arrowthinleft",
     "font_class": "arrowthinleft",
     "unicode": "e6bc",
-    "unicode_decimal": 59068 },
-
-  {
+    "unicode_decimal": 59068
+  }, {
     "icon_id": "24923355",
     "name": "arrowthinup",
     "font_class": "arrow-up",
     "unicode": "e6bd",
-    "unicode_decimal": 59069 },
-
-  {
+    "unicode_decimal": 59069
+  }, {
     "icon_id": "24923355",
     "name": "arrowthinup",
     "font_class": "arrowthinup",
     "unicode": "e6bd",
-    "unicode_decimal": 59069 },
-
-  {
+    "unicode_decimal": 59069
+  }, {
     "icon_id": "24923356",
     "name": "arrowthindown",
     "font_class": "arrow-down",
     "unicode": "e6be",
-    "unicode_decimal": 59070 },
-  {
+    "unicode_decimal": 59070
+  }, {
     "icon_id": "24923356",
     "name": "arrowthindown",
     "font_class": "arrowthindown",
     "unicode": "e6be",
-    "unicode_decimal": 59070 },
-
-  {
+    "unicode_decimal": 59070
+  }, {
     "icon_id": "24923349",
     "name": "arrowdown",
     "font_class": "bottom",
     "unicode": "e6b8",
-    "unicode_decimal": 59064 },
-  {
+    "unicode_decimal": 59064
+  }, {
     "icon_id": "24923349",
     "name": "arrowdown",
     "font_class": "arrowdown",
     "unicode": "e6b8",
-    "unicode_decimal": 59064 },
-
-  {
+    "unicode_decimal": 59064
+  }, {
     "icon_id": "24923346",
     "name": "arrowright",
     "font_class": "right",
     "unicode": "e6b5",
-    "unicode_decimal": 59061 },
-
-  {
+    "unicode_decimal": 59061
+  }, {
     "icon_id": "24923346",
     "name": "arrowright",
     "font_class": "arrowright",
     "unicode": "e6b5",
-    "unicode_decimal": 59061 },
-
-  {
+    "unicode_decimal": 59061
+  }, {
     "icon_id": "24923347",
     "name": "arrowup",
     "font_class": "top",
     "unicode": "e6b6",
-    "unicode_decimal": 59062 },
-
-  {
+    "unicode_decimal": 59062
+  }, {
     "icon_id": "24923347",
     "name": "arrowup",
     "font_class": "arrowup",
     "unicode": "e6b6",
-    "unicode_decimal": 59062 },
-
-  {
+    "unicode_decimal": 59062
+  }, {
     "icon_id": "24923348",
     "name": "arrowleft",
     "font_class": "left",
     "unicode": "e6b7",
-    "unicode_decimal": 59063 },
-
-  {
+    "unicode_decimal": 59063
+  }, {
     "icon_id": "24923348",
     "name": "arrowleft",
     "font_class": "arrowleft",
     "unicode": "e6b7",
-    "unicode_decimal": 59063 },
-
-  {
+    "unicode_decimal": 59063
+  }, {
     "icon_id": "24923334",
     "name": "eye",
     "font_class": "eye",
     "unicode": "e651",
-    "unicode_decimal": 58961 },
-
-  {
+    "unicode_decimal": 58961
+  }, {
     "icon_id": "24923335",
     "name": "eye-filled",
     "font_class": "eye-filled",
     "unicode": "e66a",
-    "unicode_decimal": 58986 },
-
-  {
+    "unicode_decimal": 58986
+  }, {
     "icon_id": "24923336",
     "name": "eye-slash",
     "font_class": "eye-slash",
     "unicode": "e6b3",
-    "unicode_decimal": 59059 },
-
-  {
+    "unicode_decimal": 59059
+  }, {
     "icon_id": "24923337",
     "name": "eye-slash-filled",
     "font_class": "eye-slash-filled",
     "unicode": "e6b4",
-    "unicode_decimal": 59060 },
-
-  {
+    "unicode_decimal": 59060
+  }, {
     "icon_id": "24923305",
     "name": "info-filled",
     "font_class": "info-filled",
     "unicode": "e649",
-    "unicode_decimal": 58953 },
-
-  {
+    "unicode_decimal": 58953
+  }, {
     "icon_id": "24923299",
     "name": "reload-01",
     "font_class": "reload",
     "unicode": "e6b2",
-    "unicode_decimal": 59058 },
-
-  {
+    "unicode_decimal": 59058
+  }, {
     "icon_id": "24923195",
     "name": "mic_slash_fill",
     "font_class": "micoff-filled",
     "unicode": "e6b0",
-    "unicode_decimal": 59056 },
-
-  {
+    "unicode_decimal": 59056
+  }, {
     "icon_id": "24923165",
     "name": "map-pin-ellipse",
     "font_class": "map-pin-ellipse",
     "unicode": "e6ac",
-    "unicode_decimal": 59052 },
-
-  {
+    "unicode_decimal": 59052
+  }, {
     "icon_id": "24923166",
     "name": "map-pin",
     "font_class": "map-pin",
     "unicode": "e6ad",
-    "unicode_decimal": 59053 },
-
-  {
+    "unicode_decimal": 59053
+  }, {
     "icon_id": "24923167",
     "name": "location",
     "font_class": "location",
     "unicode": "e6ae",
-    "unicode_decimal": 59054 },
-
-  {
+    "unicode_decimal": 59054
+  }, {
     "icon_id": "24923064",
     "name": "starhalf",
     "font_class": "starhalf",
     "unicode": "e683",
-    "unicode_decimal": 59011 },
-
-  {
+    "unicode_decimal": 59011
+  }, {
     "icon_id": "24923065",
     "name": "star",
     "font_class": "star",
     "unicode": "e688",
-    "unicode_decimal": 59016 },
-
-  {
+    "unicode_decimal": 59016
+  }, {
     "icon_id": "24923066",
     "name": "star-filled",
     "font_class": "star-filled",
     "unicode": "e68f",
-    "unicode_decimal": 59023 },
-
-  {
+    "unicode_decimal": 59023
+  }, {
     "icon_id": "24899646",
     "name": "a-rilidaka",
     "font_class": "calendar",
     "unicode": "e6a0",
-    "unicode_decimal": 59040 },
-
-  {
+    "unicode_decimal": 59040
+  }, {
     "icon_id": "24899647",
     "name": "fire",
     "font_class": "fire",
     "unicode": "e6a1",
-    "unicode_decimal": 59041 },
-
-  {
+    "unicode_decimal": 59041
+  }, {
     "icon_id": "24899648",
     "name": "paihangbang",
     "font_class": "medal",
     "unicode": "e6a2",
-    "unicode_decimal": 59042 },
-
-  {
+    "unicode_decimal": 59042
+  }, {
     "icon_id": "24899649",
     "name": "font",
     "font_class": "font",
     "unicode": "e6a3",
-    "unicode_decimal": 59043 },
-
-  {
+    "unicode_decimal": 59043
+  }, {
     "icon_id": "24899650",
     "name": "gift",
     "font_class": "gift",
     "unicode": "e6a4",
-    "unicode_decimal": 59044 },
-
-  {
+    "unicode_decimal": 59044
+  }, {
     "icon_id": "24899651",
     "name": "link",
     "font_class": "link",
     "unicode": "e6a5",
-    "unicode_decimal": 59045 },
-
-  {
+    "unicode_decimal": 59045
+  }, {
     "icon_id": "24899652",
     "name": "notification",
     "font_class": "notification",
     "unicode": "e6a6",
-    "unicode_decimal": 59046 },
-
-  {
+    "unicode_decimal": 59046
+  }, {
     "icon_id": "24899653",
     "name": "staff",
     "font_class": "staff",
     "unicode": "e6a7",
-    "unicode_decimal": 59047 },
-
-  {
+    "unicode_decimal": 59047
+  }, {
     "icon_id": "24899654",
     "name": "VIP",
     "font_class": "vip",
     "unicode": "e6a8",
-    "unicode_decimal": 59048 },
-
-  {
+    "unicode_decimal": 59048
+  }, {
     "icon_id": "24899655",
     "name": "folder_add",
     "font_class": "folder-add",
     "unicode": "e6a9",
-    "unicode_decimal": 59049 },
-
-  {
+    "unicode_decimal": 59049
+  }, {
     "icon_id": "24899656",
     "name": "tune",
     "font_class": "tune",
     "unicode": "e6aa",
-    "unicode_decimal": 59050 },
-
-  {
+    "unicode_decimal": 59050
+  }, {
     "icon_id": "24899657",
     "name": "shimingrenzheng",
     "font_class": "auth",
     "unicode": "e6ab",
-    "unicode_decimal": 59051 },
-
-  {
+    "unicode_decimal": 59051
+  }, {
     "icon_id": "24899565",
     "name": "person",
     "font_class": "person",
     "unicode": "e699",
-    "unicode_decimal": 59033 },
-
-  {
+    "unicode_decimal": 59033
+  }, {
     "icon_id": "24899566",
     "name": "email-filled",
     "font_class": "email-filled",
     "unicode": "e69a",
-    "unicode_decimal": 59034 },
-
-  {
+    "unicode_decimal": 59034
+  }, {
     "icon_id": "24899567",
     "name": "phone-filled",
     "font_class": "phone-filled",
     "unicode": "e69b",
-    "unicode_decimal": 59035 },
-
-  {
+    "unicode_decimal": 59035
+  }, {
     "icon_id": "24899568",
     "name": "phone",
     "font_class": "phone",
     "unicode": "e69c",
-    "unicode_decimal": 59036 },
-
-  {
+    "unicode_decimal": 59036
+  }, {
     "icon_id": "24899570",
     "name": "email",
     "font_class": "email",
     "unicode": "e69e",
-    "unicode_decimal": 59038 },
-
-  {
+    "unicode_decimal": 59038
+  }, {
     "icon_id": "24899571",
     "name": "personadd",
     "font_class": "personadd",
     "unicode": "e69f",
-    "unicode_decimal": 59039 },
-
-  {
+    "unicode_decimal": 59039
+  }, {
     "icon_id": "24899558",
     "name": "chatboxes-filled",
     "font_class": "chatboxes-filled",
     "unicode": "e692",
-    "unicode_decimal": 59026 },
-
-  {
+    "unicode_decimal": 59026
+  }, {
     "icon_id": "24899559",
     "name": "contact",
     "font_class": "contact",
     "unicode": "e693",
-    "unicode_decimal": 59027 },
-
-  {
+    "unicode_decimal": 59027
+  }, {
     "icon_id": "24899560",
     "name": "chatbubble-filled",
     "font_class": "chatbubble-filled",
     "unicode": "e694",
-    "unicode_decimal": 59028 },
-
-  {
+    "unicode_decimal": 59028
+  }, {
     "icon_id": "24899561",
     "name": "contact-filled",
     "font_class": "contact-filled",
     "unicode": "e695",
-    "unicode_decimal": 59029 },
-
-  {
+    "unicode_decimal": 59029
+  }, {
     "icon_id": "24899562",
     "name": "chatboxes",
     "font_class": "chatboxes",
     "unicode": "e696",
-    "unicode_decimal": 59030 },
-
-  {
+    "unicode_decimal": 59030
+  }, {
     "icon_id": "24899563",
     "name": "chatbubble",
     "font_class": "chatbubble",
     "unicode": "e697",
-    "unicode_decimal": 59031 },
-
-  {
+    "unicode_decimal": 59031
+  }, {
     "icon_id": "24881290",
     "name": "upload-filled",
     "font_class": "upload-filled",
     "unicode": "e68e",
-    "unicode_decimal": 59022 },
-
-  {
+    "unicode_decimal": 59022
+  }, {
     "icon_id": "24881292",
     "name": "upload",
     "font_class": "upload",
     "unicode": "e690",
-    "unicode_decimal": 59024 },
-
-  {
+    "unicode_decimal": 59024
+  }, {
     "icon_id": "24881293",
     "name": "weixin",
     "font_class": "weixin",
     "unicode": "e691",
-    "unicode_decimal": 59025 },
-
-  {
+    "unicode_decimal": 59025
+  }, {
     "icon_id": "24881274",
     "name": "compose",
     "font_class": "compose",
     "unicode": "e67f",
-    "unicode_decimal": 59007 },
-
-  {
+    "unicode_decimal": 59007
+  }, {
     "icon_id": "24881275",
     "name": "qq",
     "font_class": "qq",
     "unicode": "e680",
-    "unicode_decimal": 59008 },
-
-  {
+    "unicode_decimal": 59008
+  }, {
     "icon_id": "24881276",
     "name": "download-filled",
     "font_class": "download-filled",
     "unicode": "e681",
-    "unicode_decimal": 59009 },
-
-  {
+    "unicode_decimal": 59009
+  }, {
     "icon_id": "24881277",
     "name": "pengyouquan",
     "font_class": "pyq",
     "unicode": "e682",
-    "unicode_decimal": 59010 },
-
-  {
+    "unicode_decimal": 59010
+  }, {
     "icon_id": "24881279",
     "name": "sound",
     "font_class": "sound",
     "unicode": "e684",
-    "unicode_decimal": 59012 },
-
-  {
+    "unicode_decimal": 59012
+  }, {
     "icon_id": "24881280",
     "name": "trash-filled",
     "font_class": "trash-filled",
     "unicode": "e685",
-    "unicode_decimal": 59013 },
-
-  {
+    "unicode_decimal": 59013
+  }, {
     "icon_id": "24881281",
     "name": "sound-filled",
     "font_class": "sound-filled",
     "unicode": "e686",
-    "unicode_decimal": 59014 },
-
-  {
+    "unicode_decimal": 59014
+  }, {
     "icon_id": "24881282",
     "name": "trash",
     "font_class": "trash",
     "unicode": "e687",
-    "unicode_decimal": 59015 },
-
-  {
+    "unicode_decimal": 59015
+  }, {
     "icon_id": "24881284",
     "name": "videocam-filled",
     "font_class": "videocam-filled",
     "unicode": "e689",
-    "unicode_decimal": 59017 },
-
-  {
+    "unicode_decimal": 59017
+  }, {
     "icon_id": "24881285",
     "name": "spinner-cycle",
     "font_class": "spinner-cycle",
     "unicode": "e68a",
-    "unicode_decimal": 59018 },
-
-  {
+    "unicode_decimal": 59018
+  }, {
     "icon_id": "24881286",
     "name": "weibo",
     "font_class": "weibo",
     "unicode": "e68b",
-    "unicode_decimal": 59019 },
-
-  {
+    "unicode_decimal": 59019
+  }, {
     "icon_id": "24881288",
     "name": "videocam",
     "font_class": "videocam",
     "unicode": "e68c",
-    "unicode_decimal": 59020 },
-
-  {
+    "unicode_decimal": 59020
+  }, {
     "icon_id": "24881289",
     "name": "download",
     "font_class": "download",
     "unicode": "e68d",
-    "unicode_decimal": 59021 },
-
-  {
+    "unicode_decimal": 59021
+  }, {
     "icon_id": "24879601",
     "name": "help",
     "font_class": "help",
     "unicode": "e679",
-    "unicode_decimal": 59001 },
-
-  {
+    "unicode_decimal": 59001
+  }, {
     "icon_id": "24879602",
     "name": "navigate-filled",
     "font_class": "navigate-filled",
     "unicode": "e67a",
-    "unicode_decimal": 59002 },
-
-  {
+    "unicode_decimal": 59002
+  }, {
     "icon_id": "24879603",
     "name": "plusempty",
     "font_class": "plusempty",
     "unicode": "e67b",
-    "unicode_decimal": 59003 },
-
-  {
+    "unicode_decimal": 59003
+  }, {
     "icon_id": "24879604",
     "name": "smallcircle",
     "font_class": "smallcircle",
     "unicode": "e67c",
-    "unicode_decimal": 59004 },
-
-  {
+    "unicode_decimal": 59004
+  }, {
     "icon_id": "24879605",
     "name": "minus-filled",
     "font_class": "minus-filled",
     "unicode": "e67d",
-    "unicode_decimal": 59005 },
-
-  {
+    "unicode_decimal": 59005
+  }, {
     "icon_id": "24879606",
     "name": "micoff",
     "font_class": "micoff",
     "unicode": "e67e",
-    "unicode_decimal": 59006 },
-
-  {
+    "unicode_decimal": 59006
+  }, {
     "icon_id": "24879588",
     "name": "closeempty",
     "font_class": "closeempty",
     "unicode": "e66c",
-    "unicode_decimal": 58988 },
-
-  {
+    "unicode_decimal": 58988
+  }, {
     "icon_id": "24879589",
     "name": "clear",
     "font_class": "clear",
     "unicode": "e66d",
-    "unicode_decimal": 58989 },
-
-  {
+    "unicode_decimal": 58989
+  }, {
     "icon_id": "24879590",
     "name": "navigate",
     "font_class": "navigate",
     "unicode": "e66e",
-    "unicode_decimal": 58990 },
-
-  {
+    "unicode_decimal": 58990
+  }, {
     "icon_id": "24879591",
     "name": "minus",
     "font_class": "minus",
     "unicode": "e66f",
-    "unicode_decimal": 58991 },
-
-  {
+    "unicode_decimal": 58991
+  }, {
     "icon_id": "24879592",
     "name": "image",
     "font_class": "image",
     "unicode": "e670",
-    "unicode_decimal": 58992 },
-
-  {
+    "unicode_decimal": 58992
+  }, {
     "icon_id": "24879593",
     "name": "mic",
     "font_class": "mic",
     "unicode": "e671",
-    "unicode_decimal": 58993 },
-
-  {
+    "unicode_decimal": 58993
+  }, {
     "icon_id": "24879594",
     "name": "paperplane",
     "font_class": "paperplane",
     "unicode": "e672",
-    "unicode_decimal": 58994 },
-
-  {
+    "unicode_decimal": 58994
+  }, {
     "icon_id": "24879595",
     "name": "close",
     "font_class": "close",
     "unicode": "e673",
-    "unicode_decimal": 58995 },
-
-  {
+    "unicode_decimal": 58995
+  }, {
     "icon_id": "24879596",
     "name": "help-filled",
     "font_class": "help-filled",
     "unicode": "e674",
-    "unicode_decimal": 58996 },
-
-  {
+    "unicode_decimal": 58996
+  }, {
     "icon_id": "24879597",
     "name": "plus-filled",
     "font_class": "paperplane-filled",
     "unicode": "e675",
-    "unicode_decimal": 58997 },
-
-  {
+    "unicode_decimal": 58997
+  }, {
     "icon_id": "24879598",
     "name": "plus",
     "font_class": "plus",
     "unicode": "e676",
-    "unicode_decimal": 58998 },
-
-  {
+    "unicode_decimal": 58998
+  }, {
     "icon_id": "24879599",
     "name": "mic-filled",
     "font_class": "mic-filled",
     "unicode": "e677",
-    "unicode_decimal": 58999 },
-
-  {
+    "unicode_decimal": 58999
+  }, {
     "icon_id": "24879600",
     "name": "image-filled",
     "font_class": "image-filled",
     "unicode": "e678",
-    "unicode_decimal": 59000 },
-
-  {
+    "unicode_decimal": 59000
+  }, {
     "icon_id": "24855900",
     "name": "locked-filled",
     "font_class": "locked-filled",
     "unicode": "e668",
-    "unicode_decimal": 58984 },
-
-  {
+    "unicode_decimal": 58984
+  }, {
     "icon_id": "24855901",
     "name": "info",
     "font_class": "info",
     "unicode": "e669",
-    "unicode_decimal": 58985 },
-
-  {
+    "unicode_decimal": 58985
+  }, {
     "icon_id": "24855903",
     "name": "locked",
     "font_class": "locked",
     "unicode": "e66b",
-    "unicode_decimal": 58987 },
-
-  {
+    "unicode_decimal": 58987
+  }, {
     "icon_id": "24855884",
     "name": "camera-filled",
     "font_class": "camera-filled",
     "unicode": "e658",
-    "unicode_decimal": 58968 },
-
-  {
+    "unicode_decimal": 58968
+  }, {
     "icon_id": "24855885",
     "name": "chat-filled",
     "font_class": "chat-filled",
     "unicode": "e659",
-    "unicode_decimal": 58969 },
-
-  {
+    "unicode_decimal": 58969
+  }, {
     "icon_id": "24855886",
     "name": "camera",
     "font_class": "camera",
     "unicode": "e65a",
-    "unicode_decimal": 58970 },
-
-  {
+    "unicode_decimal": 58970
+  }, {
     "icon_id": "24855887",
     "name": "circle",
     "font_class": "circle",
     "unicode": "e65b",
-    "unicode_decimal": 58971 },
-
-  {
+    "unicode_decimal": 58971
+  }, {
     "icon_id": "24855888",
     "name": "checkmarkempty",
     "font_class": "checkmarkempty",
     "unicode": "e65c",
-    "unicode_decimal": 58972 },
-
-  {
+    "unicode_decimal": 58972
+  }, {
     "icon_id": "24855889",
     "name": "chat",
     "font_class": "chat",
     "unicode": "e65d",
-    "unicode_decimal": 58973 },
-
-  {
+    "unicode_decimal": 58973
+  }, {
     "icon_id": "24855890",
     "name": "circle-filled",
     "font_class": "circle-filled",
     "unicode": "e65e",
-    "unicode_decimal": 58974 },
-
-  {
+    "unicode_decimal": 58974
+  }, {
     "icon_id": "24855891",
     "name": "flag",
     "font_class": "flag",
     "unicode": "e65f",
-    "unicode_decimal": 58975 },
-
-  {
+    "unicode_decimal": 58975
+  }, {
     "icon_id": "24855892",
     "name": "flag-filled",
     "font_class": "flag-filled",
     "unicode": "e660",
-    "unicode_decimal": 58976 },
-
-  {
+    "unicode_decimal": 58976
+  }, {
     "icon_id": "24855893",
     "name": "gear-filled",
     "font_class": "gear-filled",
     "unicode": "e661",
-    "unicode_decimal": 58977 },
-
-  {
+    "unicode_decimal": 58977
+  }, {
     "icon_id": "24855894",
     "name": "home",
     "font_class": "home",
     "unicode": "e662",
-    "unicode_decimal": 58978 },
-
-  {
+    "unicode_decimal": 58978
+  }, {
     "icon_id": "24855895",
     "name": "home-filled",
     "font_class": "home-filled",
     "unicode": "e663",
-    "unicode_decimal": 58979 },
-
-  {
+    "unicode_decimal": 58979
+  }, {
     "icon_id": "24855896",
     "name": "gear",
     "font_class": "gear",
     "unicode": "e664",
-    "unicode_decimal": 58980 },
-
-  {
+    "unicode_decimal": 58980
+  }, {
     "icon_id": "24855897",
     "name": "smallcircle-filled",
     "font_class": "smallcircle-filled",
     "unicode": "e665",
-    "unicode_decimal": 58981 },
-
-  {
+    "unicode_decimal": 58981
+  }, {
     "icon_id": "24855898",
     "name": "map-filled",
     "font_class": "map-filled",
     "unicode": "e666",
-    "unicode_decimal": 58982 },
-
-  {
+    "unicode_decimal": 58982
+  }, {
     "icon_id": "24855899",
     "name": "map",
     "font_class": "map",
     "unicode": "e667",
-    "unicode_decimal": 58983 },
-
-  {
+    "unicode_decimal": 58983
+  }, {
     "icon_id": "24855825",
     "name": "refresh-filled",
     "font_class": "refresh-filled",
     "unicode": "e656",
-    "unicode_decimal": 58966 },
-
-  {
+    "unicode_decimal": 58966
+  }, {
     "icon_id": "24855826",
     "name": "refresh",
     "font_class": "refresh",
     "unicode": "e657",
-    "unicode_decimal": 58967 },
-
-  {
+    "unicode_decimal": 58967
+  }, {
     "icon_id": "24855808",
     "name": "cloud-upload",
     "font_class": "cloud-upload",
     "unicode": "e645",
-    "unicode_decimal": 58949 },
-
-  {
+    "unicode_decimal": 58949
+  }, {
     "icon_id": "24855809",
     "name": "cloud-download-filled",
     "font_class": "cloud-download-filled",
     "unicode": "e646",
-    "unicode_decimal": 58950 },
-
-  {
+    "unicode_decimal": 58950
+  }, {
     "icon_id": "24855810",
     "name": "cloud-download",
     "font_class": "cloud-download",
     "unicode": "e647",
-    "unicode_decimal": 58951 },
-
-  {
+    "unicode_decimal": 58951
+  }, {
     "icon_id": "24855811",
     "name": "cloud-upload-filled",
     "font_class": "cloud-upload-filled",
     "unicode": "e648",
-    "unicode_decimal": 58952 },
-
-  {
+    "unicode_decimal": 58952
+  }, {
     "icon_id": "24855813",
     "name": "redo",
     "font_class": "redo",
     "unicode": "e64a",
-    "unicode_decimal": 58954 },
-
-  {
+    "unicode_decimal": 58954
+  }, {
     "icon_id": "24855814",
     "name": "images-filled",
     "font_class": "images-filled",
     "unicode": "e64b",
-    "unicode_decimal": 58955 },
-
-  {
+    "unicode_decimal": 58955
+  }, {
     "icon_id": "24855815",
     "name": "undo-filled",
     "font_class": "undo-filled",
     "unicode": "e64c",
-    "unicode_decimal": 58956 },
-
-  {
+    "unicode_decimal": 58956
+  }, {
     "icon_id": "24855816",
     "name": "more",
     "font_class": "more",
     "unicode": "e64d",
-    "unicode_decimal": 58957 },
-
-  {
+    "unicode_decimal": 58957
+  }, {
     "icon_id": "24855817",
     "name": "more-filled",
     "font_class": "more-filled",
     "unicode": "e64e",
-    "unicode_decimal": 58958 },
-
-  {
+    "unicode_decimal": 58958
+  }, {
     "icon_id": "24855818",
     "name": "undo",
     "font_class": "undo",
     "unicode": "e64f",
-    "unicode_decimal": 58959 },
-
-  {
+    "unicode_decimal": 58959
+  }, {
     "icon_id": "24855819",
     "name": "images",
     "font_class": "images",
     "unicode": "e650",
-    "unicode_decimal": 58960 },
-
-  {
+    "unicode_decimal": 58960
+  }, {
     "icon_id": "24855821",
     "name": "paperclip",
     "font_class": "paperclip",
     "unicode": "e652",
-    "unicode_decimal": 58962 },
-
-  {
+    "unicode_decimal": 58962
+  }, {
     "icon_id": "24855822",
     "name": "settings",
     "font_class": "settings",
     "unicode": "e653",
-    "unicode_decimal": 58963 },
-
-  {
+    "unicode_decimal": 58963
+  }, {
     "icon_id": "24855823",
     "name": "search",
     "font_class": "search",
     "unicode": "e654",
-    "unicode_decimal": 58964 },
-
-  {
+    "unicode_decimal": 58964
+  }, {
     "icon_id": "24855824",
     "name": "redo-filled",
     "font_class": "redo-filled",
     "unicode": "e655",
-    "unicode_decimal": 58965 },
-
-  {
+    "unicode_decimal": 58965
+  }, {
     "icon_id": "24841702",
     "name": "list",
     "font_class": "list",
     "unicode": "e644",
-    "unicode_decimal": 58948 },
-
-  {
+    "unicode_decimal": 58948
+  }, {
     "icon_id": "24841489",
     "name": "mail-open-filled",
     "font_class": "mail-open-filled",
     "unicode": "e63a",
-    "unicode_decimal": 58938 },
-
-  {
+    "unicode_decimal": 58938
+  }, {
     "icon_id": "24841491",
     "name": "hand-thumbsdown-filled",
     "font_class": "hand-down-filled",
     "unicode": "e63c",
-    "unicode_decimal": 58940 },
-
-  {
+    "unicode_decimal": 58940
+  }, {
     "icon_id": "24841492",
     "name": "hand-thumbsdown",
     "font_class": "hand-down",
     "unicode": "e63d",
-    "unicode_decimal": 58941 },
-
-  {
+    "unicode_decimal": 58941
+  }, {
     "icon_id": "24841493",
     "name": "hand-thumbsup-filled",
     "font_class": "hand-up-filled",
     "unicode": "e63e",
-    "unicode_decimal": 58942 },
-
-  {
+    "unicode_decimal": 58942
+  }, {
     "icon_id": "24841494",
     "name": "hand-thumbsup",
     "font_class": "hand-up",
     "unicode": "e63f",
-    "unicode_decimal": 58943 },
-
-  {
+    "unicode_decimal": 58943
+  }, {
     "icon_id": "24841496",
     "name": "heart-filled",
     "font_class": "heart-filled",
     "unicode": "e641",
-    "unicode_decimal": 58945 },
-
-  {
+    "unicode_decimal": 58945
+  }, {
     "icon_id": "24841498",
     "name": "mail-open",
     "font_class": "mail-open",
     "unicode": "e643",
-    "unicode_decimal": 58947 },
-
-  {
+    "unicode_decimal": 58947
+  }, {
     "icon_id": "24841488",
     "name": "heart",
     "font_class": "heart",
     "unicode": "e639",
-    "unicode_decimal": 58937 },
-
-  {
+    "unicode_decimal": 58937
+  }, {
     "icon_id": "24839963",
     "name": "loop",
     "font_class": "loop",
     "unicode": "e633",
-    "unicode_decimal": 58931 },
-
-  {
+    "unicode_decimal": 58931
+  }, {
     "icon_id": "24839866",
     "name": "pulldown",
     "font_class": "pulldown",
     "unicode": "e632",
-    "unicode_decimal": 58930 },
-
-  {
+    "unicode_decimal": 58930
+  }, {
     "icon_id": "24813798",
     "name": "scan",
     "font_class": "scan",
     "unicode": "e62a",
-    "unicode_decimal": 58922 },
-
-  {
+    "unicode_decimal": 58922
+  }, {
     "icon_id": "24813786",
     "name": "bars",
     "font_class": "bars",
     "unicode": "e627",
-    "unicode_decimal": 58919 },
-
-  {
+    "unicode_decimal": 58919
+  }, {
     "icon_id": "24813788",
     "name": "cart-filled",
     "font_class": "cart-filled",
     "unicode": "e629",
-    "unicode_decimal": 58921 },
-
-  {
+    "unicode_decimal": 58921
+  }, {
     "icon_id": "24813790",
     "name": "checkbox",
     "font_class": "checkbox",
     "unicode": "e62b",
-    "unicode_decimal": 58923 },
-
-  {
+    "unicode_decimal": 58923
+  }, {
     "icon_id": "24813791",
     "name": "checkbox-filled",
     "font_class": "checkbox-filled",
     "unicode": "e62c",
-    "unicode_decimal": 58924 },
-
-  {
+    "unicode_decimal": 58924
+  }, {
     "icon_id": "24813794",
     "name": "shop",
     "font_class": "shop",
     "unicode": "e62f",
-    "unicode_decimal": 58927 },
-
-  {
+    "unicode_decimal": 58927
+  }, {
     "icon_id": "24813795",
     "name": "headphones",
     "font_class": "headphones",
     "unicode": "e630",
-    "unicode_decimal": 58928 },
-
-  {
+    "unicode_decimal": 58928
+  }, {
     "icon_id": "24813796",
     "name": "cart",
     "font_class": "cart",
     "unicode": "e631",
-    "unicode_decimal": 58929 }] };exports.default = _default;
+    "unicode_decimal": 58929
+  }]
+};
+exports.default = _default;
 
 /***/ }),
 
-/***/ 187:
+/***/ 21:
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/nonIterableSpread.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 216:
 /*!****************************************************************************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/uni_modules/uni-datetime-picker/components/uni-datetime-picker/util.js ***!
   \****************************************************************************************************************/
@@ -6552,15 +5427,25 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;function _classCallCheck(instance, Constructor) {if (!(instance instanceof Constructor)) {throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target, props) {for (var i = 0; i < props.length; i++) {var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);}}function _createClass(Constructor, protoProps, staticProps) {if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;}var Calendar = /*#__PURE__*/function () {
-  function Calendar()
 
 
-
-
-
-
-  {var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},date = _ref.date,selected = _ref.selected,startDate = _ref.startDate,endDate = _ref.endDate,range = _ref.range;_classCallCheck(this, Calendar);
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
+var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
+var Calendar = /*#__PURE__*/function () {
+  function Calendar() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      date = _ref.date,
+      selected = _ref.selected,
+      startDate = _ref.startDate,
+      endDate = _ref.endDate,
+      range = _ref.range;
+    (0, _classCallCheck2.default)(this, Calendar);
     // 当前日期
     this.date = this.getDate(new Date()); // 当前初入日期
     // 打点信息
@@ -6579,50 +5464,61 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     this.lastHover = false;
   }
   /**
-     * 设置日期
-     * @param {Object} date
-     */_createClass(Calendar, [{ key: "setDate", value: function setDate(
-    date) {
+   * 设置日期
+   * @param {Object} date
+   */
+  (0, _createClass2.default)(Calendar, [{
+    key: "setDate",
+    value: function setDate(date) {
       this.selectDate = this.getDate(date);
       this._getWeek(this.selectDate.fullDate);
     }
 
     /**
-       * 清理多选状态
-       */ }, { key: "cleanMultipleStatus", value: function cleanMultipleStatus()
-    {
+     * 清理多选状态
+     */
+  }, {
+    key: "cleanMultipleStatus",
+    value: function cleanMultipleStatus() {
       this.multipleStatus = {
         before: '',
         after: '',
-        data: [] };
-
+        data: []
+      };
     }
 
     /**
-       * 重置开始日期
-       */ }, { key: "resetSatrtDate", value: function resetSatrtDate(
-    startDate) {
+     * 重置开始日期
+     */
+  }, {
+    key: "resetSatrtDate",
+    value: function resetSatrtDate(startDate) {
       // 范围开始
       this.startDate = startDate;
-
     }
 
     /**
-       * 重置结束日期
-       */ }, { key: "resetEndDate", value: function resetEndDate(
-    endDate) {
+     * 重置结束日期
+     */
+  }, {
+    key: "resetEndDate",
+    value: function resetEndDate(endDate) {
       // 范围结束
       this.endDate = endDate;
     }
 
     /**
-       * 获取任意时间
-       */ }, { key: "getDate", value: function getDate(
-    date) {var AddDayCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;var str = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'day';
+     * 获取任意时间
+     */
+  }, {
+    key: "getDate",
+    value: function getDate(date) {
+      var AddDayCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      var str = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'day';
       if (!date) {
         date = new Date();
       }
-      if (typeof date !== 'object') {
+      if ((0, _typeof2.default)(date) !== 'object') {
         date = date.replace(/-/g, '/');
       }
       var dd = new Date(date);
@@ -6636,11 +5532,12 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
           } else {
             dd.setMonth(dd.getMonth() + AddDayCount); // 获取AddDayCount天后的日期
           }
+
           break;
         case 'year':
           dd.setFullYear(dd.getFullYear() + AddDayCount); // 获取AddDayCount天后的日期
-          break;}
-
+          break;
+      }
       var y = dd.getFullYear();
       var m = dd.getMonth() + 1 < 10 ? '0' + (dd.getMonth() + 1) : dd.getMonth() + 1; // 获取当前月份的日期，不足10补0
       var d = dd.getDate() < 10 ? '0' + dd.getDate() : dd.getDate(); // 获取当前几号，不足10补0
@@ -6649,37 +5546,39 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
         year: y,
         month: m,
         date: d,
-        day: dd.getDay() };
-
+        day: dd.getDay()
+      };
     }
 
-
     /**
-       * 获取上月剩余天数
-       */ }, { key: "_getLastMonthDays", value: function _getLastMonthDays(
-    firstDay, full) {
+     * 获取上月剩余天数
+     */
+  }, {
+    key: "_getLastMonthDays",
+    value: function _getLastMonthDays(firstDay, full) {
       var dateArr = [];
       for (var i = firstDay; i > 0; i--) {
         var beforeDate = new Date(full.year, full.month - 1, -i + 1).getDate();
         dateArr.push({
           date: beforeDate,
           month: full.month - 1,
-          disable: true });
-
+          disable: true
+        });
       }
       return dateArr;
     }
     /**
-       * 获取本月天数
-       */ }, { key: "_currentMonthDys", value: function _currentMonthDys(
-    dateData, full) {var _this = this;
+     * 获取本月天数
+     */
+  }, {
+    key: "_currentMonthDys",
+    value: function _currentMonthDys(dateData, full) {
+      var _this = this;
       var dateArr = [];
-      var fullDate = this.date.fullDate;var _loop = function _loop(
-      i) {
+      var fullDate = this.date.fullDate;
+      var _loop = function _loop(i) {
         var isinfo = false;
-        var nowDate = full.year + '-' + (full.month < 10 ?
-        full.month : full.month) + '-' + (i < 10 ?
-        '0' + i : i);
+        var nowDate = full.year + '-' + (full.month < 10 ? full.month : full.month) + '-' + (i < 10 ? '0' + i : i);
         // 是否今天
         var isDay = fullDate === nowDate;
         // 获取打点信息
@@ -6697,7 +5596,6 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
           // disableBefore = this.dateCompare(dateCompBefore ? this.startDate : fullDate, nowDate)
           disableBefore = _this.dateCompare(_this.startDate, nowDate);
         }
-
         if (_this.endDate) {
           // let dateCompAfter = this.dateCompare(fullDate, this.endDate)
           // disableAfter = this.dateCompare(nowDate, dateCompAfter ? this.endDate : fullDate)
@@ -6726,47 +5624,58 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
           month: full.month,
           disable: !(disableBefore && disableAfter),
           isDay: isDay,
-          userChecked: false };
-
+          userChecked: false
+        };
         if (info) {
           data.extraInfo = info;
         }
-
-        dateArr.push(data);};for (var i = 1; i <= dateData; i++) {_loop(i);
+        dateArr.push(data);
+      };
+      for (var i = 1; i <= dateData; i++) {
+        _loop(i);
       }
       return dateArr;
     }
     /**
-       * 获取下月天数
-       */ }, { key: "_getNextMonthDays", value: function _getNextMonthDays(
-    surplus, full) {
+     * 获取下月天数
+     */
+  }, {
+    key: "_getNextMonthDays",
+    value: function _getNextMonthDays(surplus, full) {
       var dateArr = [];
       for (var i = 1; i < surplus + 1; i++) {
         dateArr.push({
           date: i,
           month: Number(full.month) + 1,
-          disable: true });
-
+          disable: true
+        });
       }
       return dateArr;
     }
 
     /**
-       * 获取当前日期详情
-       * @param {Object} date
-       */ }, { key: "getInfo", value: function getInfo(
-    date) {var _this2 = this;
+     * 获取当前日期详情
+     * @param {Object} date
+     */
+  }, {
+    key: "getInfo",
+    value: function getInfo(date) {
+      var _this2 = this;
       if (!date) {
         date = new Date();
       }
-      var dateInfo = this.canlender.find(function (item) {return item.fullDate === _this2.getDate(date).fullDate;});
+      var dateInfo = this.canlender.find(function (item) {
+        return item.fullDate === _this2.getDate(date).fullDate;
+      });
       return dateInfo;
     }
 
     /**
-       * 比较时间大小
-       */ }, { key: "dateCompare", value: function dateCompare(
-    startDate, endDate) {
+     * 比较时间大小
+     */
+  }, {
+    key: "dateCompare",
+    value: function dateCompare(startDate, endDate) {
       // 计算截止时间
       startDate = new Date(startDate.replace('-', '/').replace('-', '/'));
       // 计算详细项的截止时间
@@ -6779,9 +5688,11 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     }
 
     /**
-       * 比较时间是否相等
-       */ }, { key: "dateEqual", value: function dateEqual(
-    before, after) {
+     * 比较时间是否相等
+     */
+  }, {
+    key: "dateEqual",
+    value: function dateEqual(before, after) {
       // 计算截止时间
       before = new Date(before.replace('-', '/').replace('-', '/'));
       // 计算详细项的截止时间
@@ -6794,18 +5705,20 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     }
 
     /**
-       *  比较真实起始日期
-       */ }, { key: "isLogicBefore", value: function isLogicBefore(
-
-    currentDay, before, after) {
+     *  比较真实起始日期
+     */
+  }, {
+    key: "isLogicBefore",
+    value: function isLogicBefore(currentDay, before, after) {
       var logicBefore = before;
       if (before && after) {
         logicBefore = this.dateCompare(before, after) ? before : after;
       }
       return this.dateEqual(logicBefore, currentDay);
-    } }, { key: "isLogicAfter", value: function isLogicAfter(
-
-    currentDay, before, after) {
+    }
+  }, {
+    key: "isLogicAfter",
+    value: function isLogicAfter(currentDay, before, after) {
       var logicAfter = after;
       if (before && after) {
         logicAfter = this.dateCompare(before, after) ? after : before;
@@ -6814,11 +5727,13 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     }
 
     /**
-       * 获取日期范围内所有日期
-       * @param {Object} begin
-       * @param {Object} end
-       */ }, { key: "geDateAll", value: function geDateAll(
-    begin, end) {
+     * 获取日期范围内所有日期
+     * @param {Object} begin
+     * @param {Object} end
+     */
+  }, {
+    key: "geDateAll",
+    value: function geDateAll(begin, end) {
       var arr = [];
       var ab = begin.split('-');
       var ae = end.split('-');
@@ -6836,13 +5751,14 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     }
 
     /**
-       *  获取多选状态
-       */ }, { key: "setMultiple", value: function setMultiple(
-    fullDate) {var _this$multipleStatus =
-
-
-
-      this.multipleStatus,before = _this$multipleStatus.before,after = _this$multipleStatus.after;
+     *  获取多选状态
+     */
+  }, {
+    key: "setMultiple",
+    value: function setMultiple(fullDate) {
+      var _this$multipleStatus = this.multipleStatus,
+        before = _this$multipleStatus.before,
+        after = _this$multipleStatus.after;
       if (!this.range) return;
       if (before && after) {
         if (!this.lastHover) {
@@ -6861,11 +5777,9 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
         } else {
           this.multipleStatus.after = fullDate;
           if (this.dateCompare(this.multipleStatus.before, this.multipleStatus.after)) {
-            this.multipleStatus.data = this.geDateAll(this.multipleStatus.before, this.multipleStatus.
-            after);
+            this.multipleStatus.data = this.geDateAll(this.multipleStatus.before, this.multipleStatus.after);
           } else {
-            this.multipleStatus.data = this.geDateAll(this.multipleStatus.after, this.multipleStatus.
-            before);
+            this.multipleStatus.data = this.geDateAll(this.multipleStatus.after, this.multipleStatus.before);
           }
           this.lastHover = true;
         }
@@ -6874,17 +5788,16 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     }
 
     /**
-       *  鼠标 hover 更新多选状态
-       */ }, { key: "setHoverMultiple", value: function setHoverMultiple(
-    fullDate) {var _this$multipleStatus2 =
-
-
-
-      this.multipleStatus,before = _this$multipleStatus2.before,after = _this$multipleStatus2.after;
-
+     *  鼠标 hover 更新多选状态
+     */
+  }, {
+    key: "setHoverMultiple",
+    value: function setHoverMultiple(fullDate) {
+      var _this$multipleStatus2 = this.multipleStatus,
+        before = _this$multipleStatus2.before,
+        after = _this$multipleStatus2.after;
       if (!this.range) return;
       if (this.lastHover) return;
-
       if (!before) {
         this.multipleStatus.before = fullDate;
       } else {
@@ -6899,9 +5812,11 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     }
 
     /**
-       * 更新默认值多选状态
-       */ }, { key: "setDefaultMultiple", value: function setDefaultMultiple(
-    before, after) {
+     * 更新默认值多选状态
+     */
+  }, {
+    key: "setDefaultMultiple",
+    value: function setDefaultMultiple(before, after) {
       this.multipleStatus.before = before;
       this.multipleStatus.after = after;
       if (before && after) {
@@ -6916,25 +5831,29 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     }
 
     /**
-       * 获取每周数据
-       * @param {Object} dateData
-       */ }, { key: "_getWeek", value: function _getWeek(
-    dateData) {var _this$getDate =
-
-
-
-
-
-
-      this.getDate(dateData),fullDate = _this$getDate.fullDate,year = _this$getDate.year,month = _this$getDate.month,date = _this$getDate.date,day = _this$getDate.day;
+     * 获取每周数据
+     * @param {Object} dateData
+     */
+  }, {
+    key: "_getWeek",
+    value: function _getWeek(dateData) {
+      var _this$getDate = this.getDate(dateData),
+        fullDate = _this$getDate.fullDate,
+        year = _this$getDate.year,
+        month = _this$getDate.month,
+        date = _this$getDate.date,
+        day = _this$getDate.day;
       var firstDay = new Date(year, month - 1, 1).getDay();
       var currentDay = new Date(year, month, 0).getDate();
       var dates = {
-        lastMonthDays: this._getLastMonthDays(firstDay, this.getDate(dateData)), // 上个月末尾几天
-        currentMonthDys: this._currentMonthDys(currentDay, this.getDate(dateData)), // 本月天数
-        nextMonthDays: [], // 下个月开始几天
-        weeks: [] };
-
+        lastMonthDays: this._getLastMonthDays(firstDay, this.getDate(dateData)),
+        // 上个月末尾几天
+        currentMonthDys: this._currentMonthDys(currentDay, this.getDate(dateData)),
+        // 本月天数
+        nextMonthDays: [],
+        // 下个月开始几天
+        weeks: []
+      };
       var canlender = [];
       var surplus = 42 - (dates.lastMonthDays.length + dates.currentMonthDys.length);
       dates.nextMonthDays = this._getNextMonthDays(surplus, this.getDate(dateData));
@@ -6958,89 +5877,590 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     // 	}
     // 	return this.instance;
     // }
-  }]);return Calendar;}();var _default =
-
-
-Calendar;exports.default = _default;
+  }]);
+  return Calendar;
+}();
+var _default = Calendar;
+exports.default = _default;
 
 /***/ }),
 
-/***/ 2:
-/*!***********************************!*\
-  !*** (webpack)/buildin/global.js ***!
-  \***********************************/
+/***/ 22:
+/*!*************************************************************!*\
+  !*** ./node_modules/@dcloudio/uni-i18n/dist/uni-i18n.es.js ***!
+  \*************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-var g;
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni, global) {
 
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LOCALE_ZH_HANT = exports.LOCALE_ZH_HANS = exports.LOCALE_FR = exports.LOCALE_ES = exports.LOCALE_EN = exports.I18n = exports.Formatter = void 0;
+exports.compileI18nJsonStr = compileI18nJsonStr;
+exports.hasI18nJson = hasI18nJson;
+exports.initVueI18n = initVueI18n;
+exports.isI18nStr = isI18nStr;
+exports.isString = void 0;
+exports.normalizeLocale = normalizeLocale;
+exports.parseI18nJson = parseI18nJson;
+exports.resolveLocale = resolveLocale;
+var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ 5));
+var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
+var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+var isArray = Array.isArray;
+var isObject = function isObject(val) {
+  return val !== null && (0, _typeof2.default)(val) === 'object';
+};
+var defaultDelimiters = ['{', '}'];
+var BaseFormatter = /*#__PURE__*/function () {
+  function BaseFormatter() {
+    (0, _classCallCheck2.default)(this, BaseFormatter);
+    this._caches = Object.create(null);
+  }
+  (0, _createClass2.default)(BaseFormatter, [{
+    key: "interpolate",
+    value: function interpolate(message, values) {
+      var delimiters = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultDelimiters;
+      if (!values) {
+        return [message];
+      }
+      var tokens = this._caches[message];
+      if (!tokens) {
+        tokens = parse(message, delimiters);
+        this._caches[message] = tokens;
+      }
+      return compile(tokens, values);
+    }
+  }]);
+  return BaseFormatter;
+}();
+exports.Formatter = BaseFormatter;
+var RE_TOKEN_LIST_VALUE = /^(?:\d)+/;
+var RE_TOKEN_NAMED_VALUE = /^(?:\w)+/;
+function parse(format, _ref) {
+  var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
+    startDelimiter = _ref2[0],
+    endDelimiter = _ref2[1];
+  var tokens = [];
+  var position = 0;
+  var text = '';
+  while (position < format.length) {
+    var char = format[position++];
+    if (char === startDelimiter) {
+      if (text) {
+        tokens.push({
+          type: 'text',
+          value: text
+        });
+      }
+      text = '';
+      var sub = '';
+      char = format[position++];
+      while (char !== undefined && char !== endDelimiter) {
+        sub += char;
+        char = format[position++];
+      }
+      var isClosed = char === endDelimiter;
+      var type = RE_TOKEN_LIST_VALUE.test(sub) ? 'list' : isClosed && RE_TOKEN_NAMED_VALUE.test(sub) ? 'named' : 'unknown';
+      tokens.push({
+        value: sub,
+        type: type
+      });
+    }
+    //  else if (char === '%') {
+    //   // when found rails i18n syntax, skip text capture
+    //   if (format[position] !== '{') {
+    //     text += char
+    //   }
+    // }
+    else {
+      text += char;
+    }
+  }
+  text && tokens.push({
+    type: 'text',
+    value: text
+  });
+  return tokens;
 }
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
+function compile(tokens, values) {
+  var compiled = [];
+  var index = 0;
+  var mode = isArray(values) ? 'list' : isObject(values) ? 'named' : 'unknown';
+  if (mode === 'unknown') {
+    return compiled;
+  }
+  while (index < tokens.length) {
+    var token = tokens[index];
+    switch (token.type) {
+      case 'text':
+        compiled.push(token.value);
+        break;
+      case 'list':
+        compiled.push(values[parseInt(token.value, 10)]);
+        break;
+      case 'named':
+        if (mode === 'named') {
+          compiled.push(values[token.value]);
+        } else {
+          if (true) {
+            console.warn("Type of token '".concat(token.type, "' and format of value '").concat(mode, "' don't match!"));
+          }
+        }
+        break;
+      case 'unknown':
+        if (true) {
+          console.warn("Detect 'unknown' type of token!");
+        }
+        break;
+    }
+    index++;
+  }
+  return compiled;
+}
+var LOCALE_ZH_HANS = 'zh-Hans';
+exports.LOCALE_ZH_HANS = LOCALE_ZH_HANS;
+var LOCALE_ZH_HANT = 'zh-Hant';
+exports.LOCALE_ZH_HANT = LOCALE_ZH_HANT;
+var LOCALE_EN = 'en';
+exports.LOCALE_EN = LOCALE_EN;
+var LOCALE_FR = 'fr';
+exports.LOCALE_FR = LOCALE_FR;
+var LOCALE_ES = 'es';
+exports.LOCALE_ES = LOCALE_ES;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var hasOwn = function hasOwn(val, key) {
+  return hasOwnProperty.call(val, key);
+};
+var defaultFormatter = new BaseFormatter();
+function include(str, parts) {
+  return !!parts.find(function (part) {
+    return str.indexOf(part) !== -1;
+  });
+}
+function startsWith(str, parts) {
+  return parts.find(function (part) {
+    return str.indexOf(part) === 0;
+  });
+}
+function normalizeLocale(locale, messages) {
+  if (!locale) {
+    return;
+  }
+  locale = locale.trim().replace(/_/g, '-');
+  if (messages && messages[locale]) {
+    return locale;
+  }
+  locale = locale.toLowerCase();
+  if (locale.indexOf('zh') === 0) {
+    if (locale.indexOf('-hans') > -1) {
+      return LOCALE_ZH_HANS;
+    }
+    if (locale.indexOf('-hant') > -1) {
+      return LOCALE_ZH_HANT;
+    }
+    if (include(locale, ['-tw', '-hk', '-mo', '-cht'])) {
+      return LOCALE_ZH_HANT;
+    }
+    return LOCALE_ZH_HANS;
+  }
+  var lang = startsWith(locale, [LOCALE_EN, LOCALE_FR, LOCALE_ES]);
+  if (lang) {
+    return lang;
+  }
+}
+var I18n = /*#__PURE__*/function () {
+  function I18n(_ref3) {
+    var locale = _ref3.locale,
+      fallbackLocale = _ref3.fallbackLocale,
+      messages = _ref3.messages,
+      watcher = _ref3.watcher,
+      formater = _ref3.formater;
+    (0, _classCallCheck2.default)(this, I18n);
+    this.locale = LOCALE_EN;
+    this.fallbackLocale = LOCALE_EN;
+    this.message = {};
+    this.messages = {};
+    this.watchers = [];
+    if (fallbackLocale) {
+      this.fallbackLocale = fallbackLocale;
+    }
+    this.formater = formater || defaultFormatter;
+    this.messages = messages || {};
+    this.setLocale(locale || LOCALE_EN);
+    if (watcher) {
+      this.watchLocale(watcher);
+    }
+  }
+  (0, _createClass2.default)(I18n, [{
+    key: "setLocale",
+    value: function setLocale(locale) {
+      var _this = this;
+      var oldLocale = this.locale;
+      this.locale = normalizeLocale(locale, this.messages) || this.fallbackLocale;
+      if (!this.messages[this.locale]) {
+        // 可能初始化时不存在
+        this.messages[this.locale] = {};
+      }
+      this.message = this.messages[this.locale];
+      // 仅发生变化时，通知
+      if (oldLocale !== this.locale) {
+        this.watchers.forEach(function (watcher) {
+          watcher(_this.locale, oldLocale);
+        });
+      }
+    }
+  }, {
+    key: "getLocale",
+    value: function getLocale() {
+      return this.locale;
+    }
+  }, {
+    key: "watchLocale",
+    value: function watchLocale(fn) {
+      var _this2 = this;
+      var index = this.watchers.push(fn) - 1;
+      return function () {
+        _this2.watchers.splice(index, 1);
+      };
+    }
+  }, {
+    key: "add",
+    value: function add(locale, message) {
+      var override = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var curMessages = this.messages[locale];
+      if (curMessages) {
+        if (override) {
+          Object.assign(curMessages, message);
+        } else {
+          Object.keys(message).forEach(function (key) {
+            if (!hasOwn(curMessages, key)) {
+              curMessages[key] = message[key];
+            }
+          });
+        }
+      } else {
+        this.messages[locale] = message;
+      }
+    }
+  }, {
+    key: "f",
+    value: function f(message, values, delimiters) {
+      return this.formater.interpolate(message, values, delimiters).join('');
+    }
+  }, {
+    key: "t",
+    value: function t(key, locale, values) {
+      var message = this.message;
+      if (typeof locale === 'string') {
+        locale = normalizeLocale(locale, this.messages);
+        locale && (message = this.messages[locale]);
+      } else {
+        values = locale;
+      }
+      if (!hasOwn(message, key)) {
+        console.warn("Cannot translate the value of keypath ".concat(key, ". Use the value of keypath as default."));
+        return key;
+      }
+      return this.formater.interpolate(message[key], values).join('');
+    }
+  }]);
+  return I18n;
+}();
+exports.I18n = I18n;
+function watchAppLocale(appVm, i18n) {
+  // 需要保证 watch 的触发在组件渲染之前
+  if (appVm.$watchLocale) {
+    // vue2
+    appVm.$watchLocale(function (newLocale) {
+      i18n.setLocale(newLocale);
+    });
+  } else {
+    appVm.$watch(function () {
+      return appVm.$locale;
+    }, function (newLocale) {
+      i18n.setLocale(newLocale);
+    });
+  }
+}
+function getDefaultLocale() {
+  if (typeof uni !== 'undefined' && uni.getLocale) {
+    return uni.getLocale();
+  }
+  // 小程序平台，uni 和 uni-i18n 互相引用，导致访问不到 uni，故在 global 上挂了 getLocale
+  if (typeof global !== 'undefined' && global.getLocale) {
+    return global.getLocale();
+  }
+  return LOCALE_EN;
+}
+function initVueI18n(locale) {
+  var messages = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var fallbackLocale = arguments.length > 2 ? arguments[2] : undefined;
+  var watcher = arguments.length > 3 ? arguments[3] : undefined;
+  // 兼容旧版本入参
+  if (typeof locale !== 'string') {
+    var _ref4 = [messages, locale];
+    locale = _ref4[0];
+    messages = _ref4[1];
+  }
+  if (typeof locale !== 'string') {
+    // 因为小程序平台，uni-i18n 和 uni 互相引用，导致此时访问 uni 时，为 undefined
+    locale = getDefaultLocale();
+  }
+  if (typeof fallbackLocale !== 'string') {
+    fallbackLocale = typeof __uniConfig !== 'undefined' && __uniConfig.fallbackLocale || LOCALE_EN;
+  }
+  var i18n = new I18n({
+    locale: locale,
+    fallbackLocale: fallbackLocale,
+    messages: messages,
+    watcher: watcher
+  });
+  var _t = function t(key, values) {
+    if (typeof getApp !== 'function') {
+      // app view
+      /* eslint-disable no-func-assign */
+      _t = function t(key, values) {
+        return i18n.t(key, values);
+      };
+    } else {
+      var isWatchedAppLocale = false;
+      _t = function t(key, values) {
+        var appVm = getApp().$vm;
+        // 可能$vm还不存在，比如在支付宝小程序中，组件定义较早，在props的default里使用了t()函数（如uni-goods-nav），此时app还未初始化
+        // options: {
+        // 	type: Array,
+        // 	default () {
+        // 		return [{
+        // 			icon: 'shop',
+        // 			text: t("uni-goods-nav.options.shop"),
+        // 		}, {
+        // 			icon: 'cart',
+        // 			text: t("uni-goods-nav.options.cart")
+        // 		}]
+        // 	}
+        // },
+        if (appVm) {
+          // 触发响应式
+          appVm.$locale;
+          if (!isWatchedAppLocale) {
+            isWatchedAppLocale = true;
+            watchAppLocale(appVm, i18n);
+          }
+        }
+        return i18n.t(key, values);
+      };
+    }
+    return _t(key, values);
+  };
+  return {
+    i18n: i18n,
+    f: function f(message, values, delimiters) {
+      return i18n.f(message, values, delimiters);
+    },
+    t: function t(key, values) {
+      return _t(key, values);
+    },
+    add: function add(locale, message) {
+      var override = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      return i18n.add(locale, message, override);
+    },
+    watch: function watch(fn) {
+      return i18n.watchLocale(fn);
+    },
+    getLocale: function getLocale() {
+      return i18n.getLocale();
+    },
+    setLocale: function setLocale(newLocale) {
+      return i18n.setLocale(newLocale);
+    }
+  };
+}
+var isString = function isString(val) {
+  return typeof val === 'string';
+};
+exports.isString = isString;
+var formater;
+function hasI18nJson(jsonObj, delimiters) {
+  if (!formater) {
+    formater = new BaseFormatter();
+  }
+  return walkJsonObj(jsonObj, function (jsonObj, key) {
+    var value = jsonObj[key];
+    if (isString(value)) {
+      if (isI18nStr(value, delimiters)) {
+        return true;
+      }
+    } else {
+      return hasI18nJson(value, delimiters);
+    }
+  });
+}
+function parseI18nJson(jsonObj, values, delimiters) {
+  if (!formater) {
+    formater = new BaseFormatter();
+  }
+  walkJsonObj(jsonObj, function (jsonObj, key) {
+    var value = jsonObj[key];
+    if (isString(value)) {
+      if (isI18nStr(value, delimiters)) {
+        jsonObj[key] = compileStr(value, values, delimiters);
+      }
+    } else {
+      parseI18nJson(value, values, delimiters);
+    }
+  });
+  return jsonObj;
+}
+function compileI18nJsonStr(jsonStr, _ref5) {
+  var locale = _ref5.locale,
+    locales = _ref5.locales,
+    delimiters = _ref5.delimiters;
+  if (!isI18nStr(jsonStr, delimiters)) {
+    return jsonStr;
+  }
+  if (!formater) {
+    formater = new BaseFormatter();
+  }
+  var localeValues = [];
+  Object.keys(locales).forEach(function (name) {
+    if (name !== locale) {
+      localeValues.push({
+        locale: name,
+        values: locales[name]
+      });
+    }
+  });
+  localeValues.unshift({
+    locale: locale,
+    values: locales[locale]
+  });
+  try {
+    return JSON.stringify(compileJsonObj(JSON.parse(jsonStr), localeValues, delimiters), null, 2);
+  } catch (e) {}
+  return jsonStr;
+}
+function isI18nStr(value, delimiters) {
+  return value.indexOf(delimiters[0]) > -1;
+}
+function compileStr(value, values, delimiters) {
+  return formater.interpolate(value, values, delimiters).join('');
+}
+function compileValue(jsonObj, key, localeValues, delimiters) {
+  var value = jsonObj[key];
+  if (isString(value)) {
+    // 存在国际化
+    if (isI18nStr(value, delimiters)) {
+      jsonObj[key] = compileStr(value, localeValues[0].values, delimiters);
+      if (localeValues.length > 1) {
+        // 格式化国际化语言
+        var valueLocales = jsonObj[key + 'Locales'] = {};
+        localeValues.forEach(function (localValue) {
+          valueLocales[localValue.locale] = compileStr(value, localValue.values, delimiters);
+        });
+      }
+    }
+  } else {
+    compileJsonObj(value, localeValues, delimiters);
+  }
+}
+function compileJsonObj(jsonObj, localeValues, delimiters) {
+  walkJsonObj(jsonObj, function (jsonObj, key) {
+    compileValue(jsonObj, key, localeValues, delimiters);
+  });
+  return jsonObj;
+}
+function walkJsonObj(jsonObj, walk) {
+  if (isArray(jsonObj)) {
+    for (var i = 0; i < jsonObj.length; i++) {
+      if (walk(jsonObj, i)) {
+        return true;
+      }
+    }
+  } else if (isObject(jsonObj)) {
+    for (var key in jsonObj) {
+      if (walk(jsonObj, key)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function resolveLocale(locales) {
+  return function (locale) {
+    if (!locale) {
+      return locale;
+    }
+    locale = normalizeLocale(locale) || locale;
+    return resolveLocaleChain(locale).find(function (locale) {
+      return locales.indexOf(locale) > -1;
+    });
+  };
+}
+function resolveLocaleChain(locale) {
+  var chain = [];
+  var tokens = locale.split('-');
+  while (tokens.length) {
+    chain.push(tokens.join('-'));
+    tokens.pop();
+  }
+  return chain;
+}
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./../../../webpack/buildin/global.js */ 3)))
 
 /***/ }),
 
-/***/ 228:
-/*!*******************************************************************!*\
-  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b1.png ***!
-  \*******************************************************************/
+/***/ 23:
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/classCallCheck.js ***!
+  \***************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "/static/imgs/banner/b1.png";
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
-/***/ 229:
-/*!*******************************************************************!*\
-  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b2.png ***!
-  \*******************************************************************/
+/***/ 24:
+/*!************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/createClass.js ***!
+  \************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "/static/imgs/banner/b2.png";
-
-/***/ }),
-
-/***/ 230:
-/*!*******************************************************************!*\
-  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b3.png ***!
-  \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = "/static/imgs/banner/b3.png";
-
-/***/ }),
-
-/***/ 231:
-/*!*******************************************************************!*\
-  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b4.png ***!
-  \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = "/static/imgs/banner/b4.png";
+var toPropertyKey = __webpack_require__(/*! ./toPropertyKey.js */ 12);
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
+  }
+}
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
+module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
-/***/ 3:
+/***/ 25:
 /*!******************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/mp-vue/dist/mp.runtime.esm.js ***!
   \******************************************************************************************/
@@ -8042,7 +7462,8 @@ function observe (value, asRootData) {
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
     Object.isExtensible(value) &&
-    !value._isVue
+    !value._isVue &&
+    !value.__v_isMPComponent
   ) {
     ob = new Observer(value);
   }
@@ -12460,6 +11881,8 @@ Vue.version = '2.6.11';
  */
 var ARRAYTYPE = '[object Array]';
 var OBJECTTYPE = '[object Object]';
+var NULLTYPE = '[object Null]';
+var UNDEFINEDTYPE = '[object Undefined]';
 // const FUNCTIONTYPE = '[object Function]'
 
 function diff(current, pre) {
@@ -12493,6 +11916,16 @@ function syncKeys(current, pre) {
     }
 }
 
+function nullOrUndefined(currentType, preType) {
+    if(
+        (currentType === NULLTYPE || currentType === UNDEFINEDTYPE) && 
+        (preType === NULLTYPE || preType === UNDEFINEDTYPE)
+    ) {
+        return false
+    }
+    return true
+}
+
 function _diff(current, pre, path, result) {
     if (current === pre) { return }
     var rootCurrentType = type(current);
@@ -12507,7 +11940,7 @@ function _diff(current, pre, path, result) {
                 var currentType = type(currentValue);
                 var preType = type(preValue);
                 if (currentType != ARRAYTYPE && currentType != OBJECTTYPE) {
-                    if (currentValue !== pre[key]) {
+                    if (currentValue !== pre[key] && nullOrUndefined(currentType, preType)) {
                         setResult(result, (path == '' ? '' : path + ".") + key, currentValue);
                     }
                 } else if (currentType == ARRAYTYPE) {
@@ -12566,7 +11999,7 @@ function type(obj) {
 
 function flushCallbacks$1(vm) {
     if (vm.__next_tick_callbacks && vm.__next_tick_callbacks.length) {
-        if (Object({"VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+        if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:flushCallbacks[' + vm.__next_tick_callbacks.length + ']');
@@ -12587,14 +12020,14 @@ function nextTick$1(vm, cb) {
     //1.nextTick 之前 已 setData 且 setData 还未回调完成
     //2.nextTick 之前存在 render watcher
     if (!vm.__next_tick_pending && !hasRenderWatcher(vm)) {
-        if(Object({"VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:nextVueTick');
         }
         return nextTick(cb, vm)
     }else{
-        if(Object({"VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance$1 = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance$1.is || mpInstance$1.route) + '][' + vm._uid +
                 ']:nextMPTick');
@@ -12624,6 +12057,16 @@ function nextTick$1(vm, cb) {
 }
 
 /*  */
+
+function clearInstance(key, value) {
+  // 简易去除 Vue 和小程序组件实例
+  if (value) {
+    if (value._isVue || value.__v_isMPComponent) {
+      return {}
+    }
+  }
+  return value
+}
 
 function cloneWithData(vm) {
   // 确保当前 vm 所有数据被同步
@@ -12656,7 +12099,7 @@ function cloneWithData(vm) {
     ret['value'] = vm.value;
   }
 
-  return JSON.parse(JSON.stringify(ret))
+  return JSON.parse(JSON.stringify(ret, clearInstance))
 }
 
 var patch = function(oldVnode, vnode) {
@@ -12680,7 +12123,7 @@ var patch = function(oldVnode, vnode) {
     });
     var diffData = this.$shouldDiffData === false ? data : diff(data, mpData);
     if (Object.keys(diffData).length) {
-      if (Object({"VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"my-app","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + this._uid +
           ']差量更新',
           JSON.stringify(diffData));
@@ -12866,9 +12309,16 @@ function internalMixin(Vue) {
 
   Vue.prototype.$emit = function(event) {
     if (this.$scope && event) {
-      (this.$scope['_triggerEvent'] || this.$scope['triggerEvent']).call(this.$scope, event, {
-        __args__: toArray(arguments, 1)
-      });
+      var triggerEvent = this.$scope['_triggerEvent'] || this.$scope['triggerEvent'];
+      if (triggerEvent) {
+        try {
+          triggerEvent.call(this.$scope, event, {
+            __args__: toArray(arguments, 1)
+          });
+        } catch (error) {
+
+        }
+      }
     }
     return oldEmit.apply(this, arguments)
   };
@@ -13035,7 +12485,8 @@ var LIFECYCLE_HOOKS$1 = [
     // 'onReady', // 兼容旧版本，应该移除该事件
     'onPageShow',
     'onPageHide',
-    'onPageResize'
+    'onPageResize',
+    'onUploadDouyinVideo'
 ];
 function lifecycleMixin$1(Vue) {
 
@@ -13086,475 +12537,11 @@ internalMixin(Vue);
 
 /* harmony default export */ __webpack_exports__["default"] = (Vue);
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../webpack/buildin/global.js */ 2)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../webpack/buildin/global.js */ 3)))
 
 /***/ }),
 
-/***/ 4:
-/*!*************************************************************!*\
-  !*** ./node_modules/@dcloudio/uni-i18n/dist/uni-i18n.es.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni, global) {Object.defineProperty(exports, "__esModule", { value: true });exports.compileI18nJsonStr = compileI18nJsonStr;exports.hasI18nJson = hasI18nJson;exports.initVueI18n = initVueI18n;exports.isI18nStr = isI18nStr;exports.normalizeLocale = normalizeLocale;exports.parseI18nJson = parseI18nJson;exports.resolveLocale = resolveLocale;exports.isString = exports.LOCALE_ZH_HANT = exports.LOCALE_ZH_HANS = exports.LOCALE_FR = exports.LOCALE_ES = exports.LOCALE_EN = exports.I18n = exports.Formatter = void 0;function _slicedToArray(arr, i) {return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();}function _nonIterableRest() {throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}function _iterableToArrayLimit(arr, i) {if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {_arr.push(_s.value);if (i && _arr.length === i) break;}} catch (err) {_d = true;_e = err;} finally {try {if (!_n && _i["return"] != null) _i["return"]();} finally {if (_d) throw _e;}}return _arr;}function _arrayWithHoles(arr) {if (Array.isArray(arr)) return arr;}function _classCallCheck(instance, Constructor) {if (!(instance instanceof Constructor)) {throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target, props) {for (var i = 0; i < props.length; i++) {var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);}}function _createClass(Constructor, protoProps, staticProps) {if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;}var isArray = Array.isArray;
-var isObject = function isObject(val) {return val !== null && typeof val === 'object';};
-var defaultDelimiters = ['{', '}'];var
-BaseFormatter = /*#__PURE__*/function () {
-  function BaseFormatter() {_classCallCheck(this, BaseFormatter);
-    this._caches = Object.create(null);
-  }_createClass(BaseFormatter, [{ key: "interpolate", value: function interpolate(
-    message, values) {var delimiters = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultDelimiters;
-      if (!values) {
-        return [message];
-      }
-      var tokens = this._caches[message];
-      if (!tokens) {
-        tokens = parse(message, delimiters);
-        this._caches[message] = tokens;
-      }
-      return compile(tokens, values);
-    } }]);return BaseFormatter;}();exports.Formatter = BaseFormatter;
-
-var RE_TOKEN_LIST_VALUE = /^(?:\d)+/;
-var RE_TOKEN_NAMED_VALUE = /^(?:\w)+/;
-function parse(format, _ref) {var _ref2 = _slicedToArray(_ref, 2),startDelimiter = _ref2[0],endDelimiter = _ref2[1];
-  var tokens = [];
-  var position = 0;
-  var text = '';
-  while (position < format.length) {
-    var char = format[position++];
-    if (char === startDelimiter) {
-      if (text) {
-        tokens.push({ type: 'text', value: text });
-      }
-      text = '';
-      var sub = '';
-      char = format[position++];
-      while (char !== undefined && char !== endDelimiter) {
-        sub += char;
-        char = format[position++];
-      }
-      var isClosed = char === endDelimiter;
-      var type = RE_TOKEN_LIST_VALUE.test(sub) ?
-      'list' :
-      isClosed && RE_TOKEN_NAMED_VALUE.test(sub) ?
-      'named' :
-      'unknown';
-      tokens.push({ value: sub, type: type });
-    }
-    //  else if (char === '%') {
-    //   // when found rails i18n syntax, skip text capture
-    //   if (format[position] !== '{') {
-    //     text += char
-    //   }
-    // }
-    else {
-        text += char;
-      }
-  }
-  text && tokens.push({ type: 'text', value: text });
-  return tokens;
-}
-function compile(tokens, values) {
-  var compiled = [];
-  var index = 0;
-  var mode = isArray(values) ?
-  'list' :
-  isObject(values) ?
-  'named' :
-  'unknown';
-  if (mode === 'unknown') {
-    return compiled;
-  }
-  while (index < tokens.length) {
-    var token = tokens[index];
-    switch (token.type) {
-      case 'text':
-        compiled.push(token.value);
-        break;
-      case 'list':
-        compiled.push(values[parseInt(token.value, 10)]);
-        break;
-      case 'named':
-        if (mode === 'named') {
-          compiled.push(values[token.value]);
-        } else
-        {
-          if (true) {
-            console.warn("Type of token '".concat(token.type, "' and format of value '").concat(mode, "' don't match!"));
-          }
-        }
-        break;
-      case 'unknown':
-        if (true) {
-          console.warn("Detect 'unknown' type of token!");
-        }
-        break;}
-
-    index++;
-  }
-  return compiled;
-}
-
-var LOCALE_ZH_HANS = 'zh-Hans';exports.LOCALE_ZH_HANS = LOCALE_ZH_HANS;
-var LOCALE_ZH_HANT = 'zh-Hant';exports.LOCALE_ZH_HANT = LOCALE_ZH_HANT;
-var LOCALE_EN = 'en';exports.LOCALE_EN = LOCALE_EN;
-var LOCALE_FR = 'fr';exports.LOCALE_FR = LOCALE_FR;
-var LOCALE_ES = 'es';exports.LOCALE_ES = LOCALE_ES;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var hasOwn = function hasOwn(val, key) {return hasOwnProperty.call(val, key);};
-var defaultFormatter = new BaseFormatter();
-function include(str, parts) {
-  return !!parts.find(function (part) {return str.indexOf(part) !== -1;});
-}
-function startsWith(str, parts) {
-  return parts.find(function (part) {return str.indexOf(part) === 0;});
-}
-function normalizeLocale(locale, messages) {
-  if (!locale) {
-    return;
-  }
-  locale = locale.trim().replace(/_/g, '-');
-  if (messages && messages[locale]) {
-    return locale;
-  }
-  locale = locale.toLowerCase();
-  if (locale.indexOf('zh') === 0) {
-    if (locale.indexOf('-hans') > -1) {
-      return LOCALE_ZH_HANS;
-    }
-    if (locale.indexOf('-hant') > -1) {
-      return LOCALE_ZH_HANT;
-    }
-    if (include(locale, ['-tw', '-hk', '-mo', '-cht'])) {
-      return LOCALE_ZH_HANT;
-    }
-    return LOCALE_ZH_HANS;
-  }
-  var lang = startsWith(locale, [LOCALE_EN, LOCALE_FR, LOCALE_ES]);
-  if (lang) {
-    return lang;
-  }
-}var
-I18n = /*#__PURE__*/function () {
-  function I18n(_ref3) {var locale = _ref3.locale,fallbackLocale = _ref3.fallbackLocale,messages = _ref3.messages,watcher = _ref3.watcher,formater = _ref3.formater;_classCallCheck(this, I18n);
-    this.locale = LOCALE_EN;
-    this.fallbackLocale = LOCALE_EN;
-    this.message = {};
-    this.messages = {};
-    this.watchers = [];
-    if (fallbackLocale) {
-      this.fallbackLocale = fallbackLocale;
-    }
-    this.formater = formater || defaultFormatter;
-    this.messages = messages || {};
-    this.setLocale(locale || LOCALE_EN);
-    if (watcher) {
-      this.watchLocale(watcher);
-    }
-  }_createClass(I18n, [{ key: "setLocale", value: function setLocale(
-    locale) {var _this = this;
-      var oldLocale = this.locale;
-      this.locale = normalizeLocale(locale, this.messages) || this.fallbackLocale;
-      if (!this.messages[this.locale]) {
-        // 可能初始化时不存在
-        this.messages[this.locale] = {};
-      }
-      this.message = this.messages[this.locale];
-      // 仅发生变化时，通知
-      if (oldLocale !== this.locale) {
-        this.watchers.forEach(function (watcher) {
-          watcher(_this.locale, oldLocale);
-        });
-      }
-    } }, { key: "getLocale", value: function getLocale()
-    {
-      return this.locale;
-    } }, { key: "watchLocale", value: function watchLocale(
-    fn) {var _this2 = this;
-      var index = this.watchers.push(fn) - 1;
-      return function () {
-        _this2.watchers.splice(index, 1);
-      };
-    } }, { key: "add", value: function add(
-    locale, message) {var override = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      var curMessages = this.messages[locale];
-      if (curMessages) {
-        if (override) {
-          Object.assign(curMessages, message);
-        } else
-        {
-          Object.keys(message).forEach(function (key) {
-            if (!hasOwn(curMessages, key)) {
-              curMessages[key] = message[key];
-            }
-          });
-        }
-      } else
-      {
-        this.messages[locale] = message;
-      }
-    } }, { key: "f", value: function f(
-    message, values, delimiters) {
-      return this.formater.interpolate(message, values, delimiters).join('');
-    } }, { key: "t", value: function t(
-    key, locale, values) {
-      var message = this.message;
-      if (typeof locale === 'string') {
-        locale = normalizeLocale(locale, this.messages);
-        locale && (message = this.messages[locale]);
-      } else
-      {
-        values = locale;
-      }
-      if (!hasOwn(message, key)) {
-        console.warn("Cannot translate the value of keypath ".concat(key, ". Use the value of keypath as default."));
-        return key;
-      }
-      return this.formater.interpolate(message[key], values).join('');
-    } }]);return I18n;}();exports.I18n = I18n;
-
-
-function watchAppLocale(appVm, i18n) {
-  // 需要保证 watch 的触发在组件渲染之前
-  if (appVm.$watchLocale) {
-    // vue2
-    appVm.$watchLocale(function (newLocale) {
-      i18n.setLocale(newLocale);
-    });
-  } else
-  {
-    appVm.$watch(function () {return appVm.$locale;}, function (newLocale) {
-      i18n.setLocale(newLocale);
-    });
-  }
-}
-function getDefaultLocale() {
-  if (typeof uni !== 'undefined' && uni.getLocale) {
-    return uni.getLocale();
-  }
-  // 小程序平台，uni 和 uni-i18n 互相引用，导致访问不到 uni，故在 global 上挂了 getLocale
-  if (typeof global !== 'undefined' && global.getLocale) {
-    return global.getLocale();
-  }
-  return LOCALE_EN;
-}
-function initVueI18n(locale) {var messages = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};var fallbackLocale = arguments.length > 2 ? arguments[2] : undefined;var watcher = arguments.length > 3 ? arguments[3] : undefined;
-  // 兼容旧版本入参
-  if (typeof locale !== 'string') {var _ref4 =
-    [
-    messages,
-    locale];locale = _ref4[0];messages = _ref4[1];
-
-  }
-  if (typeof locale !== 'string') {
-    // 因为小程序平台，uni-i18n 和 uni 互相引用，导致此时访问 uni 时，为 undefined
-    locale = getDefaultLocale();
-  }
-  if (typeof fallbackLocale !== 'string') {
-    fallbackLocale =
-    typeof __uniConfig !== 'undefined' && __uniConfig.fallbackLocale ||
-    LOCALE_EN;
-  }
-  var i18n = new I18n({
-    locale: locale,
-    fallbackLocale: fallbackLocale,
-    messages: messages,
-    watcher: watcher });
-
-  var _t = function t(key, values) {
-    if (typeof getApp !== 'function') {
-      // app view
-      /* eslint-disable no-func-assign */
-      _t = function t(key, values) {
-        return i18n.t(key, values);
-      };
-    } else
-    {
-      var isWatchedAppLocale = false;
-      _t = function t(key, values) {
-        var appVm = getApp().$vm;
-        // 可能$vm还不存在，比如在支付宝小程序中，组件定义较早，在props的default里使用了t()函数（如uni-goods-nav），此时app还未初始化
-        // options: {
-        // 	type: Array,
-        // 	default () {
-        // 		return [{
-        // 			icon: 'shop',
-        // 			text: t("uni-goods-nav.options.shop"),
-        // 		}, {
-        // 			icon: 'cart',
-        // 			text: t("uni-goods-nav.options.cart")
-        // 		}]
-        // 	}
-        // },
-        if (appVm) {
-          // 触发响应式
-          appVm.$locale;
-          if (!isWatchedAppLocale) {
-            isWatchedAppLocale = true;
-            watchAppLocale(appVm, i18n);
-          }
-        }
-        return i18n.t(key, values);
-      };
-    }
-    return _t(key, values);
-  };
-  return {
-    i18n: i18n,
-    f: function f(message, values, delimiters) {
-      return i18n.f(message, values, delimiters);
-    },
-    t: function t(key, values) {
-      return _t(key, values);
-    },
-    add: function add(locale, message) {var override = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      return i18n.add(locale, message, override);
-    },
-    watch: function watch(fn) {
-      return i18n.watchLocale(fn);
-    },
-    getLocale: function getLocale() {
-      return i18n.getLocale();
-    },
-    setLocale: function setLocale(newLocale) {
-      return i18n.setLocale(newLocale);
-    } };
-
-}
-
-var isString = function isString(val) {return typeof val === 'string';};exports.isString = isString;
-var formater;
-function hasI18nJson(jsonObj, delimiters) {
-  if (!formater) {
-    formater = new BaseFormatter();
-  }
-  return walkJsonObj(jsonObj, function (jsonObj, key) {
-    var value = jsonObj[key];
-    if (isString(value)) {
-      if (isI18nStr(value, delimiters)) {
-        return true;
-      }
-    } else
-    {
-      return hasI18nJson(value, delimiters);
-    }
-  });
-}
-function parseI18nJson(jsonObj, values, delimiters) {
-  if (!formater) {
-    formater = new BaseFormatter();
-  }
-  walkJsonObj(jsonObj, function (jsonObj, key) {
-    var value = jsonObj[key];
-    if (isString(value)) {
-      if (isI18nStr(value, delimiters)) {
-        jsonObj[key] = compileStr(value, values, delimiters);
-      }
-    } else
-    {
-      parseI18nJson(value, values, delimiters);
-    }
-  });
-  return jsonObj;
-}
-function compileI18nJsonStr(jsonStr, _ref5) {var locale = _ref5.locale,locales = _ref5.locales,delimiters = _ref5.delimiters;
-  if (!isI18nStr(jsonStr, delimiters)) {
-    return jsonStr;
-  }
-  if (!formater) {
-    formater = new BaseFormatter();
-  }
-  var localeValues = [];
-  Object.keys(locales).forEach(function (name) {
-    if (name !== locale) {
-      localeValues.push({
-        locale: name,
-        values: locales[name] });
-
-    }
-  });
-  localeValues.unshift({ locale: locale, values: locales[locale] });
-  try {
-    return JSON.stringify(compileJsonObj(JSON.parse(jsonStr), localeValues, delimiters), null, 2);
-  }
-  catch (e) {}
-  return jsonStr;
-}
-function isI18nStr(value, delimiters) {
-  return value.indexOf(delimiters[0]) > -1;
-}
-function compileStr(value, values, delimiters) {
-  return formater.interpolate(value, values, delimiters).join('');
-}
-function compileValue(jsonObj, key, localeValues, delimiters) {
-  var value = jsonObj[key];
-  if (isString(value)) {
-    // 存在国际化
-    if (isI18nStr(value, delimiters)) {
-      jsonObj[key] = compileStr(value, localeValues[0].values, delimiters);
-      if (localeValues.length > 1) {
-        // 格式化国际化语言
-        var valueLocales = jsonObj[key + 'Locales'] = {};
-        localeValues.forEach(function (localValue) {
-          valueLocales[localValue.locale] = compileStr(value, localValue.values, delimiters);
-        });
-      }
-    }
-  } else
-  {
-    compileJsonObj(value, localeValues, delimiters);
-  }
-}
-function compileJsonObj(jsonObj, localeValues, delimiters) {
-  walkJsonObj(jsonObj, function (jsonObj, key) {
-    compileValue(jsonObj, key, localeValues, delimiters);
-  });
-  return jsonObj;
-}
-function walkJsonObj(jsonObj, walk) {
-  if (isArray(jsonObj)) {
-    for (var i = 0; i < jsonObj.length; i++) {
-      if (walk(jsonObj, i)) {
-        return true;
-      }
-    }
-  } else
-  if (isObject(jsonObj)) {
-    for (var key in jsonObj) {
-      if (walk(jsonObj, key)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-function resolveLocale(locales) {
-  return function (locale) {
-    if (!locale) {
-      return locale;
-    }
-    locale = normalizeLocale(locale) || locale;
-    return resolveLocaleChain(locale).find(function (locale) {return locales.indexOf(locale) > -1;});
-  };
-}
-function resolveLocaleChain(locale) {
-  var chain = [];
-  var tokens = locale.split('-');
-  while (tokens.length) {
-    chain.push(tokens.join('-'));
-    tokens.pop();
-  }
-  return chain;
-}
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"], __webpack_require__(/*! ./../../../webpack/buildin/global.js */ 2)))
-
-/***/ }),
-
-/***/ 5:
+/***/ 26:
 /*!****************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/pages.json ***!
   \****************************************************/
@@ -13565,7 +12552,1589 @@ function resolveLocaleChain(locale) {
 
 /***/ }),
 
-/***/ 52:
+/***/ 3:
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || new Function("return this")();
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ 32:
+/*!**********************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
+  \**********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return normalizeComponent; });
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+function normalizeComponent (
+  scriptExports,
+  render,
+  staticRenderFns,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier, /* server only */
+  shadowMode, /* vue-cli only */
+  components, // fixed by xxxxxx auto components
+  renderjs // fixed by xxxxxx renderjs
+) {
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // fixed by xxxxxx auto components
+  if (components) {
+    if (!options.components) {
+      options.components = {}
+    }
+    var hasOwn = Object.prototype.hasOwnProperty
+    for (var name in components) {
+      if (hasOwn.call(components, name) && !hasOwn.call(options.components, name)) {
+        options.components[name] = components[name]
+      }
+    }
+  }
+  // fixed by xxxxxx renderjs
+  if (renderjs) {
+    (renderjs.beforeCreate || (renderjs.beforeCreate = [])).unshift(function() {
+      this[renderjs.__module] = this
+    });
+    (options.mixins || (options.mixins = [])).push(renderjs)
+  }
+
+  // render functions
+  if (render) {
+    options.render = render
+    options.staticRenderFns = staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = 'data-v-' + scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = shadowMode
+      ? function () { injectStyles.call(this, this.$root.$options.shadowRoot) }
+      : injectStyles
+  }
+
+  if (hook) {
+    if (options.functional) {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      var originalRender = options.render
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return originalRender(h, context)
+      }
+    } else {
+      // inject component registration as beforeCreate hook
+      var existing = options.beforeCreate
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    }
+  }
+
+  return {
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+
+/***/ 33:
+/*!********************************************************!*\
+  !*** F:/A_项目实战/bank-appointment/my-app/store/index.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
+var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 34));
+_vue.default.use(_vuex.default);
+var store = new _vuex.default.Store({
+  state: {
+    userInfo: '11'
+  },
+  mutations: {
+    setUserInfo: function setUserInfo(state, data) {
+      state.userInfo = data;
+    }
+  }
+});
+var _default = store;
+exports.default = _default;
+
+/***/ }),
+
+/***/ 34:
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vuex3/dist/vuex.common.js ***!
+  \**************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*!
+ * vuex v3.6.2
+ * (c) 2021 Evan You
+ * @license MIT
+ */
+
+
+function applyMixin (Vue) {
+  var version = Number(Vue.version.split('.')[0]);
+
+  if (version >= 2) {
+    Vue.mixin({ beforeCreate: vuexInit });
+  } else {
+    // override init and inject vuex init procedure
+    // for 1.x backwards compatibility.
+    var _init = Vue.prototype._init;
+    Vue.prototype._init = function (options) {
+      if ( options === void 0 ) options = {};
+
+      options.init = options.init
+        ? [vuexInit].concat(options.init)
+        : vuexInit;
+      _init.call(this, options);
+    };
+  }
+
+  /**
+   * Vuex init hook, injected into each instances init hooks list.
+   */
+
+  function vuexInit () {
+    var options = this.$options;
+    // store injection
+    if (options.store) {
+      this.$store = typeof options.store === 'function'
+        ? options.store()
+        : options.store;
+    } else if (options.parent && options.parent.$store) {
+      this.$store = options.parent.$store;
+    }
+  }
+}
+
+var target = typeof window !== 'undefined'
+  ? window
+  : typeof global !== 'undefined'
+    ? global
+    : {};
+var devtoolHook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+
+function devtoolPlugin (store) {
+  if (!devtoolHook) { return }
+
+  store._devtoolHook = devtoolHook;
+
+  devtoolHook.emit('vuex:init', store);
+
+  devtoolHook.on('vuex:travel-to-state', function (targetState) {
+    store.replaceState(targetState);
+  });
+
+  store.subscribe(function (mutation, state) {
+    devtoolHook.emit('vuex:mutation', mutation, state);
+  }, { prepend: true });
+
+  store.subscribeAction(function (action, state) {
+    devtoolHook.emit('vuex:action', action, state);
+  }, { prepend: true });
+}
+
+/**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+function find (list, f) {
+  return list.filter(f)[0]
+}
+
+/**
+ * Deep copy the given object considering circular structure.
+ * This function caches all nested objects and its copies.
+ * If it detects circular structure, use cached copy to avoid infinite loop.
+ *
+ * @param {*} obj
+ * @param {Array<Object>} cache
+ * @return {*}
+ */
+function deepCopy (obj, cache) {
+  if ( cache === void 0 ) cache = [];
+
+  // just return if obj is immutable value
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  // if obj is hit, it is in circular structure
+  var hit = find(cache, function (c) { return c.original === obj; });
+  if (hit) {
+    return hit.copy
+  }
+
+  var copy = Array.isArray(obj) ? [] : {};
+  // put the copy into cache at first
+  // because we want to refer it in recursive deepCopy
+  cache.push({
+    original: obj,
+    copy: copy
+  });
+
+  Object.keys(obj).forEach(function (key) {
+    copy[key] = deepCopy(obj[key], cache);
+  });
+
+  return copy
+}
+
+/**
+ * forEach for object
+ */
+function forEachValue (obj, fn) {
+  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
+}
+
+function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
+}
+
+function isPromise (val) {
+  return val && typeof val.then === 'function'
+}
+
+function assert (condition, msg) {
+  if (!condition) { throw new Error(("[vuex] " + msg)) }
+}
+
+function partial (fn, arg) {
+  return function () {
+    return fn(arg)
+  }
+}
+
+// Base data struct for store's module, package with some attribute and method
+var Module = function Module (rawModule, runtime) {
+  this.runtime = runtime;
+  // Store some children item
+  this._children = Object.create(null);
+  // Store the origin module object which passed by programmer
+  this._rawModule = rawModule;
+  var rawState = rawModule.state;
+
+  // Store the origin module's state
+  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
+};
+
+var prototypeAccessors = { namespaced: { configurable: true } };
+
+prototypeAccessors.namespaced.get = function () {
+  return !!this._rawModule.namespaced
+};
+
+Module.prototype.addChild = function addChild (key, module) {
+  this._children[key] = module;
+};
+
+Module.prototype.removeChild = function removeChild (key) {
+  delete this._children[key];
+};
+
+Module.prototype.getChild = function getChild (key) {
+  return this._children[key]
+};
+
+Module.prototype.hasChild = function hasChild (key) {
+  return key in this._children
+};
+
+Module.prototype.update = function update (rawModule) {
+  this._rawModule.namespaced = rawModule.namespaced;
+  if (rawModule.actions) {
+    this._rawModule.actions = rawModule.actions;
+  }
+  if (rawModule.mutations) {
+    this._rawModule.mutations = rawModule.mutations;
+  }
+  if (rawModule.getters) {
+    this._rawModule.getters = rawModule.getters;
+  }
+};
+
+Module.prototype.forEachChild = function forEachChild (fn) {
+  forEachValue(this._children, fn);
+};
+
+Module.prototype.forEachGetter = function forEachGetter (fn) {
+  if (this._rawModule.getters) {
+    forEachValue(this._rawModule.getters, fn);
+  }
+};
+
+Module.prototype.forEachAction = function forEachAction (fn) {
+  if (this._rawModule.actions) {
+    forEachValue(this._rawModule.actions, fn);
+  }
+};
+
+Module.prototype.forEachMutation = function forEachMutation (fn) {
+  if (this._rawModule.mutations) {
+    forEachValue(this._rawModule.mutations, fn);
+  }
+};
+
+Object.defineProperties( Module.prototype, prototypeAccessors );
+
+var ModuleCollection = function ModuleCollection (rawRootModule) {
+  // register root module (Vuex.Store options)
+  this.register([], rawRootModule, false);
+};
+
+ModuleCollection.prototype.get = function get (path) {
+  return path.reduce(function (module, key) {
+    return module.getChild(key)
+  }, this.root)
+};
+
+ModuleCollection.prototype.getNamespace = function getNamespace (path) {
+  var module = this.root;
+  return path.reduce(function (namespace, key) {
+    module = module.getChild(key);
+    return namespace + (module.namespaced ? key + '/' : '')
+  }, '')
+};
+
+ModuleCollection.prototype.update = function update$1 (rawRootModule) {
+  update([], this.root, rawRootModule);
+};
+
+ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
+    var this$1 = this;
+    if ( runtime === void 0 ) runtime = true;
+
+  if ((true)) {
+    assertRawModule(path, rawModule);
+  }
+
+  var newModule = new Module(rawModule, runtime);
+  if (path.length === 0) {
+    this.root = newModule;
+  } else {
+    var parent = this.get(path.slice(0, -1));
+    parent.addChild(path[path.length - 1], newModule);
+  }
+
+  // register nested modules
+  if (rawModule.modules) {
+    forEachValue(rawModule.modules, function (rawChildModule, key) {
+      this$1.register(path.concat(key), rawChildModule, runtime);
+    });
+  }
+};
+
+ModuleCollection.prototype.unregister = function unregister (path) {
+  var parent = this.get(path.slice(0, -1));
+  var key = path[path.length - 1];
+  var child = parent.getChild(key);
+
+  if (!child) {
+    if ((true)) {
+      console.warn(
+        "[vuex] trying to unregister module '" + key + "', which is " +
+        "not registered"
+      );
+    }
+    return
+  }
+
+  if (!child.runtime) {
+    return
+  }
+
+  parent.removeChild(key);
+};
+
+ModuleCollection.prototype.isRegistered = function isRegistered (path) {
+  var parent = this.get(path.slice(0, -1));
+  var key = path[path.length - 1];
+
+  if (parent) {
+    return parent.hasChild(key)
+  }
+
+  return false
+};
+
+function update (path, targetModule, newModule) {
+  if ((true)) {
+    assertRawModule(path, newModule);
+  }
+
+  // update target module
+  targetModule.update(newModule);
+
+  // update nested modules
+  if (newModule.modules) {
+    for (var key in newModule.modules) {
+      if (!targetModule.getChild(key)) {
+        if ((true)) {
+          console.warn(
+            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
+            'manual reload is needed'
+          );
+        }
+        return
+      }
+      update(
+        path.concat(key),
+        targetModule.getChild(key),
+        newModule.modules[key]
+      );
+    }
+  }
+}
+
+var functionAssert = {
+  assert: function (value) { return typeof value === 'function'; },
+  expected: 'function'
+};
+
+var objectAssert = {
+  assert: function (value) { return typeof value === 'function' ||
+    (typeof value === 'object' && typeof value.handler === 'function'); },
+  expected: 'function or object with "handler" function'
+};
+
+var assertTypes = {
+  getters: functionAssert,
+  mutations: functionAssert,
+  actions: objectAssert
+};
+
+function assertRawModule (path, rawModule) {
+  Object.keys(assertTypes).forEach(function (key) {
+    if (!rawModule[key]) { return }
+
+    var assertOptions = assertTypes[key];
+
+    forEachValue(rawModule[key], function (value, type) {
+      assert(
+        assertOptions.assert(value),
+        makeAssertionMessage(path, key, type, value, assertOptions.expected)
+      );
+    });
+  });
+}
+
+function makeAssertionMessage (path, key, type, value, expected) {
+  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
+  if (path.length > 0) {
+    buf += " in module \"" + (path.join('.')) + "\"";
+  }
+  buf += " is " + (JSON.stringify(value)) + ".";
+  return buf
+}
+
+var Vue; // bind on install
+
+var Store = function Store (options) {
+  var this$1 = this;
+  if ( options === void 0 ) options = {};
+
+  // Auto install if it is not done yet and `window` has `Vue`.
+  // To allow users to avoid auto-installation in some cases,
+  // this code should be placed here. See #731
+  if (!Vue && typeof window !== 'undefined' && window.Vue) {
+    install(window.Vue);
+  }
+
+  if ((true)) {
+    assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
+    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
+    assert(this instanceof Store, "store must be called with the new operator.");
+  }
+
+  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
+  var strict = options.strict; if ( strict === void 0 ) strict = false;
+
+  // store internal state
+  this._committing = false;
+  this._actions = Object.create(null);
+  this._actionSubscribers = [];
+  this._mutations = Object.create(null);
+  this._wrappedGetters = Object.create(null);
+  this._modules = new ModuleCollection(options);
+  this._modulesNamespaceMap = Object.create(null);
+  this._subscribers = [];
+  this._watcherVM = new Vue();
+  this._makeLocalGettersCache = Object.create(null);
+
+  // bind commit and dispatch to self
+  var store = this;
+  var ref = this;
+  var dispatch = ref.dispatch;
+  var commit = ref.commit;
+  this.dispatch = function boundDispatch (type, payload) {
+    return dispatch.call(store, type, payload)
+  };
+  this.commit = function boundCommit (type, payload, options) {
+    return commit.call(store, type, payload, options)
+  };
+
+  // strict mode
+  this.strict = strict;
+
+  var state = this._modules.root.state;
+
+  // init root module.
+  // this also recursively registers all sub-modules
+  // and collects all module getters inside this._wrappedGetters
+  installModule(this, state, [], this._modules.root);
+
+  // initialize the store vm, which is responsible for the reactivity
+  // (also registers _wrappedGetters as computed properties)
+  resetStoreVM(this, state);
+
+  // apply plugins
+  plugins.forEach(function (plugin) { return plugin(this$1); });
+
+  var useDevtools = options.devtools !== undefined ? options.devtools : Vue.config.devtools;
+  if (useDevtools) {
+    devtoolPlugin(this);
+  }
+};
+
+var prototypeAccessors$1 = { state: { configurable: true } };
+
+prototypeAccessors$1.state.get = function () {
+  return this._vm._data.$$state
+};
+
+prototypeAccessors$1.state.set = function (v) {
+  if ((true)) {
+    assert(false, "use store.replaceState() to explicit replace store state.");
+  }
+};
+
+Store.prototype.commit = function commit (_type, _payload, _options) {
+    var this$1 = this;
+
+  // check object-style commit
+  var ref = unifyObjectStyle(_type, _payload, _options);
+    var type = ref.type;
+    var payload = ref.payload;
+    var options = ref.options;
+
+  var mutation = { type: type, payload: payload };
+  var entry = this._mutations[type];
+  if (!entry) {
+    if ((true)) {
+      console.error(("[vuex] unknown mutation type: " + type));
+    }
+    return
+  }
+  this._withCommit(function () {
+    entry.forEach(function commitIterator (handler) {
+      handler(payload);
+    });
+  });
+
+  this._subscribers
+    .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
+    .forEach(function (sub) { return sub(mutation, this$1.state); });
+
+  if (
+    ( true) &&
+    options && options.silent
+  ) {
+    console.warn(
+      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
+      'Use the filter functionality in the vue-devtools'
+    );
+  }
+};
+
+Store.prototype.dispatch = function dispatch (_type, _payload) {
+    var this$1 = this;
+
+  // check object-style dispatch
+  var ref = unifyObjectStyle(_type, _payload);
+    var type = ref.type;
+    var payload = ref.payload;
+
+  var action = { type: type, payload: payload };
+  var entry = this._actions[type];
+  if (!entry) {
+    if ((true)) {
+      console.error(("[vuex] unknown action type: " + type));
+    }
+    return
+  }
+
+  try {
+    this._actionSubscribers
+      .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
+      .filter(function (sub) { return sub.before; })
+      .forEach(function (sub) { return sub.before(action, this$1.state); });
+  } catch (e) {
+    if ((true)) {
+      console.warn("[vuex] error in before action subscribers: ");
+      console.error(e);
+    }
+  }
+
+  var result = entry.length > 1
+    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
+    : entry[0](payload);
+
+  return new Promise(function (resolve, reject) {
+    result.then(function (res) {
+      try {
+        this$1._actionSubscribers
+          .filter(function (sub) { return sub.after; })
+          .forEach(function (sub) { return sub.after(action, this$1.state); });
+      } catch (e) {
+        if ((true)) {
+          console.warn("[vuex] error in after action subscribers: ");
+          console.error(e);
+        }
+      }
+      resolve(res);
+    }, function (error) {
+      try {
+        this$1._actionSubscribers
+          .filter(function (sub) { return sub.error; })
+          .forEach(function (sub) { return sub.error(action, this$1.state, error); });
+      } catch (e) {
+        if ((true)) {
+          console.warn("[vuex] error in error action subscribers: ");
+          console.error(e);
+        }
+      }
+      reject(error);
+    });
+  })
+};
+
+Store.prototype.subscribe = function subscribe (fn, options) {
+  return genericSubscribe(fn, this._subscribers, options)
+};
+
+Store.prototype.subscribeAction = function subscribeAction (fn, options) {
+  var subs = typeof fn === 'function' ? { before: fn } : fn;
+  return genericSubscribe(subs, this._actionSubscribers, options)
+};
+
+Store.prototype.watch = function watch (getter, cb, options) {
+    var this$1 = this;
+
+  if ((true)) {
+    assert(typeof getter === 'function', "store.watch only accepts a function.");
+  }
+  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
+};
+
+Store.prototype.replaceState = function replaceState (state) {
+    var this$1 = this;
+
+  this._withCommit(function () {
+    this$1._vm._data.$$state = state;
+  });
+};
+
+Store.prototype.registerModule = function registerModule (path, rawModule, options) {
+    if ( options === void 0 ) options = {};
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if ((true)) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+    assert(path.length > 0, 'cannot register the root module by using registerModule.');
+  }
+
+  this._modules.register(path, rawModule);
+  installModule(this, this.state, path, this._modules.get(path), options.preserveState);
+  // reset store to update getters...
+  resetStoreVM(this, this.state);
+};
+
+Store.prototype.unregisterModule = function unregisterModule (path) {
+    var this$1 = this;
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if ((true)) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+  }
+
+  this._modules.unregister(path);
+  this._withCommit(function () {
+    var parentState = getNestedState(this$1.state, path.slice(0, -1));
+    Vue.delete(parentState, path[path.length - 1]);
+  });
+  resetStore(this);
+};
+
+Store.prototype.hasModule = function hasModule (path) {
+  if (typeof path === 'string') { path = [path]; }
+
+  if ((true)) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+  }
+
+  return this._modules.isRegistered(path)
+};
+
+Store.prototype[[104,111,116,85,112,100,97,116,101].map(function (item) {return String.fromCharCode(item)}).join('')] = function (newOptions) {
+  this._modules.update(newOptions);
+  resetStore(this, true);
+};
+
+Store.prototype._withCommit = function _withCommit (fn) {
+  var committing = this._committing;
+  this._committing = true;
+  fn();
+  this._committing = committing;
+};
+
+Object.defineProperties( Store.prototype, prototypeAccessors$1 );
+
+function genericSubscribe (fn, subs, options) {
+  if (subs.indexOf(fn) < 0) {
+    options && options.prepend
+      ? subs.unshift(fn)
+      : subs.push(fn);
+  }
+  return function () {
+    var i = subs.indexOf(fn);
+    if (i > -1) {
+      subs.splice(i, 1);
+    }
+  }
+}
+
+function resetStore (store, hot) {
+  store._actions = Object.create(null);
+  store._mutations = Object.create(null);
+  store._wrappedGetters = Object.create(null);
+  store._modulesNamespaceMap = Object.create(null);
+  var state = store.state;
+  // init all modules
+  installModule(store, state, [], store._modules.root, true);
+  // reset vm
+  resetStoreVM(store, state, hot);
+}
+
+function resetStoreVM (store, state, hot) {
+  var oldVm = store._vm;
+
+  // bind store public getters
+  store.getters = {};
+  // reset local getters cache
+  store._makeLocalGettersCache = Object.create(null);
+  var wrappedGetters = store._wrappedGetters;
+  var computed = {};
+  forEachValue(wrappedGetters, function (fn, key) {
+    // use computed to leverage its lazy-caching mechanism
+    // direct inline function use will lead to closure preserving oldVm.
+    // using partial to return function with only arguments preserved in closure environment.
+    computed[key] = partial(fn, store);
+    Object.defineProperty(store.getters, key, {
+      get: function () { return store._vm[key]; },
+      enumerable: true // for local getters
+    });
+  });
+
+  // use a Vue instance to store the state tree
+  // suppress warnings just in case the user has added
+  // some funky global mixins
+  var silent = Vue.config.silent;
+  Vue.config.silent = true;
+  store._vm = new Vue({
+    data: {
+      $$state: state
+    },
+    computed: computed
+  });
+  Vue.config.silent = silent;
+
+  // enable strict mode for new vm
+  if (store.strict) {
+    enableStrictMode(store);
+  }
+
+  if (oldVm) {
+    if (hot) {
+      // dispatch changes in all subscribed watchers
+      // to force getter re-evaluation for hot reloading.
+      store._withCommit(function () {
+        oldVm._data.$$state = null;
+      });
+    }
+    Vue.nextTick(function () { return oldVm.$destroy(); });
+  }
+}
+
+function installModule (store, rootState, path, module, hot) {
+  var isRoot = !path.length;
+  var namespace = store._modules.getNamespace(path);
+
+  // register in namespace map
+  if (module.namespaced) {
+    if (store._modulesNamespaceMap[namespace] && ("development" !== 'production')) {
+      console.error(("[vuex] duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
+    }
+    store._modulesNamespaceMap[namespace] = module;
+  }
+
+  // set state
+  if (!isRoot && !hot) {
+    var parentState = getNestedState(rootState, path.slice(0, -1));
+    var moduleName = path[path.length - 1];
+    store._withCommit(function () {
+      if ((true)) {
+        if (moduleName in parentState) {
+          console.warn(
+            ("[vuex] state field \"" + moduleName + "\" was overridden by a module with the same name at \"" + (path.join('.')) + "\"")
+          );
+        }
+      }
+      Vue.set(parentState, moduleName, module.state);
+    });
+  }
+
+  var local = module.context = makeLocalContext(store, namespace, path);
+
+  module.forEachMutation(function (mutation, key) {
+    var namespacedType = namespace + key;
+    registerMutation(store, namespacedType, mutation, local);
+  });
+
+  module.forEachAction(function (action, key) {
+    var type = action.root ? key : namespace + key;
+    var handler = action.handler || action;
+    registerAction(store, type, handler, local);
+  });
+
+  module.forEachGetter(function (getter, key) {
+    var namespacedType = namespace + key;
+    registerGetter(store, namespacedType, getter, local);
+  });
+
+  module.forEachChild(function (child, key) {
+    installModule(store, rootState, path.concat(key), child, hot);
+  });
+}
+
+/**
+ * make localized dispatch, commit, getters and state
+ * if there is no namespace, just use root ones
+ */
+function makeLocalContext (store, namespace, path) {
+  var noNamespace = namespace === '';
+
+  var local = {
+    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if (( true) && !store._actions[type]) {
+          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      return store.dispatch(type, payload)
+    },
+
+    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if (( true) && !store._mutations[type]) {
+          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      store.commit(type, payload, options);
+    }
+  };
+
+  // getters and state object must be gotten lazily
+  // because they will be changed by vm update
+  Object.defineProperties(local, {
+    getters: {
+      get: noNamespace
+        ? function () { return store.getters; }
+        : function () { return makeLocalGetters(store, namespace); }
+    },
+    state: {
+      get: function () { return getNestedState(store.state, path); }
+    }
+  });
+
+  return local
+}
+
+function makeLocalGetters (store, namespace) {
+  if (!store._makeLocalGettersCache[namespace]) {
+    var gettersProxy = {};
+    var splitPos = namespace.length;
+    Object.keys(store.getters).forEach(function (type) {
+      // skip if the target getter is not match this namespace
+      if (type.slice(0, splitPos) !== namespace) { return }
+
+      // extract local getter type
+      var localType = type.slice(splitPos);
+
+      // Add a port to the getters proxy.
+      // Define as getter property because
+      // we do not want to evaluate the getters in this time.
+      Object.defineProperty(gettersProxy, localType, {
+        get: function () { return store.getters[type]; },
+        enumerable: true
+      });
+    });
+    store._makeLocalGettersCache[namespace] = gettersProxy;
+  }
+
+  return store._makeLocalGettersCache[namespace]
+}
+
+function registerMutation (store, type, handler, local) {
+  var entry = store._mutations[type] || (store._mutations[type] = []);
+  entry.push(function wrappedMutationHandler (payload) {
+    handler.call(store, local.state, payload);
+  });
+}
+
+function registerAction (store, type, handler, local) {
+  var entry = store._actions[type] || (store._actions[type] = []);
+  entry.push(function wrappedActionHandler (payload) {
+    var res = handler.call(store, {
+      dispatch: local.dispatch,
+      commit: local.commit,
+      getters: local.getters,
+      state: local.state,
+      rootGetters: store.getters,
+      rootState: store.state
+    }, payload);
+    if (!isPromise(res)) {
+      res = Promise.resolve(res);
+    }
+    if (store._devtoolHook) {
+      return res.catch(function (err) {
+        store._devtoolHook.emit('vuex:error', err);
+        throw err
+      })
+    } else {
+      return res
+    }
+  });
+}
+
+function registerGetter (store, type, rawGetter, local) {
+  if (store._wrappedGetters[type]) {
+    if ((true)) {
+      console.error(("[vuex] duplicate getter key: " + type));
+    }
+    return
+  }
+  store._wrappedGetters[type] = function wrappedGetter (store) {
+    return rawGetter(
+      local.state, // local state
+      local.getters, // local getters
+      store.state, // root state
+      store.getters // root getters
+    )
+  };
+}
+
+function enableStrictMode (store) {
+  store._vm.$watch(function () { return this._data.$$state }, function () {
+    if ((true)) {
+      assert(store._committing, "do not mutate vuex store state outside mutation handlers.");
+    }
+  }, { deep: true, sync: true });
+}
+
+function getNestedState (state, path) {
+  return path.reduce(function (state, key) { return state[key]; }, state)
+}
+
+function unifyObjectStyle (type, payload, options) {
+  if (isObject(type) && type.type) {
+    options = payload;
+    payload = type;
+    type = type.type;
+  }
+
+  if ((true)) {
+    assert(typeof type === 'string', ("expects string as the type, but found " + (typeof type) + "."));
+  }
+
+  return { type: type, payload: payload, options: options }
+}
+
+function install (_Vue) {
+  if (Vue && _Vue === Vue) {
+    if ((true)) {
+      console.error(
+        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
+      );
+    }
+    return
+  }
+  Vue = _Vue;
+  applyMixin(Vue);
+}
+
+/**
+ * Reduce the code which written in Vue.js for getting the state.
+ * @param {String} [namespace] - Module's namespace
+ * @param {Object|Array} states # Object's item can be a function which accept state and getters for param, you can do something for state and getters in it.
+ * @param {Object}
+ */
+var mapState = normalizeNamespace(function (namespace, states) {
+  var res = {};
+  if (( true) && !isValidMap(states)) {
+    console.error('[vuex] mapState: mapper parameter must be either an Array or an Object');
+  }
+  normalizeMap(states).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedState () {
+      var state = this.$store.state;
+      var getters = this.$store.getters;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
+        if (!module) {
+          return
+        }
+        state = module.context.state;
+        getters = module.context.getters;
+      }
+      return typeof val === 'function'
+        ? val.call(this, state, getters)
+        : state[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+/**
+ * Reduce the code which written in Vue.js for committing the mutation
+ * @param {String} [namespace] - Module's namespace
+ * @param {Object|Array} mutations # Object's item can be a function which accept `commit` function as the first param, it can accept another params. You can commit mutation and do any other things in this function. specially, You need to pass anthor params from the mapped function.
+ * @return {Object}
+ */
+var mapMutations = normalizeNamespace(function (namespace, mutations) {
+  var res = {};
+  if (( true) && !isValidMap(mutations)) {
+    console.error('[vuex] mapMutations: mapper parameter must be either an Array or an Object');
+  }
+  normalizeMap(mutations).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedMutation () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      // Get the commit method from store
+      var commit = this.$store.commit;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapMutations', namespace);
+        if (!module) {
+          return
+        }
+        commit = module.context.commit;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [commit].concat(args))
+        : commit.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+/**
+ * Reduce the code which written in Vue.js for getting the getters
+ * @param {String} [namespace] - Module's namespace
+ * @param {Object|Array} getters
+ * @return {Object}
+ */
+var mapGetters = normalizeNamespace(function (namespace, getters) {
+  var res = {};
+  if (( true) && !isValidMap(getters)) {
+    console.error('[vuex] mapGetters: mapper parameter must be either an Array or an Object');
+  }
+  normalizeMap(getters).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    // The namespace has been mutated by normalizeNamespace
+    val = namespace + val;
+    res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if (( true) && !(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
+        return
+      }
+      return this.$store.getters[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+/**
+ * Reduce the code which written in Vue.js for dispatch the action
+ * @param {String} [namespace] - Module's namespace
+ * @param {Object|Array} actions # Object's item can be a function which accept `dispatch` function as the first param, it can accept anthor params. You can dispatch action and do any other things in this function. specially, You need to pass anthor params from the mapped function.
+ * @return {Object}
+ */
+var mapActions = normalizeNamespace(function (namespace, actions) {
+  var res = {};
+  if (( true) && !isValidMap(actions)) {
+    console.error('[vuex] mapActions: mapper parameter must be either an Array or an Object');
+  }
+  normalizeMap(actions).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedAction () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      // get dispatch function from store
+      var dispatch = this.$store.dispatch;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapActions', namespace);
+        if (!module) {
+          return
+        }
+        dispatch = module.context.dispatch;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [dispatch].concat(args))
+        : dispatch.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+/**
+ * Rebinding namespace param for mapXXX function in special scoped, and return them by simple object
+ * @param {String} namespace
+ * @return {Object}
+ */
+var createNamespacedHelpers = function (namespace) { return ({
+  mapState: mapState.bind(null, namespace),
+  mapGetters: mapGetters.bind(null, namespace),
+  mapMutations: mapMutations.bind(null, namespace),
+  mapActions: mapActions.bind(null, namespace)
+}); };
+
+/**
+ * Normalize the map
+ * normalizeMap([1, 2, 3]) => [ { key: 1, val: 1 }, { key: 2, val: 2 }, { key: 3, val: 3 } ]
+ * normalizeMap({a: 1, b: 2, c: 3}) => [ { key: 'a', val: 1 }, { key: 'b', val: 2 }, { key: 'c', val: 3 } ]
+ * @param {Array|Object} map
+ * @return {Object}
+ */
+function normalizeMap (map) {
+  if (!isValidMap(map)) {
+    return []
+  }
+  return Array.isArray(map)
+    ? map.map(function (key) { return ({ key: key, val: key }); })
+    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+/**
+ * Validate whether given map is valid or not
+ * @param {*} map
+ * @return {Boolean}
+ */
+function isValidMap (map) {
+  return Array.isArray(map) || isObject(map)
+}
+
+/**
+ * Return a function expect two param contains namespace and map. it will normalize the namespace and then the param's function will handle the new namespace and the map.
+ * @param {Function} fn
+ * @return {Function}
+ */
+function normalizeNamespace (fn) {
+  return function (namespace, map) {
+    if (typeof namespace !== 'string') {
+      map = namespace;
+      namespace = '';
+    } else if (namespace.charAt(namespace.length - 1) !== '/') {
+      namespace += '/';
+    }
+    return fn(namespace, map)
+  }
+}
+
+/**
+ * Search a special module from store by namespace. if module not exist, print error message.
+ * @param {Object} store
+ * @param {String} helper
+ * @param {String} namespace
+ * @return {Object}
+ */
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if (( true) && !module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
+}
+
+// Credits: borrowed code from fcomb/redux-logger
+
+function createLogger (ref) {
+  if ( ref === void 0 ) ref = {};
+  var collapsed = ref.collapsed; if ( collapsed === void 0 ) collapsed = true;
+  var filter = ref.filter; if ( filter === void 0 ) filter = function (mutation, stateBefore, stateAfter) { return true; };
+  var transformer = ref.transformer; if ( transformer === void 0 ) transformer = function (state) { return state; };
+  var mutationTransformer = ref.mutationTransformer; if ( mutationTransformer === void 0 ) mutationTransformer = function (mut) { return mut; };
+  var actionFilter = ref.actionFilter; if ( actionFilter === void 0 ) actionFilter = function (action, state) { return true; };
+  var actionTransformer = ref.actionTransformer; if ( actionTransformer === void 0 ) actionTransformer = function (act) { return act; };
+  var logMutations = ref.logMutations; if ( logMutations === void 0 ) logMutations = true;
+  var logActions = ref.logActions; if ( logActions === void 0 ) logActions = true;
+  var logger = ref.logger; if ( logger === void 0 ) logger = console;
+
+  return function (store) {
+    var prevState = deepCopy(store.state);
+
+    if (typeof logger === 'undefined') {
+      return
+    }
+
+    if (logMutations) {
+      store.subscribe(function (mutation, state) {
+        var nextState = deepCopy(state);
+
+        if (filter(mutation, prevState, nextState)) {
+          var formattedTime = getFormattedTime();
+          var formattedMutation = mutationTransformer(mutation);
+          var message = "mutation " + (mutation.type) + formattedTime;
+
+          startMessage(logger, message, collapsed);
+          logger.log('%c prev state', 'color: #9E9E9E; font-weight: bold', transformer(prevState));
+          logger.log('%c mutation', 'color: #03A9F4; font-weight: bold', formattedMutation);
+          logger.log('%c next state', 'color: #4CAF50; font-weight: bold', transformer(nextState));
+          endMessage(logger);
+        }
+
+        prevState = nextState;
+      });
+    }
+
+    if (logActions) {
+      store.subscribeAction(function (action, state) {
+        if (actionFilter(action, state)) {
+          var formattedTime = getFormattedTime();
+          var formattedAction = actionTransformer(action);
+          var message = "action " + (action.type) + formattedTime;
+
+          startMessage(logger, message, collapsed);
+          logger.log('%c action', 'color: #03A9F4; font-weight: bold', formattedAction);
+          endMessage(logger);
+        }
+      });
+    }
+  }
+}
+
+function startMessage (logger, message, collapsed) {
+  var startMessage = collapsed
+    ? logger.groupCollapsed
+    : logger.group;
+
+  // render
+  try {
+    startMessage.call(logger, message);
+  } catch (e) {
+    logger.log(message);
+  }
+}
+
+function endMessage (logger) {
+  try {
+    logger.groupEnd();
+  } catch (e) {
+    logger.log('—— log end ——');
+  }
+}
+
+function getFormattedTime () {
+  var time = new Date();
+  return (" @ " + (pad(time.getHours(), 2)) + ":" + (pad(time.getMinutes(), 2)) + ":" + (pad(time.getSeconds(), 2)) + "." + (pad(time.getMilliseconds(), 3)))
+}
+
+function repeat (str, times) {
+  return (new Array(times + 1)).join(str)
+}
+
+function pad (num, maxLength) {
+  return repeat('0', maxLength - num.toString().length) + num
+}
+
+var index_cjs = {
+  Store: Store,
+  install: install,
+  version: '3.6.2',
+  mapState: mapState,
+  mapMutations: mapMutations,
+  mapGetters: mapGetters,
+  mapActions: mapActions,
+  createNamespacedHelpers: createNamespacedHelpers,
+  createLogger: createLogger
+};
+
+module.exports = index_cjs;
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../webpack/buildin/global.js */ 3)))
+
+/***/ }),
+
+/***/ 4:
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/interopRequireDefault.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : {
+    "default": obj
+  };
+}
+module.exports = _interopRequireDefault, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 41:
+/*!*******************************************************************!*\
+  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b1.png ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/static/imgs/banner/b1.png";
+
+/***/ }),
+
+/***/ 42:
+/*!*******************************************************************!*\
+  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b2.png ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/static/imgs/banner/b2.png";
+
+/***/ }),
+
+/***/ 43:
+/*!*******************************************************************!*\
+  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b3.png ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/static/imgs/banner/b3.png";
+
+/***/ }),
+
+/***/ 44:
+/*!*******************************************************************!*\
+  !*** F:/A_项目实战/bank-appointment/my-app/static/imgs/banner/b4.png ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/static/imgs/banner/b4.png";
+
+/***/ }),
+
+/***/ 5:
+/*!**************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithHoles = __webpack_require__(/*! ./arrayWithHoles.js */ 6);
+var iterableToArrayLimit = __webpack_require__(/*! ./iterableToArrayLimit.js */ 7);
+var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ 8);
+var nonIterableRest = __webpack_require__(/*! ./nonIterableRest.js */ 10);
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 6:
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithHoles.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 7:
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _iterableToArrayLimit(arr, i) {
+  var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+  if (null != _i) {
+    var _s,
+      _e,
+      _x,
+      _r,
+      _arr = [],
+      _n = !0,
+      _d = !1;
+    try {
+      if (_x = (_i = _i.call(arr)).next, 0 === i) {
+        if (Object(_i) !== _i) return;
+        _n = !1;
+      } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0) {
+        ;
+      }
+    } catch (err) {
+      _d = !0, _e = err;
+    } finally {
+      try {
+        if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return;
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+    return _arr;
+  }
+}
+module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 77:
 /*!****************************************************!*\
   !*** F:/A_项目实战/bank-appointment/my-app/api/api.js ***!
   \****************************************************/
@@ -13573,14 +14142,20 @@ function resolveLocaleChain(locale) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.requestApi = void 0;var requestApi = function requestApi(url, method, data) {
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.requestApi = void 0;
+var requestApi = function requestApi(url, method, data) {
   var baseUrl = 'http://localhost:8082';
   return new Promise(function (resolve, reject) {
     uni.request({
       url: baseUrl + url,
       method: method,
-      data: data }).
-    then(function (res) {
+      data: data
+    }).then(function (res) {
       // 请求成功时，将结果返出去
       resolve(res);
     }).catch(function (err) {
@@ -13589,12 +14164,51 @@ function resolveLocaleChain(locale) {
       uni.showToast({
         title: '请求失败',
         duration: 3000,
-        icon: 'error' });
-
+        icon: 'error'
+      });
     });
   });
-};exports.requestApi = requestApi;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+};
+exports.requestApi = requestApi;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+
+/***/ 8:
+/*!***************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ 9);
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
+}
+module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 9:
+/*!*****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayLikeToArray.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
+module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ })
 
